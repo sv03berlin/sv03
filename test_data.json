@@ -24,8 +24,6 @@
         "is_active": true,
         "date_joined": "2023-05-31T08:08:20",
         "license": "",
-        "iban": "",
-        "bic": "",
         "membership_type": 1,
         "can_create_invoices": false,
         "is_boat_owner": false,

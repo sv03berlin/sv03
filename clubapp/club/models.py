@@ -1,31 +1,32 @@
 from datetime import datetime
-from functools import cached_property
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
 
 
 class Membership(models.Model):
-    name = models.CharField(max_length=63, unique=True)
-    work_hours = models.IntegerField()
-    work_hours_boat_owner = models.IntegerField()
-    work_hours_club_boat_user = models.IntegerField()
+    name = models.CharField(max_length=63, unique=True, verbose_name=_("Mitgliedschaftsart"))
+    work_hours = models.IntegerField(verbose_name=_("Arbeitsstunden"))
+    work_hours_boat_owner = models.IntegerField(verbose_name=_("Arbeitsstunden Bootseigner:in"))
+    work_hours_club_boat_user = models.IntegerField(verbose_name=_("Arbeitsstunden Clubbootnutzer:in"))
 
-    work_compensation = models.DecimalField(decimal_places=2, max_digits=5)
+    work_compensation = models.DecimalField(decimal_places=2, max_digits=5, verbose_name=_("Entschädigung pro Stunde in €"))
 
     def __str__(self) -> str:
         return self.name
 
 
 class User(AbstractUser):
-    license = models.CharField(max_length=63, blank=True)
-    iban = models.CharField(max_length=34, blank=True)
-    bic = models.CharField(max_length=63, blank=True)
+    license = models.CharField(max_length=63, blank=True, null=True, verbose_name=_("Lizenznummer"))
 
-    membership_type = models.ForeignKey(Membership, on_delete=models.PROTECT, related_name="users", null=True)
-    can_create_invoices = models.BooleanField(default=False)
-    is_boat_owner = models.BooleanField(default=False)
-    is_clubboat_user = models.BooleanField(default=False)
+    membership_type = models.ForeignKey(
+        Membership, on_delete=models.PROTECT, related_name="users", null=True, verbose_name=_("Mitgliedschaftsart")
+    )
+    can_create_invoices = models.BooleanField(default=False, verbose_name=_("Nutzer darf Rechnungen erstellen"))
+    is_boat_owner = models.BooleanField(default=False, verbose_name=_("Nutzer ist Bootseigner:in"))
+    is_clubboat_user = models.BooleanField(default=False, verbose_name=_("Nutzer ist Clubbootnutzer:in"))
 
     def __str__(self) -> str:
         if self.first_name and self.last_name:
@@ -84,10 +85,10 @@ class User(AbstractUser):
 
 
 class Resort(models.Model):
-    name = models.CharField(max_length=63, unique=True)
-    bank_account = models.CharField(max_length=255)
-    head = models.ForeignKey(User, related_name="head", null=True, on_delete=models.SET_NULL)
-    is_accounting_resort = models.BooleanField(default=False)
+    name = models.CharField(max_length=63, unique=True, verbose_name=_("Resortname"))
+    bank_account = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Buchungskonto"))
+    head = models.ForeignKey(User, related_name="head", null=True, on_delete=models.SET_NULL, verbose_name=_("Vorstehende:r"))
+    is_accounting_resort = models.BooleanField(default=False, verbose_name=_("Buchhaltungsresort"))
 
     def __str__(self) -> str:
         return self.name

@@ -13,7 +13,6 @@
                 <th scope="col">Empfänger</th>
                 <th scope="col">Anlass</th>
                 <th scope="col">Datum</th>
-                <th scope="col">IBAN</th>
                 <th scope="col">Betrag</th>
                 <th scope="col">Rechnung</th>
                 <th scope="col">Resort</th>
@@ -33,7 +32,6 @@
                 </td>
                 <td>{{t.reason}}</td>
                 <td>{{t.date}}</td>
-                <td>{{t.user.iban}}</td>
                 <td>{{t.amount}}€</td>
                 <td><a href="{% url 'invoice' pdf=t.id %}" target="_blank" rel="noopener noreferrer">{{t.path}}</a></td>
                 <td>{{t.resort.name}}</td>

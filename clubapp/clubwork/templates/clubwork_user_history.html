@@ -25,8 +25,13 @@
                 <td>{{t.date_time}}</td>
                 <td>{{t.description}}</td>
                 <td>{{t.duration}}h</td>
+                {% if t.approved_by == None %}
+                <td>Ausstehend</td>
+                <td>-</td>
+                {% else %}
                 <td>{{t.approved_by}}</td>
                 <td>{{t.approve_date}}</td>
+                {% endif %}
             </tr>
             {% empty %}
                 <p>Sorry, keine einträge in der Tabelle</p>

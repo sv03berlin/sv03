@@ -7,7 +7,7 @@ from clubapp.club.models import Membership, Resort, User
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "email", "license", "iban", "bic")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "email", "license")}),
         (
             "Permissions",
             {
@@ -27,6 +27,14 @@ class CustomUserAdmin(UserAdmin):
     )
 
 
-admin.site.register(Resort)
-admin.site.register(Membership)
+class MembershipAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("name", "work_hours", "work_hours_boat_owner", "work_hours_club_boat_user", "work_compensation")
+
+
+class ResortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("name", "head", "is_accounting_resort")
+
+
+admin.site.register(Resort, ResortAdmin)
+admin.site.register(Membership, MembershipAdmin)
 admin.site.register(User, CustomUserAdmin)

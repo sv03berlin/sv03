@@ -38,11 +38,7 @@ services:
   clubapp:
     container_name: clubapp
     restart: always
-    command: python3 /code/clubapp_uvicorn.py
-    build:
-      context: ~/clubapp/
-      args:
-        - ISDEPLOY=1
+    image: fidoriel/clubapp:latest
     volumes:
       - clubapp-static:/clubapp_static
       - ./vhost.d:/etc/nginx/vhost.d

@@ -17,7 +17,7 @@
         {% include 'user_clubwork.html' with clubworkpart=clubworkpart user=user %}
     {% endfor %}
 
-    <p class="h4 mb-3">Arbeitsdienste für die ich mich anmelden kann</p>
+    <p class="h4 mb-3">Zukünftige Arbeitsdienste für die ich mich anmelden kann</p>
     {% for clubwork in clubworks %}
         {% include 'clubwork_card.html' with clubwork=clubwork user=user %}
     {% endfor %}      

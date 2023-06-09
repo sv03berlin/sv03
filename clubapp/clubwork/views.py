@@ -64,6 +64,7 @@ def add_own_clubwork(request: AuthenticatedHttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = ClubWorkParticipationForm(request.POST)
         if form.is_valid():
+            form.instance.user = request.user
             form.save()
             return redirect("clubwork_index")
         else:
@@ -98,7 +99,9 @@ def mod_own_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
 @login_required
 @is_resort_user
 def approve_clubwork_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
-    cw = ClubWorkParticipation.objects.filter(approved_by=None, resort__head=request.user)
+    cw = ClubWorkParticipation.objects.filter(approved_by=None, resort__head=request.user, date_time__lte=datetime.now()).order_by(
+        "date_time"
+    )
     return render(request, template_name="approve_clubwork.html", context={"clubworks": cw})
 
 
@@ -177,6 +180,6 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 def user_history(request: AuthenticatedHttpRequest) -> HttpResponse:
-    qs = ClubWorkParticipation.objects.filter(~Q(approved_by=None), user=request.user)
+    qs = ClubWorkParticipation.objects.filter(user=request.user, date_time__lte=datetime.now())
     c = {"clubworks": qs}
     return render(request, template_name="clubwork_user_history.html", context=c)
