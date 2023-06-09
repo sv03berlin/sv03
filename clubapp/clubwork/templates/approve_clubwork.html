@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3">Ausstehende Genehmigungen</p>
+    <a class="btn btn-outline-secondary mb-3" href="{% url 'clubwork_history' %}">Historie</a>
+    <table class="table align-middle mb-3">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Arbeitende:r</th>
+                <th scope="col">Anlass</th>
+                <th scope="col">Datum</th>
+                <th scope="col">Kommentar</th>
+                <th scope="col">Dauer</th>
+                <th scope="col">Optionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in clubworks %}
+            <tr id="row{{ forloop.counter0 }}">
+                <th scope="row">{{t.id}}</th>
+                <td>
+                    {{t.user}}          
+                </td>
+                <td>{{t.title}}</td>
+                <td>{{t.date_time}}</td>
+                <td>{{t.description}}</td>
+                <td>{{t.duration}}h</td>
+                <td>
+                    <div class="d-flex">
+                        <a href="{% url 'mod_own_clubwork' t.id %}" class="btn-sm btn-outline-primary me-1 btn">Bearbeiten</a>
+                        <button class="btn-sm btn-outline-secondary me-1 btn btn-outline-success" onclick="fetchAndDeleteOnSuccess(`{% url 'approve_clubwork' t.id %}`, ['row{{ forloop.counter0 }}'], 'POST')">Annehmen</button>
+                        <button class="btn-sm btn-primary ms-1 btn btn-danger" onclick="fetchAndDeleteOnSuccess(`{% url 'approve_clubwork' t.id %}`, ['row{{ forloop.counter0 }}'], 'DELETE')">Ablehnen</button>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+                <p>Sorry, keine einträge in der Tabelle</p>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}

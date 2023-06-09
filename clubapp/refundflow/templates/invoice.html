@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+{% load static %}
+<html>
+    <style type="text/css">
+        th, td {
+        text-align: left;
+        padding: 2px;
+        text-align: left;
+        -pdf-keep-with-next: true;
+        -pdf-keep-in-frame-mode: shrink;
+        box-sizing: border-box;
+         width: 100%;
+        }
+    </style>
+    <head>
+        <meta charset="UTF-8">
+        <title>clubapp Invoice</title>
+    </head>
+
+    <body style="size: 21cm 29.7cm !important; font-size: 12px !important;">
+        <h3 style="font-size: 18px; text-align: center;"><u>Trainigsabrechung</u></h3>
+
+        <p>
+            <strong>Name: </strong> {% if user.first_name == "" and user.last_name == "" %} {{user.username}} {% else %} {{t.user.first_name}} {{t.user.last_name}} {% endif %}
+            <br>
+            <strong>Lizenznummer: </strong> {% if user.license != ""%} {{user.license}} {% else %} - {% endif %}
+        </p>
+
+        <p class="text-end text-justify" style="text-align: right;">
+            <strong>Rechnungsdatum: </strong> {{date}}
+            <br>
+        </p>
+
+        <!-- <table class="table table-sm table-striped caption-top"> -->
+        <h6>Rechnungspositionen</h6>
+        <table style="border: .1px solid black;">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Aufgabe</th>
+                    <th scope="col">Datum</th>
+                    <th scope="col">Bemerkung</th>
+                    <th scope="col">Abrechnungsform</th>
+                    <th scope="col">Stunden</th>
+                    <th scope="col">Stundensatz</th>
+                    <th scope="col">Kosten</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lot in lots %}
+                <tr>
+                    <th scope="row" style="width: 20%;">{{ forloop.counter }}</th>
+                    <td>{{lot.reason}}</td>
+                    <td>{{lot.date}}</td>
+                    <td>{{lot.annotation}}</td>
+                    <td style="width: 80%;">
+                        {% if lot.payment_type == "flat" %}
+                            pauschal
+                        {% else %}
+                            Stundensatz
+                        {% endif %}
+                    </td>
+                    <td style="width: 40%;">
+                        {% if lot.hour_count == None %}
+                            -
+                        {% else %}
+                            {{lot.hour_count}}
+                        {% endif %}
+                    </td>
+                    <td style="width: 60%;">
+                        {% if lot.hour_rate == None %}
+                            -
+                        {% else %}
+                            {{lot.hour_rate}}€
+                        {% endif %}
+                    </td>
+                    <td style="width: 60%;">{{lot.amount}}€</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-end font-weight-bold" style="font-size: 13px; text-align: right;">
+            <strong>Betrag:</strong> {{total}}€
+        </p>
+    </body>
+</html>

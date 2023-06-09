@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href={% static "bootstrap/css/bootstrap.css" %} />
+<link rel="stylesheet" type="text/css" href={% static "customcss/custom.css" %} />
+<link rel="stylesheet" type="text/css" href={% static "gh.css" %} />
+<script type="text/javascript" src={% static "bootstrap/js/bootstrap.js" %}></script>
+<script type="text/javascript" src={% static "clubapp.js" %}></script>
+
+<html>
+    <head>
+        <title>Sv03 Papierkram</title>
+    </head>
+
+    <body>
+        <header>
+            <nav class="navbar navbar-fixed-top navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
+                <div class="container">
+                    <a class="navbar-brand" href="{% url 'index' %}">
+                        <img src="/static/logo.png" alt="Flowers" style="width:auto;height:50px;">
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample" aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    {% if user.is_authenticated %}
+                        <div class="navbar-collapse" id="navbarsExample">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <div class="navbar-collapse" id="navbarsExample">
+                                    <div class="navbar-nav nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Erstattungen</a>
+                                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                            <li><a class="dropdown-item" href="{% url 'transaction_overview' %}">Meine Auszahlungen</a></li>
+            
+                                            {% if user.is_invoice_user %}
+                                                <li><a class="dropdown-item" href="{% url 'tracking_overview' %}">Meine Abrechnungen</a></li>
+                                            {% endif %}
+            
+                                            {% if user.is_resort_user %}
+                                                <li><a class="dropdown-item" href="{% url 'approve_payment' %}">Genehmigen</a></li>
+                                            {% endif %}
+            
+                                            {% if user.is_accountant_user %}
+                                                <li><a class="dropdown-item" href="{% url 'manage_payment' %}">Auszahlungsübersicht</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+
+                                    <div class="navbar-collapse" id="navbarsExample">
+                                        <div class="navbar-nav nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Arbeitsdienst</a>
+                                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                                <li><a class="dropdown-item" href="{% url 'clubwork_index' %}">Meine Übersicht</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'clubwork_user_history' %}">Meine vergangenen Arbeitsdienste</a></li>
+                                                {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+                                                <li><a class="dropdown-item" href="{% url 'approve_clubwork_overview' %}">Arbeitsdienste genehmigen</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'clubwork_history' %}">Arbeitsdienst Historie</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                            </ul>
+
+                            <div class="navbar-nav px-2"></ul>
+                                <div class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">{{ user }}</a>
+                                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                        <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        {% if user.is_superuser %}
+                                            <h6 class="dropdown-header">Admin</h6>
+                                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        {% endif %}
+                                        <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        
+                        {% else %}
+
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="/">Home</a>
+                            </li>
+                        </ul>
+
+                        <div class="text-end">
+                            <a href="{% url 'login' %}" class="btn btn-outline-light me-2" role="button" aria-pressed="true">Sign in</a>
+                        </div>
+
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <a class="github-fork-ribbon" href="#" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+
+        <div class="p-3 m-3">
+            {% for message in messages %}      
+            <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message | safe }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+
+            {% block content %}
+            {% endblock content %}
+        </div>        
+    </body>
+</html>

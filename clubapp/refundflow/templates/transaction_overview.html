@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3">Meine Auszahlungen</p>
+    <a class="btn btn-outline-secondary mb-3" href="{% url 'add_refund' %}">Erstattung Beantragen</a>
+    <table class="table align-middle mb-3">
+        <thead>
+            <tr>
+                <th scope="col">Transaction ID</th>
+                <th scope="col">Anlass</th>
+                <th scope="col">Datum</th>
+                <th scope="col">Bemerkung</th>
+                <th scope="col">Betrag</th>
+                <th scope="col">Rechnung</th>
+                <th scope="col">Resort</th>
+                <th scope="col">Status</th>
+                <th scope="col">Optionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+            <tr id="row{{ forloop.counter0 }}">
+                <th scope="row">{{t.id}}</th>
+                <td>{{t.reason}}</td>
+                <td>{{t.date}}</td>
+                <td>{{t.annotation}}</td>
+                <td>{{t.amount}}€</td>
+                <td><a href="{% url 'invoice' pdf=t.id %}" target="_blank" rel="noopener noreferrer">{{t.invoice_path}}</a></td>
+                <td>{{t.resort.name}}</td>
+                <td>{{t.get_status_display}}</td>
+                <td>
+                    <div class="d-flex">
+                    {% if t.approved_by == None %}
+                        <!-- <div class="btn btn-outline-secondary me-1">Bearbeiten</div> -->
+                        <button class="btn btn-primary ms-1 btn btn-danger" onclick="remove({{t.id}}, {{ forloop.counter0 }})">Abbrechen</button>
+                    {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+                <p>Sorry, keine einträge in der Tabelle</p>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    function remove(id, row){
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200)
+            {
+                //alert(this.responseText + " row" + row);
+                document.getElementById("row" + row).remove();
+            }
+            else if (this.readyState == 4)
+            {
+                alert("Error: " + this.status + "\n" + this.responseText);
+            }
+        };
+
+        xhr.open("POST", "", true);
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        xhr.send(JSON.stringify({"remove": id}));
+    };
+</script>
+
+{% endblock content %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3">Abrechnungsposten Hinzufügen</p>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            <span class="input-group-text">Anlass</span>
+            <!-- <select class="form-select col-auto">
+                <option selected>Training Opti</option>
+                <option value="1">Training Bahia</option>
+            </select> -->
+            <input type="text" class="form-control disable" name="reason" required id="reason">
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-text">Datum</div>
+            <input type="date" class="form-control" name="date" id="date" required name="date">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Resort</span>
+            <select class="form-select col-auto" name="resort" id="id_resort">
+                {% for resort in resorts %}
+                    <option value="{{ resort.id }}">{{resort.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" name="is_hour" type="checkbox" id="is_hour">
+                </div>
+            </span>
+            <span class="input-group-text">Stundenanzahl</span>
+            <input type="text" class="form-control disable" name="hour_count" id="hour_payment">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="amountLabel">€</span>
+            <input type="number" name="amount" required class="form-control">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Bemerkung</span>
+            <textarea class="form-control" name="annotation" aria-label="With textarea"> </textarea>
+        </div>
+
+        <input type="submit" class="btn btn-primary mb-3" value="Hinzufügen">
+    </form>
+
+</div>
+
+<script type="text/javascript">
+    document.getElementById('hour_payment').disabled = true;
+    document.getElementById('is_hour').addEventListener('change', (event) => {
+        document.getElementById('hour_payment').disabled = !event.currentTarget.checked;
+        if (event.currentTarget.checked) {
+            document.getElementById('amountLabel').innerHTML = '€/Std';
+        } else {
+            document.getElementById('amountLabel').innerHTML = '€';
+        }
+});
+</script>
+{% endblock content %}

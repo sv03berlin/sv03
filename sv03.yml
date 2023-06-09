@@ -1,0 +1,76 @@
+version: '3.3'
+services:
+
+
+  nginx-proxy:
+    container_name: nginx-proxy
+    image: jwilder/nginx-proxy
+    networks:
+      - clubnet
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./vhost.d:/etc/nginx/vhost.d
+      - nginx_html:/usr/share/nginx/html
+      - nginx_certs:/etc/nginx/certs:ro
+      - clubapp-static:/clubapp-static
+      - ./conf.d:/etc/nginx/conf.d
+      - clubapp-asgi-sock:/tmp
+    restart: always
+
+
+  letsencrypt:
+    image: nginxproxy/acme-companion
+    container_name: nginx-proxy-letsencrypt
+    environment:
+      - DEFAULT_EMAIL=
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./vhost.d:/etc/nginx/vhost.d
+      - nginx_html:/usr/share/nginx/html
+      - nginx_certs:/etc/nginx/certs:rw
+      - acme:/etc/acme.sh
+    restart: always
+
+  clubapp:
+    container_name: clubapp
+    restart: always
+    command: python3 /code/clubapp_uvicorn.py
+    build:
+      context: ~/clubapp/
+      args:
+        - ISDEPLOY=1
+    volumes:
+      - clubapp-static:/clubapp_static
+      - ./vhost.d:/etc/nginx/vhost.d
+      - clubapp-asgi-sock:/tmp
+      - ./conf.d:/etc/nginx/conf.d
+      - ./clubapp-data:/clubapp_data
+      - ./clubaapp-db:/code/clubapp/data
+    environment:
+      - SECRET_KEY=
+      - ALLOWED_HOSTS=
+      - VIRTUAL_HOST=
+      - LETSENCRYPT_HOST=
+    networks:
+      - clubnet
+    depends_on:
+      - nginx-proxy
+
+
+networks:
+  clubnet:
+    driver: bridge
+
+
+volumes:
+  nginx_certs:
+  certbot_config:
+  certbot_www:
+  nginx_html:
+  clubapp-static:
+  acme:
+  clubapp-asgi-sock:

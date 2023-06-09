@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3">Meine Abrechnungen</p>
+    <a class="btn btn-outline-secondary mb-3 me-3" href="{% url 'add_tracking' %}">Abrechnungsposten Hinzufügen</a>
+    <a class="btn btn-outline-secondary mb-3 me-3" href="{% url 'invoice_generate'%}">Abrechnung Einreichen</a>
+    <table class="table align-middle mb-3">
+        <thead>
+            <tr>
+                <th scope="col">Posten ID</th>
+                <th scope="col">Anlass</th>
+                <th scope="col">Datum</th>
+                <th scope="col">Bemerkung</th>
+                <th scope="col">Abrechnungsform</th>
+                <th scope="col">Stunden</th>
+                <th scope="col">Stundensatz</th>
+                <th scope="col">Betrag</th>
+                <th scope="col">Resort</th>
+                <th scope="col">Transaction ID</th>
+                <th scope="col">Status</th>
+                <th scope="col">Optionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lot in lots %}
+            <tr id="row{{ forloop.counter0 }}">
+                <th scope="row">{{lot.id}}</th>
+                <td>{{lot.reason}}</td>
+                <td>{{lot.date}}</td>
+                <td>{{lot.annotation}}</td>
+                <td>{{lot.paymentType}}</td>
+                <td>
+                    {% if lot.hour_count == None %}
+                        -
+                    {% else %}
+                        {{lot.hour_count}}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if lot.hourRate == None %}
+                        -
+                    {% else %}
+                        {{lot.hourRate}}
+                    {% endif %}
+                </td>
+                <td>{{lot.amount}}</td>
+                <td>{{lot.resort.name}}</td>
+                <td>{{lot.transaction.id}}</td>
+                <td>{{lot.transaction.status}}</td>
+                <td>
+                    <div class="d-flex">
+                        {% if lot.transaction == None %}
+                            <!-- <div class="btn btn-outline-secondary me-1">Bearbeiten</div> -->
+                            <button class="btn btn-primary ms-1 btn btn-danger" onclick="remove({{lot.id}}, {{ forloop.counter0 }}, 0)">Abbrechen</button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+                <p>Sorry, keine einträge in der Tabelle</p>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    function remove(id, row){
+        fetch("", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify({"remove": id})
+        }).then(response => {
+            if (response.ok)
+            {
+                document.getElementById("row" + row).remove();
+            }
+            else
+            {
+                alert("Error: " + response.status + "\n" + response.responseText);
+            }
+        });
+    };
+</script>
+
+{% endblock content %}

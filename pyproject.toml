@@ -1,0 +1,48 @@
+[tool.black]
+line-length = 140
+target-version = ['py39']
+include = 'clubapp/.*\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | migrations
+  | magcli
+  | tmp
+)/
+'''
+
+[tool.isort]
+skip_glob = ["**/tmp/*.py"]
+profile = "black"
+src_paths = ["clubapp/"]
+line_length = 120
+
+[tool.mypy]
+packages = "clubapp"
+strict = true
+follow_imports = 'normal'
+implicit_reexport = true
+plugins = ["mypy_django_plugin.main"]
+
+exclude = [
+    "test\\.py$",
+    "migrations/*",
+]
+
+[[tool.mypy.overrides]]
+module = ["xhtml2pdf", "uvicorn"]  # those are untyped and don't plan to add stubs
+ignore_missing_imports = true
+disallow_any_generics = false
+
+[tool.django-stubs]
+django_settings_module = "clubapp.clubapp.settings"
+
+[tool.ruff]
+line-length = 140
+exclude = [
+    "**/migrations/*",
+    "**/settings/__init__.py",
+    "**/commands/*.py"
+]
+
+target-version = "py311"

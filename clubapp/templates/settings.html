@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+
+    {% for key, error in form.errors.items %}
+        <div class="alert alert-dark" role="alert">{{ error }}</div>
+    {% endfor %}
+
+        {% if user.is_invoice_user %}
+            <p class="h5 text-center">Change License</p>
+            <div class="form" id="changelicenseform">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="id_license">License</label>
+                        <input class="form-control" name="BIC" autofocus="" required="" id="id_license" control-id="" placeholder="Enter License">
+                    </div>
+
+                    <div class="text-center m-3">
+                        <button type="submit" class="btn btn-success">Save license data</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+
+        <p class="h5 text-center">Change Password</p>
+        <div class="form" id="changepasswordform">
+            <form method="post" action="{% url 'password_change' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_old_password">Old password</label>
+                    <input class="form-control" type="password" name="old_password" autocomplete="current-password" autofocus="" required="" id="id_old_password" control-id="ControlID-2" placeholder="Enter old password">
+                </div>
+
+                <div class="form-group">
+                    <label for="id_new_password1">New password</label>
+                    <input class="form-control" type="password" name="new_password1" autocomplete="new-password" required="" id="id_new_password1" control-id="ControlID-3"  placeholder="Enter new password">
+                </div>
+
+                <div class="form-group">
+                    <label for="id_new_password1">Repeat New password</label>
+                    <input class="form-control" type="password" name="new_password2" autocomplete="new-password" required="" id="id_new_password2" control-id="ControlID-4"  placeholder="Enter new password again">
+                </div>
+
+                <input class="btn btn-success m-3" type="submit" value="Save new Password" />
+                <input type="hidden" name="next" value="{{ next }}" />
+            </form>
+        </div>
+
+    {% else %}
+        <p>Please log in</p>
+    {% endif %}
+
+{% endblock %}

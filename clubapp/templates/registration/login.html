@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href={% static "customcss/auth.css" %} />
+
+    {% for key, error in form.errors.items %}
+        <div class="alert alert-dark" role="alert">{{ error }}</div>
+    {% endfor %}
+
+    <div class="center-page">
+    {% if not user.is_authenticated %}
+        <main class="form-signin" id="signinform">
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+                <div class="form-floating">
+                    <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" class="form-control" required id="id_username" placeholder="Username">
+                    <label for="id_username">
+                        Username
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" name="password" autocomplete="current-password" class="form-control" required id="id_password" placeholder="Password">
+                    <label for="id_password">
+                        Password
+                    </label> 
+                </div>
+
+                <div class="checkbox mb-3">
+                    <label>
+                    <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>
+
+                <input class="button w-100 btn btn-lg btn-primary" type="submit" value="Sign in" />
+            </form>
+
+            {# Assumes you setup the password_reset view in your URLconf #}
+            <!-- <a class="button mt-3 w-100 btn btn-outline-secondary" href="#" role="button">Sing up</a> -->
+            <a class="button mt-3 w-100 btn btn-outline-secondary" href="{% url 'password_reset' %}" role="button">Forgot Password</a>
+        </main>
+        {% endif %}
+    </div>
+
+{% endblock %}

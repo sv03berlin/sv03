@@ -1,0 +1,35 @@
+<div class="card m-3" id="clubwork-{{ clubwork.id }}">
+    <div class="card-body row">
+        <div class="col-md-6">
+            <h5 class="card-title mb-2">{{ clubwork.title }} für {{ clubwork.resort }}</h5>
+            <p class="card-text">{{ clubwork.description }}</p>
+            <p class="card-text mb-2">Datum und Uhrzeit: {{ clubwork.date_time }}, Dauer: {{ clubwork.max_duration }} Stunden</p>
+        </div>
+        <div class="col-md-4">
+            <p class="card-text">Teilnehmer: {{ clubwork.num_participants }}/{{ clubwork.max_participants }}</p>
+            <ul>
+            {% for participant in clubwork.registered_users %}
+                <li class="card-text">{{ participant }} ({{ participant.email }})</li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="d-flex col-12">
+            {% if user not in clubwork.registered_users %}
+            <form action="{% url 'register' clubwork.id %}" method="post" class="mr-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary mx-1">Anmelden</button>
+            </form>
+            {% else %}
+            <form action="{% url 'unregister' clubwork.id %}" method="post" class="mr-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger mx-1">Abmelden</button>
+            </form>
+            {% endif %}
+            {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+                <a href="{% url 'mod_clubwork' clubwork.id %}" class="btn btn-primary mx-1">Bearbeiten</a>
+                <button onclick="fetchAndDeleteOnSuccess(`{% url 'mod_clubwork' clubwork.id %}`, ['clubwork-{{ clubwork.id }}'])" class="btn btn-danger mx-1">Löschen</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+  

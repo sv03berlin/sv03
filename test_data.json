@@ -1,0 +1,85 @@
+[
+{
+    "model": "club.membership",
+    "pk": 1,
+    "fields": {
+        "name": "Super ordentliches Mitglied",
+        "work_hours": 42,
+        "work_hours_boat_owner": 43,
+        "work_hours_club_boat_user": 44,
+        "work_compensation": "30.00"
+    }
+},
+{
+    "model": "club.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$tLjyxGQSuUqltejnuseG8Q$Gmp85vK92tULvrk79+/FT1D99dbTnDzyBrfjoqm36hk=",
+        "last_login": "2023-05-31T16:31:24",
+        "is_superuser": true,
+        "username": "superuser",
+        "first_name": "super",
+        "last_name": "user",
+        "email": "superuser@clubapp.localdev",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2023-05-31T08:08:20",
+        "license": "",
+        "iban": "",
+        "bic": "",
+        "membership_type": 1,
+        "can_create_invoices": false,
+        "is_boat_owner": false,
+        "is_clubboat_user": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "club.resort",
+    "pk": 1,
+    "fields": {
+        "name": "Spaß und Unsinn",
+        "bank_account": "alle",
+        "head": [
+            "superuser"
+        ],
+        "is_accounting_resort": true
+    }
+},
+{
+    "model": "clubwork.clubwork",
+    "pk": 1,
+    "fields": {
+        "resort": 1,
+        "title": "Hüpfen",
+        "description": "The quick brown fox jumps over the lazy dog",
+        "date_time": "2023-07-16T10:10:00",
+        "max_duration": 3,
+        "max_participants": 5
+    }
+},
+{
+    "model": "clubwork.clubwork",
+    "pk": 2,
+    "fields": {
+        "resort": 1,
+        "title": "Jagen",
+        "description": "Franz jagt im komplett verwahrlosten Taxi quer durch Bayern",
+        "date_time": "2023-07-17T10:10:00",
+        "max_duration": 11,
+        "max_participants": 12
+    }
+},
+{
+    "model": "clubwork.clubwork",
+    "pk": 3,
+    "fields": {
+        "resort": 1,
+        "title": "Gurkensalat machen",
+        "description": "Das Pferd frisst keinen Gurkensalat",
+        "date_time": "2099-12-11T10:10:00",
+        "max_duration": 3,
+        "max_participants": 3
+    }
+}
+]

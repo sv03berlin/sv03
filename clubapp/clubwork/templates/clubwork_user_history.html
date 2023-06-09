@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="">
+    <p class="h4 mb-3">Meine vergangenen Arbeitsdienste</p>
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Arbeitende:r</th>
+                <th scope="col">Anlass</th>
+                <th scope="col">Datum</th>
+                <th scope="col">Kommentar</th>
+                <th scope="col">Dauer</th>
+                <th scope="col">Genehmigt von</th>
+                <th scope="col">Genehmigt am</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in clubworks %}
+            <tr id="row{{ forloop.counter0 }}">
+                <th scope="row">{{t.id}}</th>
+                <td>{{t.user}}</td>
+                <td>{{t.title}}</td>
+                <td>{{t.date_time}}</td>
+                <td>{{t.description}}</td>
+                <td>{{t.duration}}h</td>
+                <td>{{t.approved_by}}</td>
+                <td>{{t.approve_date}}</td>
+            </tr>
+            {% empty %}
+                <p>Sorry, keine einträge in der Tabelle</p>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}

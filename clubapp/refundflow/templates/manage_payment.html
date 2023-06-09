@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3 me-3">Offene Auszahlungen</p>
+    <a class="btn btn-outline-secondary mb-3 me-3" href="{% url 'history' %}">Historie</a>
+    <a class="btn btn-outline-secondary mb-3 me-3" href="">Download CSV</a>
+    <a class="btn btn-outline-secondary mb-3 me-3" href="">Alle Ausgezahlt</a>
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Transaction ID</th>
+                <th scope="col">Empfänger</th>
+                <th scope="col">Anlass</th>
+                <th scope="col">Datum</th>
+                <th scope="col">IBAN</th>
+                <th scope="col">Betrag</th>
+                <th scope="col">Rechnung</th>
+                <th scope="col">Resort</th>
+                <th scope="col">Optionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+            <tr id="row{{ forloop.counter0 }}">
+                <th scope="row">{{t.id}}</th>
+                <td>
+                    {% if t.user.first_name == "" and t.user.last_name == "" %}
+                        {{t.user.username}}
+                    {% else %}
+                        {{t.user.first_name}} {{t.user.last_name}}
+                    {% endif %}                    
+                </td>
+                <td>{{t.reason}}</td>
+                <td>{{t.date}}</td>
+                <td>{{t.user.iban}}</td>
+                <td>{{t.amount}}€</td>
+                <td><a href="{% url 'invoice' pdf=t.id %}" target="_blank" rel="noopener noreferrer">{{t.path}}</a></td>
+                <td>{{t.resort.name}}</td>
+                <td>
+                    <div class="btn btn-outline-secondary me-1 btn btn-outline-success" onclick="paid({{t.id}}, {{ forloop.counter0 }})">Ausgezahlt</div>
+                </td>
+            </tr>
+            {% empty %}
+                <p>Sorry, keine einträge in der Tabelle</p>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    function paid(id, row){
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200)
+            {
+                document.getElementById("row" + row).remove();
+            }
+            else if (this.readyState == 4)
+            {
+                alert("Error: " + this.status + "\n" + this.responseText);
+            }
+        };
+
+        xhr.open("POST", "", true);
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        xhr.send(JSON.stringify({"paid": id}));
+    };
+</script>
+
+{% endblock content %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <p class="h4 mb-3">Rechnung Hinzufügen</p>
+
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input class="form-control" type="file" name="file" id="id_file" accept="application/pdf" required>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Anlass</span>
+            <input type="text" class="form-control" name="reason" id="id_reason" required>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Resort</span>
+            <select class="form-select col-auto" name="resort" id="id_resort">
+                {% for resort in resorts %}
+                    <option value="{{ resort.id }}">{{resort.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">€</span>
+            <input type="text" class="form-control" name="amount" id="id_amount" required>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Bemerkung</span>
+            <textarea class="form-control" name="annotation" id="id_annotation"></textarea>
+        </div>
+
+        <input type="submit" class="btn btn-primary mb-3" value="Einreichen">
+    </form>
+</div>
+{% endblock content %}

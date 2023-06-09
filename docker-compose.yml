@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+  clubapp-dev:
+    container_name: clubapp-dev
+    command: python3 /code/clubapp/manage.py runserver 0.0.0.0:8000
+    build:
+      context: .
+      args:
+        - ISDEPLOY=0
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=secret
+      - ALLOWED_HOSTS=*
+      - DJANGO_DEBUG=True
+    volumes:
+      - ./:/code
+      - ./data:/clubapp_data
+volumes:
+  data:

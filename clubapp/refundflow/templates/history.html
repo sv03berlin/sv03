@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3">historie</p>
+
+    <div class="d-flex">
+        <select class="form-select mb-3 me-3 col-auto w-25" id="year_select">
+            <option value="{{ selected_year }}" selected>{{ selected_year }}</option>
+            {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <button class="btn btn-outline-secondary mb-3 me-3 col-auto" onclick="download('csv')">Download CSV</button>
+        <button class="btn btn-outline-secondary mb-3  me-3col-auto" onclick="download('zip')">Download Rechnungen PDF</button>
+    </div>
+
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Transaction ID</th>
+                <th scope="col">Empfänger</th>
+                <th scope="col">Anlass</th>
+                <th scope="col">Datum</th>
+                <th scope="col">Bemerkung</th>
+                {% if user.is_accountant_user %}
+                    <th scope="col">IBAN</th>
+                {% endif %}
+                <th scope="col">Betrag</th>
+                <th scope="col">Rechnung</th>
+                <th scope="col">Resort</th>
+                <th scope="col">Status</th>
+                <!-- <th scope="col">Optionen</th> -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+            <tr id="row{{ forloop.counter0 }}">
+                <th scope="row">{{t.id}}</th>
+                <td>
+                    {% if t.user.first_name == "" and t.user.last_name == "" %}
+                        {{t.user.username}}
+                    {% else %}
+                        {{t.user.first_name}} {{t.user.last_name}}
+                    {% endif %}                    
+                </td>
+                <td>{{t.reason}}</td>
+                <td>{{t.date}}</td>
+                <td>{{t.annotation}}</td>
+                {% if user.is_accountant_user %}
+                    <td>{{t.user.iban}}</td>
+                {% endif %}
+                <td>{{t.amount}}€</td>
+                <td><a href="{% url 'invoice' pdf=t.id %}" target="_blank" rel="noopener noreferrer">{{t.path}}</a></td>
+                <td>{{t.resort.name}}</td>
+                <td>{{t.status}}</td>
+                <!-- <td>
+                    <div class="btn btn-outline-secondary me-1" onclick="x({{t.id}}, {{ forloop.counter0 }})">Aktivieren</div>
+                </td> -->
+            </tr>
+            {% empty %}
+                <p>Sorry, keine einträge in der Tabelle</p>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const year_select = document.getElementById("year_select");
+    year_select.addEventListener("change", function() {
+        window.location.href = "?year=" + year_select.value;
+    });
+
+    function download(type)
+    {
+        var year = year_select.value;
+        var url = "{% url 'download' %}" + "?year=" + year + "&download=" + type;
+        // trigger get download
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'blob';
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+            var downloadUrl = URL.createObjectURL(xhr.response);
+            var a = document.createElement('a');
+            a.href = downloadUrl;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+            }, 100);
+            }
+        };
+
+        xhr.send();
+    };
+
+
+</script>
+
+{% endblock content %}

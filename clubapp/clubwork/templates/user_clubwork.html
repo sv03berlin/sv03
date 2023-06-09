@@ -1,0 +1,11 @@
+<div class="card m-3" id="clubwork-user-{{ clubworkpart.id }}">
+    <div class="card-body">
+        <h5 class="card-title mb-2">{{ clubworkpart.title }} für {{ clubworkpart.resort }}</h5>
+        <p class="card-text">{{ clubworkpart.description }}</p>
+        <p class="card-text mb-2">{% if clubworkpart.date_time %}Datum und Uhrzeit: {{ clubworkpart.date_time }}{% endif %}{% if clubworkpart.duration %}, Dauer: {{ clubworkpart.duration }} Stunden{% endif %}</p>
+        <div class="d-flex">
+            <button onclick="fetchAndDeleteOnSuccess(`{% url 'mod_own_clubwork' clubworkpart.id %}`, ['clubwork-user-{{ clubworkpart.id }}'])" class="btn btn-danger mx-1">Abmelden</button>
+            <a href="{% url 'mod_own_clubwork' clubworkpart.id %}" class="btn btn-primary mx-1">Bearbeiten</a>
+        </div>
+    </div>
+</div>
