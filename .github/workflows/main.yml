@@ -54,6 +54,7 @@ jobs:
           platforms: linux/amd64 #,linux/arm64
 
   mypy:
+    runs-on: ubuntu-latest
     name: mypy
     steps:
       - name: Check out repo
@@ -64,6 +65,7 @@ jobs:
         run: python3 manage.py typecheck
 
   ruff:
+    runs-on: ubuntu-latest
     name: ruff
     steps:
       - name: Check out repo
@@ -74,6 +76,7 @@ jobs:
         run: python3 manage.py lint
   
   format:
+    runs-on: ubuntu-latest
     name: format
     steps:
       - name: Check out repo
