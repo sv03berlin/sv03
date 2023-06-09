@@ -51,6 +51,7 @@ services:
       - ALLOWED_HOSTS=
       - VIRTUAL_HOST=
       - LETSENCRYPT_HOST=
+      - DJANGO_MIGRATE=true
     networks:
       - clubnet
     depends_on:
