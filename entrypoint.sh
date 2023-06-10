@@ -16,6 +16,13 @@ fi
 echo "collectstatic is in progress"
 python3 /code/manage.py collectstatic --no-input
 
+if [ "$DJANGO_MIGRATE" = "true" ]; then
+    echo "migrating is in progress"
+    python3 /code/manage.py migrate
+else
+    echo "Migration flag not set. Skipping migrations."
+fi
+
 echo "Django docker is fully configured successfully."
 
 exec "$@"
