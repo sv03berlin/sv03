@@ -4,7 +4,11 @@
         <p class="card-text">{{ clubworkpart.description }}</p>
         <p class="card-text mb-2">{% if clubworkpart.date_time %}Datum und Uhrzeit: {{ clubworkpart.date_time }}{% endif %}{% if clubworkpart.duration %}, Dauer: {{ clubworkpart.duration }} Stunden{% endif %}</p>
         <div class="d-flex">
-            <button onclick="fetchAndDeleteOnSuccess(`{% url 'mod_own_clubwork' clubworkpart.id %}`, ['clubwork-user-{{ clubworkpart.id }}'])" class="btn btn-danger mx-1">Abmelden</button>
+            <form action="{% url 'mod_own_clubwork' clubworkpart.id %}" method="post" class="mr-2">
+                {% csrf_token %}
+                <input type="hidden" id="post_action" name="post_action" value="delete">
+                <button type="submit" class="btn btn-danger mx-1">Abmelden</button>
+            </form>
             <a href="{% url 'mod_own_clubwork' clubworkpart.id %}" class="btn btn-primary mx-1">Bearbeiten</a>
         </div>
     </div>

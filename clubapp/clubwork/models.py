@@ -15,6 +15,9 @@ class ClubWork(models.Model):
     max_duration = models.IntegerField(verbose_name=_("Maximale Dauer (in Minuten)"))
     max_participants = models.IntegerField(verbose_name=_("Maximale Teilnehmer:innenanzahl"))
 
+    def __str__(self) -> str:
+        return f"{self.title} ({self.date_time})"
+
     @cached_property
     def num_participants(self) -> int:
         return self.participations.count()

@@ -14,4 +14,5 @@ urlpatterns = [
     path("approve/<int:pk>/", views.approve_clubwork, name="approve_clubwork"),
     path("clubwork_history/", views.history, name="clubwork_history"),
     path("clubwork_user_history/", views.user_history, name="clubwork_user_history"),
+    path("select_user_mail/<int:pk>/", views.select_users_to_email_about, name="select_user_mail"),
 ]

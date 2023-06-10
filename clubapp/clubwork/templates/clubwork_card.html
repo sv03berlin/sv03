@@ -27,7 +27,12 @@
             {% endif %}
             {% if user.is_resort_user or user.is_superuser or user.is_staff %}
                 <a href="{% url 'mod_clubwork' clubwork.id %}" class="btn btn-primary mx-1">Bearbeiten</a>
-                <button onclick="fetchAndDeleteOnSuccess(`{% url 'mod_clubwork' clubwork.id %}`, ['clubwork-{{ clubwork.id }}'])" class="btn btn-danger mx-1">Löschen</button>
+                <form action="{% url 'mod_clubwork' clubwork.id %}" method="post" class="mr-2">
+                    {% csrf_token %}
+                    <input type="hidden" id="post_action" name="post_action" value="delete">
+                    <button type="submit" class="btn btn-danger mx-1">Löschen</button>
+                </form>
+                <a href="{% url 'select_user_mail' clubwork.id %}" class="btn btn-outline-success mx-1">Mitglieder zur Benachichtigung auswählen</a>
             {% endif %}
         </div>
     </div>

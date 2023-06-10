@@ -3,18 +3,21 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href={% static "bootstrap/css/bootstrap.css" %} />
 <link rel="stylesheet" type="text/css" href={% static "customcss/custom.css" %} />
-<link rel="stylesheet" type="text/css" href={% static "gh.css" %} />
+<link rel="stylesheet" type="text/css" href={% static "ext/gh.css" %} />
+<link rel="stylesheet" type="text/css" href={% static "ext/tom-select.min.css" %} />
+<script type="text/javascript" src={% static "ext/tom-select.min.js" %}></script>
 <script type="text/javascript" src={% static "bootstrap/js/bootstrap.js" %}></script>
 <script type="text/javascript" src={% static "clubapp.js" %}></script>
+<link rel="icon" href={% static "favicon.ico" %} type="image/x-icon">
 
 <html>
     <head>
-        <title>Sv03 Papierkram</title>
+        <title>{{club_name_short}} {{app_name}}</title>
     </head>
 
     <body>
         <header>
-            <nav class="navbar navbar-fixed-top navbar-expand-lg navbar-dark bg-dark" aria-label="navbar">
+            <nav class="navbar navbar-fixed-top navbar-expand-lg {%if not staging%}navbar-dark bg-dark{% endif %}" aria-label="navbar" {%if staging%}style="background-color: #ee00aa;"{% endif %}>
                 <div class="container">
                     <a class="navbar-brand" href="{% url 'index' %}">
                         <img src="/static/logo.png" alt="Flowers" style="width:auto;height:50px;">
@@ -80,7 +83,7 @@
 
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="/">Home</a>
+                                <a class="nav-link active" aria-current="page" href="{{club_imprint}}">Impressum</a>
                             </li>
                         </ul>
 

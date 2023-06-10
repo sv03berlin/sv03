@@ -74,6 +74,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "clubapp.clubapp.context_processors.club_processor",
             ],
         },
     },
@@ -145,10 +146,20 @@ if DEBUG:
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
-EMAIL_PORT = 465
-EMAIL_HOST = ""
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "")
+
+CLUB_NAME = os.environ.get("CLUB_NAME", "Club")
+CLUB_NAME_SHORT = os.environ.get("CLUB_NAME_SHORT", "CN")
+CLUB_IMPRINT = os.environ.get("CLUB_IMPRINT", "#")
+THIS_APP_NAME = os.environ.get("THIS_APP_NAME", "Clubapp")
+
+STAGING = os.environ.get("STAGING", "False").lower() == "true"
+
+INDEX_IS_LOGIN = os.environ.get("INDEX_IS_LOGIN", "True").lower() == "true"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
