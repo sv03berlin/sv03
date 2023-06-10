@@ -1,19 +1,36 @@
 from datetime import datetime
 from typing import Any
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
+from clubapp.club.models import User
 from clubapp.clubapp.decorators import is_resort_user
 from clubapp.clubapp.utils import AuthenticatedHttpRequest
 
 from .forms import ClubWorkForm, ClubWorkParticipationForm
 from .models import ClubWork, ClubWorkParticipation
+
+
+def get_post_action(request: AuthenticatedHttpRequest) -> str:
+    if request.method == "POST":
+        return request.POST.get("post_action", "POST").lower()
+    return ""
+
+
+def is_delete_action(request: AuthenticatedHttpRequest) -> bool:
+    return get_post_action(request) == "delete"
+
+
+def is_post_action(request: AuthenticatedHttpRequest) -> bool:
+    return get_post_action(request) == "post"
 
 
 @login_required
@@ -45,14 +62,14 @@ def add_clubwork(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
-    if request.method == "POST":
+    if is_post_action(request):
         form = ClubWorkForm(request.POST, instance=ClubWork.objects.get(pk=pk))
         if form.is_valid():
             form.save()
             return redirect("clubwork_index")
         else:
             messages.error(request, str(form.errors))
-    elif request.method == "DELETE":
+    elif is_delete_action(request):
         ClubWork.objects.get(pk=pk).delete()
         return redirect("clubwork_index")
     c = {"form": ClubWorkForm(instance=ClubWork.objects.get(pk=pk)), "heading": "Ausschreibung bearbeiten"}
@@ -79,16 +96,16 @@ def mod_own_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
     if cw.approved_by is not None and cw.approved_by != request.user:
         messages.error(request, "Du kannst nur deine eigenen Anmeldungen bearbeiten.")
         return redirect("clubwork_index")
-    if request.method == "POST":
+    if is_post_action(request):
         form = ClubWorkParticipationForm(request.POST, instance=cw)
         if form.is_valid():
             form.save()
             return redirect("clubwork_index")
         else:
             messages.error(request, str(form.errors))
-    elif request.method == "DELETE":
+    elif is_delete_action(request):
         ClubWorkParticipation.objects.get(pk=pk).delete()
-        return HttpResponse(status=204)
+        return redirect("clubwork_index")
     c = {
         "form": ClubWorkParticipationForm(instance=ClubWorkParticipation.objects.get(pk=pk)),
         "heading": "Eigenen Clubdienst bearbeiten",
@@ -183,3 +200,33 @@ def user_history(request: AuthenticatedHttpRequest) -> HttpResponse:
     qs = ClubWorkParticipation.objects.filter(user=request.user, date_time__lte=datetime.now())
     c = {"clubworks": qs}
     return render(request, template_name="clubwork_user_history.html", context=c)
+
+
+@login_required
+@staff_member_required
+def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    cw = get_object_or_404(ClubWork, pk=pk)
+    if request.method == "POST":
+        users = request.POST.get("users")
+        if users is None:
+            messages.error(request, "Es wurden keine Nutzer:innen ausgewählt.")
+            return redirect("clubwork_index")
+        for user_id in users.split(","):
+            try:
+                user = User.objects.get(pk=int(user_id))
+                send_mail(
+                    subject=f"Arbeitsdienst {cw.title}",
+                    message=f"Hallo {user.first_name},\n\n"
+                    f"es ist ein neuer Arbeitsdienst verfügbar: {cw.title} am {cw.date_time}.\n"
+                    f"Beschreibung: {cw.description}\n\n"
+                    f"Viele Grüße,\n"
+                    f"{request.user.first_name} {request.user.last_name}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                )
+            except User.DoesNotExist:
+                messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
+        return redirect("clubwork_index")
+
+    c = {"users": User.objects.all(), "clubwork": cw}
+    return render(request, template_name="email_specific_user.html", context=c)

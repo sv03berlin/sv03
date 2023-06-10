@@ -6,7 +6,7 @@ from clubapp.clubapp import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index, name="index"),
-    path("settings/", views.settings, name="settings"),
+    path("settings/", views.user_settings, name="settings"),
     path("refundflow/", include("clubapp.refundflow.urls")),
     path("clubwork/", include("clubapp.clubwork.urls")),
     path("accounts/", include("django.contrib.auth.urls")),

@@ -1,12 +1,15 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
 
 def index(request: HttpRequest) -> HttpResponse:
+    if settings.INDEX_IS_LOGIN:
+        return render(request, "registration/login.html")
     return render(request, "index.html")
 
 
 @login_required
-def settings(request: HttpRequest) -> HttpResponse:
+def user_settings(request: HttpRequest) -> HttpResponse:
     return render(request, "settings.html")

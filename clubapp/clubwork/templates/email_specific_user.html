@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h3 class="mt-4">Benachrichtigungen über Arbeitsdienst {{clubwork}} an Mitglieder senden</h1>
+    {% include 'member_select.html' with users=users action_target="" action_desc="Email senden" tomselect_id="select-user" %}
+</div>
+
+{% endblock content %}
