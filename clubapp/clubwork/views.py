@@ -216,7 +216,7 @@ class YearFilter(FilterSet):  # type: ignore
         self.filters["year"].field.widget.choices = self.get_year_choices()
 
     def get_year_choices(self) -> list[tuple[str, str]]:
-        return [("all", "")] + [(str(x.year), str(x.year)) for x in self.choices]
+        return [("", "all")] + [(str(x.year), str(x.year)) for x in self.choices]
 
     class Meta:
         model = ClubWorkParticipation
