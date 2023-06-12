@@ -1,17 +1,18 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="">
     <p class="h4 mb-3">Arbeitsdienst Historie</p>
 
     <div class="d-flex">
-        <select class="form-select mb-3 me-3 col-auto w-25" id="year_select">
-            <option value="{{ selected_year }}" selected>{{ selected_year }}</option>
-            {% for year in years %}
-                <option value="{{ year }}">{{ year }}</option>
-            {% endfor %}
-        </select>
-        <button class="btn btn-outline-secondary mb-3 me-3 col-auto" onclick="#">Download CSV</button>
+        <form action="" method="get" class="d-flex">
+            <div class="me-2">
+            {{ filter.form.as_div }}
+            </div>
+            <button class="btn btn-primary btn-sm me-2" type="submit">Filtern</button>
+    </form>
+    <a class="btn btn-sm btn-outline-secondary me-2 col-auto" href="?">Reset</a>
+    <button class="btn btn-sm btn-outline-secondary me-2 col-auto" onclick="#">Download CSV</button>
     </div>
 
     <table class="table align-middle">

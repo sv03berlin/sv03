@@ -1,15 +1,21 @@
 from datetime import datetime
 from typing import Any
 
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic.list import ListView
+from django_filters import FilterSet, NumberFilter
+from django_filters.views import FilterView
 
 from clubapp.club.models import User
 from clubapp.clubapp.decorators import is_resort_user
@@ -195,11 +201,60 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, template_name="clubwork_history.html", context=c)
 
 
-@login_required
-def user_history(request: AuthenticatedHttpRequest) -> HttpResponse:
-    qs = ClubWorkParticipation.objects.filter(user=request.user, date_time__lte=datetime.now())
-    c = {"clubworks": qs}
-    return render(request, template_name="clubwork_user_history.html", context=c)
+class YearFilter(FilterSet):  # type: ignore
+    year = NumberFilter(
+        field_name="date_time",
+        lookup_expr="year",
+        label="Year",
+        widget=forms.Select(choices=[]),
+    )
+
+    choices = ClubWorkParticipation.objects.dates("date_time", "year")
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.filters["year"].field.widget.choices = self.get_year_choices()
+
+    def get_year_choices(self) -> list[tuple[str, str]]:
+        return [("all", "")] + [(str(x.year), str(x.year)) for x in self.choices]
+
+    class Meta:
+        model = ClubWorkParticipation
+        fields = ["year"]
+
+
+class IsStaffMixin(UserPassesTestMixin):
+    request: HttpRequest
+
+    def test_func(self) -> bool:
+        return self.request.user.is_staff
+
+
+class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type: ignore
+    model = ClubWorkParticipation
+    template_name = "clubwork_history.html"
+    filterset_class = YearFilter
+
+    def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
+        return super().get_queryset().filter(date_time__lte=datetime.now())  # type: ignore
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c.update({"clubworks": self.get_queryset()})
+        return c  # type: ignore
+
+
+class UserHistroyView(LoginRequiredMixin, ListView):  # type: ignore
+    model = ClubWorkParticipation
+    template_name = "clubwork_user_history.html"
+
+    def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
+        return super().get_queryset().filter(user=self.request.user, date_time__lte=datetime.now())  # type: ignore
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c.update({"clubworks": self.get_queryset()})
+        return c
 
 
 @login_required
