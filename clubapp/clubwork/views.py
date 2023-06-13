@@ -256,12 +256,14 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
             if ClubWorkParticipation.objects.filter(date_time__year=year, approved_by=None).exists():
                 messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
             if year:
-                return FileResponse(
+                r = FileResponse(
                     self.get_xlsx(int(year)),
                     status=200,
                     content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     as_attachment=True,
                 )
+                r["Content-Disposition"] = f"attachment; filename=arbeitsdienst_{year}.xlsx"
+                return r
             else:
                 messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
         return super().get(request, *args, **kwargs)
