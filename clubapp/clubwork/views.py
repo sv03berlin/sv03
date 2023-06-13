@@ -18,7 +18,7 @@ from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView
 
 from clubapp.club.models import User
-from clubapp.clubapp.decorators import is_resort_user
+from clubapp.clubapp.decorators import is_ressort_user
 from clubapp.clubapp.utils import AuthenticatedHttpRequest
 
 from .forms import ClubWorkForm, ClubWorkParticipationForm
@@ -120,16 +120,16 @@ def mod_own_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
 
 
 @login_required
-@is_resort_user
+@is_ressort_user
 def approve_clubwork_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
-    cw = ClubWorkParticipation.objects.filter(approved_by=None, resort__head=request.user, date_time__lte=datetime.now()).order_by(
+    cw = ClubWorkParticipation.objects.filter(approved_by=None, ressort__head=request.user, date_time__lte=datetime.now()).order_by(
         "date_time"
     )
     return render(request, template_name="approve_clubwork.html", context={"clubworks": cw})
 
 
 @login_required
-@is_resort_user
+@is_ressort_user
 def approve_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     if request.method == "POST":
         part = ClubWorkParticipation.objects.get(pk=pk)
@@ -161,7 +161,7 @@ def register_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
             ClubWorkParticipation.objects.create(
                 title=cw.title,
                 user=request.user,
-                resort=cw.resort,
+                ressort=cw.ressort,
                 clubwork=cw,
                 date_time=cw.date_time,
                 duration=cw.max_duration,
@@ -186,7 +186,7 @@ def unregister_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpR
         return redirect("clubwork_index")
 
 
-@is_resort_user
+@is_ressort_user
 @login_required
 def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     c: dict[str, Any] = {}
@@ -220,7 +220,7 @@ class YearFilter(FilterSet):  # type: ignore
 
     class Meta:
         model = ClubWorkParticipation
-        fields = ["year"]
+        fields = ["year", "ressort"]
 
 
 class IsStaffMixin(UserPassesTestMixin):

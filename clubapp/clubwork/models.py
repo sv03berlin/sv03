@@ -2,11 +2,11 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from clubapp.club.models import Resort, User
+from clubapp.club.models import Ressort, User
 
 
 class ClubWork(models.Model):
-    resort = models.ForeignKey(Resort, on_delete=models.PROTECT, related_name="clubwork", verbose_name=_("Ressort"))
+    ressort = models.ForeignKey(Ressort, on_delete=models.PROTECT, related_name="clubwork", verbose_name=_("Ressort"))
 
     title = models.CharField(max_length=127, verbose_name=_("Titel"))
     description = models.TextField(verbose_name=_("Beschreibung"))
@@ -30,7 +30,7 @@ class ClubWork(models.Model):
 class ClubWorkParticipation(models.Model):
     title = models.CharField(max_length=127, verbose_name=_("Titel"))
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="clubwork_participations", verbose_name=_("Teilnehmer:in"))
-    resort = models.ForeignKey(Resort, on_delete=models.PROTECT, related_name="clubwork_participations", verbose_name=_("Ressort"))
+    ressort = models.ForeignKey(Ressort, on_delete=models.PROTECT, related_name="clubwork_participations", verbose_name=_("Ressort"))
     clubwork = models.ForeignKey(
         ClubWork, on_delete=models.PROTECT, related_name="participations", null=True, verbose_name=_("Arbeitsdienst")
     )

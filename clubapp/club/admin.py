@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from clubapp.club.models import Membership, Resort, User
+from clubapp.club.models import Membership, Ressort, User
 
 
 class CustomUserAdmin(UserAdmin):
@@ -31,10 +31,10 @@ class MembershipAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     list_display = ("name", "work_hours", "work_hours_boat_owner", "work_hours_club_boat_user", "work_compensation")
 
 
-class ResortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
-    list_display = ("name", "head", "is_accounting_resort")
+class RessortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("name", "head", "is_accounting_ressort")
 
 
-admin.site.register(Resort, ResortAdmin)
+admin.site.register(Ressort, RessortAdmin)
 admin.site.register(Membership, MembershipAdmin)
 admin.site.register(User, CustomUserAdmin)

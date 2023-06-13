@@ -38,12 +38,12 @@ class User(AbstractUser):
         return self.can_create_invoices or self.is_superuser
 
     @cached_property
-    def is_resort_user(self) -> bool:
-        return Resort.objects.filter(head=self).exists() or self.is_superuser
+    def is_ressort_user(self) -> bool:
+        return Ressort.objects.filter(head=self).exists() or self.is_superuser
 
     @cached_property
     def is_accountant_user(self) -> bool:
-        return Resort.objects.filter(head=self, is_accounting_resort=True).exists() or self.is_superuser
+        return Ressort.objects.filter(head=self, is_accounting_ressort=True).exists() or self.is_superuser
 
     @cached_property
     def club_work_hours(self) -> int:
@@ -84,11 +84,11 @@ class User(AbstractUser):
         return self.club_work_hours - self.hours_done_year(year)
 
 
-class Resort(models.Model):
-    name = models.CharField(max_length=63, unique=True, verbose_name=_("Resortname"))
+class Ressort(models.Model):
+    name = models.CharField(max_length=63, unique=True, verbose_name=_("Ressortname"))
     bank_account = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Buchungskonto"))
     head = models.ForeignKey(User, related_name="head", null=True, on_delete=models.SET_NULL, verbose_name=_("Vorstehende:r"))
-    is_accounting_resort = models.BooleanField(default=False, verbose_name=_("Buchhaltungsresort"))
+    is_accounting_ressort = models.BooleanField(default=False, verbose_name=_("Buchhaltungsressort"))
 
     def __str__(self) -> str:
         return self.name

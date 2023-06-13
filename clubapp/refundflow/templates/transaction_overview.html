@@ -13,7 +13,7 @@
                 <th scope="col">Bemerkung</th>
                 <th scope="col">Betrag</th>
                 <th scope="col">Rechnung</th>
-                <th scope="col">Resort</th>
+                <th scope="col">Ressort</th>
                 <th scope="col">Status</th>
                 <th scope="col">Optionen</th>
             </tr>
@@ -27,7 +27,7 @@
                 <td>{{t.annotation}}</td>
                 <td>{{t.amount}}€</td>
                 <td><a href="{% url 'invoice' pdf=t.id %}" target="_blank" rel="noopener noreferrer">{{t.invoice_path}}</a></td>
-                <td>{{t.resort.name}}</td>
+                <td>{{t.ressort.name}}</td>
                 <td>{{t.get_status_display}}</td>
                 <td>
                     <div class="d-flex">

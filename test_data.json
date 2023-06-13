@@ -33,7 +33,7 @@
     }
 },
 {
-    "model": "club.resort",
+    "model": "club.ressort",
     "pk": 1,
     "fields": {
         "name": "Spaß und Unsinn",
@@ -41,14 +41,14 @@
         "head": [
             "superuser"
         ],
-        "is_accounting_resort": true
+        "is_accounting_ressort": true
     }
 },
 {
     "model": "clubwork.clubwork",
     "pk": 1,
     "fields": {
-        "resort": 1,
+        "ressort": 1,
         "title": "Hüpfen",
         "description": "The quick brown fox jumps over the lazy dog",
         "date_time": "2023-07-16T10:10:00",
@@ -60,7 +60,7 @@
     "model": "clubwork.clubwork",
     "pk": 2,
     "fields": {
-        "resort": 1,
+        "ressort": 1,
         "title": "Jagen",
         "description": "Franz jagt im komplett verwahrlosten Taxi quer durch Bayern",
         "date_time": "2023-07-17T10:10:00",
@@ -72,7 +72,7 @@
     "model": "clubwork.clubwork",
     "pk": 3,
     "fields": {
-        "resort": 1,
+        "ressort": 1,
         "title": "Gurkensalat machen",
         "description": "Das Pferd frisst keinen Gurkensalat",
         "date_time": "2099-12-11T10:10:00",
