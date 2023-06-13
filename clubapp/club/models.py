@@ -68,7 +68,7 @@ class User(AbstractUser):
 
     def hours_done_year(self, year: int) -> int:
         return (
-            self.approved_work.filter(clubwork__date_time__year=year)
+            self.clubwork_participations.filter(date_time__year=year)
             .exclude(approved_by=None)
             .aggregate(models.Sum("duration"))
             .get("duration__sum")

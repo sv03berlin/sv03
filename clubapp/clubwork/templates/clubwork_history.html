@@ -5,14 +5,15 @@
     <p class="h4 mb-3">Arbeitsdienst Historie</p>
 
     <div class="d-flex">
+    <p class="me-2 mb-0">Filtern nach:</p>
         <form action="" method="get" class="d-flex">
             <div class="me-2">
-            {{ filter.form.as_div }}
+            {{ filter.form }}
             </div>
             <button class="btn btn-primary btn-sm me-2" type="submit">Filtern</button>
+            <button class="btn btn-sm btn-outline-secondary me-2 col-auto" name="xlsx" value="true" type="submit">Download XLSX</button>
     </form>
     <a class="btn btn-sm btn-outline-secondary me-2 col-auto" href="?">Reset</a>
-    <button class="btn btn-sm btn-outline-secondary me-2 col-auto" onclick="#">Download CSV</button>
     </div>
 
     <table class="table align-middle">
