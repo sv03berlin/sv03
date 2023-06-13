@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class ReservationflowConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'clubapp.reservationflow'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "clubapp.reservationflow"
