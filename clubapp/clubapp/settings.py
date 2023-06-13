@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "clubapp.refundflow",
     "clubapp.club",
     "clubapp.clubwork",
+    "clubapp.reservationflow",
 ]
 
 MIDDLEWARE = [
