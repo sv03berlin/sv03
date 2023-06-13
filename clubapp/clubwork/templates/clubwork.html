@@ -8,9 +8,9 @@
     <p>Als {{user.membership_type}} habe ich von meinen {{user.club_work_hours}} Stunden für {{this_year}} schon {{user.hours_done}} erledigt.</p>
 
     {% if user.is_resort_user or user.is_superuser or user.is_staff %}
-    <a class="btn btn-outline-secondary mb-3" href="{% url 'add_clubwork' %}">Neuen Arbeitsdienst ausschreiben</a>
+    <a class="btn btn-outline-secondary btn-sm mb-3" href="{% url 'add_clubwork' %}">Neuen Arbeitsdienst ausschreiben</a>
     {% endif %}
-    <a class="btn btn-outline-secondary mb-3" href="{% url 'add_own_clubwork' %}">Eigenen Arbeitsdienst einreichen</a>
+    <a class="btn btn-outline-secondary btn-sm mb-3" href="{% url 'add_own_clubwork' %}">Eigenen Arbeitsdienst einreichen</a>
 
     <p class="h6 mb-3">Zukünftige Arbeitdienste für die ich mich Angemeldet habe</p>
     {% for clubworkpart in upcoming_clubwork_user %}

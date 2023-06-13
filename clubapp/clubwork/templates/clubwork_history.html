@@ -42,7 +42,7 @@
                 <td>
                     <div class="d-flex">
                         <a href="{% url 'mod_own_clubwork' t.id %}" class="btn-sm btn-outline-primary me-1 btn">Bearbeiten</a>
-                        <button class="btn-sm btn-primary ms-1 btn btn-danger" onclick="fetchAndDeleteOnSuccess(`{% url 'approve_clubwork' t.id %}`, ['row{{ forloop.counter0 }}'], 'DELETE')">Nachträglich Löschen</button>
+                        <a href="{% url 'delete_own_clubwork' t.id %}" class="btn-sm btn-outline-danger me-1 btn">Löschen</a>
                     </div>
                 </td>
             </tr>
