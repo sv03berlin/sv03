@@ -1,7 +1,7 @@
 <div class="card m-3" id="clubwork-{{ clubwork.id }}">
     <div class="card-body row">
         <div class="col-md-6">
-            <h5 class="card-title mb-2">{{ clubwork.title }} für {{ clubwork.resort }}</h5>
+            <h5 class="card-title mb-2">{{ clubwork.title }} für {{ clubwork.ressort }}</h5>
             <p class="card-text">{{ clubwork.description }}</p>
             <p class="card-text mb-2">Datum und Uhrzeit: {{ clubwork.date_time }}, Dauer: {{ clubwork.max_duration }} Stunden</p>
         </div>
@@ -25,7 +25,7 @@
                 <button type="submit" class="btn btn-danger mx-1">Abmelden</button>
             </form>
             {% endif %}
-            {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+            {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
                 <a href="{% url 'mod_clubwork' clubwork.id %}" class="btn btn-primary mx-1">Bearbeiten</a>
                 <form action="{% url 'mod_clubwork' clubwork.id %}" method="post" class="mr-2">
                     {% csrf_token %}

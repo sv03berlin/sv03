@@ -18,8 +18,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 
-from clubapp.club.models import Resort
-from clubapp.clubapp.decorators import is_accountant_user, is_invoice_user, is_resort_user
+from clubapp.club.models import Ressort
+from clubapp.clubapp.decorators import is_accountant_user, is_invoice_user, is_ressort_user
 from clubapp.clubapp.settings import EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, MEDIA_ROOT
 from clubapp.clubapp.utils import AuthenticatedHttpRequest
 from clubapp.refundflow.models import Tracking, Transaction
@@ -80,7 +80,7 @@ def add_refund(request: AuthenticatedHttpRequest) -> HttpResponse:
 
             reason = form.cleaned_data["reason"]
             amount = form.cleaned_data["amount"]
-            resort = form.cleaned_data["resort"]
+            ressort = form.cleaned_data["ressort"]
             annotation = form.cleaned_data["annotation"]
 
             with transaction.atomic():
@@ -88,7 +88,7 @@ def add_refund(request: AuthenticatedHttpRequest) -> HttpResponse:
                     user=request.user,
                     date=str(date.today()),
                     reason=reason,
-                    resort=Resort.objects.get(id=resort),
+                    ressort=Ressort.objects.get(id=ressort),
                     amount=amount,
                     annotation=annotation,
                     status=Transaction.StatusChoice.RECEIVED,
@@ -102,18 +102,18 @@ def add_refund(request: AuthenticatedHttpRequest) -> HttpResponse:
             return redirect("transaction_overview")
         c["messages"] = ["Invalid form"]
 
-    c["resorts"] = Resort.objects.all()
+    c["ressorts"] = Ressort.objects.all()
     return render(request, "add_refund.html", c)
 
 
 def send_mail_transation_approve(t: Transaction) -> None:
-    if t.resort.head:
+    if t.ressort.head:
         send_mail(
             subject="Neue Rechnung zur Genehmigung",
-            message=f"""Es ist eine neue Rechnung für {t.resort.name} von {t.user.first_name} zur Genehmigung eingetroffen.
+            message=f"""Es ist eine neue Rechnung für {t.ressort.name} von {t.user.first_name} zur Genehmigung eingetroffen.
                         Bitte melde dich im System an, um sie zu bearbeiten.""",
             from_email=EMAIL_HOST_USER,
-            recipient_list=[t.resort.head.email],
+            recipient_list=[t.ressort.head.email],
             fail_silently=False,
             auth_user=EMAIL_HOST_USER,
             auth_password=EMAIL_HOST_PASSWORD,
@@ -149,7 +149,7 @@ def add_tracking(request: AuthenticatedHttpRequest) -> HttpResponse:
                 user=request.user,
                 date=form.cleaned_data["date"],
                 reason=form.cleaned_data["reason"],
-                resort=form.cleaned_data["resort"],
+                ressort=form.cleaned_data["ressort"],
                 annotation=form.cleaned_data["annotation"],
             )
             if form.cleaned_data["is_hour"]:
@@ -168,15 +168,15 @@ def add_tracking(request: AuthenticatedHttpRequest) -> HttpResponse:
             t.save()
             return redirect("tracking_overview")
 
-    c["resorts"] = Resort.objects.all()
+    c["ressorts"] = Ressort.objects.all()
     return render(request, "add_tracking.html", c)
 
 
 @login_required
 def invoice_generate(request: AuthenticatedHttpRequest) -> HttpResponse:
-    for for_resort in Resort.objects.filter(tracking__user=request.user, tracking__transaction=None).distinct():
+    for for_ressort in Ressort.objects.filter(tracking__user=request.user, tracking__transaction=None).distinct():
         c: dict[str, Any] = {}
-        c["lots"] = Tracking.objects.filter(user=request.user, transaction=None, resort=for_resort)
+        c["lots"] = Tracking.objects.filter(user=request.user, transaction=None, ressort=for_ressort)
         c["total"] = sum(t.amount for t in c["lots"])
 
         now = datetime.now()
@@ -201,7 +201,7 @@ def invoice_generate(request: AuthenticatedHttpRequest) -> HttpResponse:
                 + c["lots"].order_by("-date")[0].date.strftime("%d.%m.%Y")
             )
             t.date = str(date.today())
-            t.resort = for_resort
+            t.ressort = for_ressort
             t.status = Transaction.StatusChoice.RECEIVED
             t.save()
 
@@ -237,7 +237,7 @@ def manage_payment(request: HttpRequest) -> HttpResponse:
 
             send_mail(
                 subject="Deine Zahlung wurde überwiesen",
-                message=f"Deine Zahlung für {transaction.resort.name} wurde als überwiesen markiert",
+                message=f"Deine Zahlung für {transaction.ressort.name} wurde als überwiesen markiert",
                 from_email=EMAIL_HOST_USER,
                 recipient_list=[transaction.user.email],
                 fail_silently=False,
@@ -252,7 +252,7 @@ def manage_payment(request: HttpRequest) -> HttpResponse:
     return render(request, "manage_payment.html", c)
 
 
-@is_resort_user
+@is_ressort_user
 @login_required
 def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     c: dict[str, Any] = {}
@@ -266,13 +266,13 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     if request.user.is_accountant_user:
         c["transactions"] = reversed(year_qs)
     else:
-        resort_qs = Resort.objects.filter(head=request.user)
-        c["transactions"] = reversed(year_qs.filter(resort__in=resort_qs))
+        ressort_qs = Ressort.objects.filter(head=request.user)
+        c["transactions"] = reversed(year_qs.filter(ressort__in=ressort_qs))
 
     return render(request, "history.html", c)
 
 
-@is_resort_user
+@is_ressort_user
 @login_required
 def download(request: AuthenticatedHttpRequest) -> Union[HttpResponse, HttpResponseNotFound]:
     kind = request.GET.get("download", "csv")
@@ -281,8 +281,8 @@ def download(request: AuthenticatedHttpRequest) -> Union[HttpResponse, HttpRespo
     if (year := request.GET.get("year", "all")) != "all":
         qs = qs.filter(date__year=year)
     if not request.user.is_accountant_user:
-        resort_qs = Resort.objects.filter(head=request.user)
-        qs = qs.filter(resort__in=resort_qs)
+        ressort_qs = Ressort.objects.filter(head=request.user)
+        qs = qs.filter(ressort__in=ressort_qs)
 
     if kind == "csv":
         response = HttpResponse(content_type="text/csv")
@@ -290,14 +290,14 @@ def download(request: AuthenticatedHttpRequest) -> Union[HttpResponse, HttpRespo
         # use ;
         writer = csv.writer(response, delimiter=";")
         writer.writerow(
-            ["Datum", "Resort", "User", "Betrag", "Grund", "Status", "Buchungsnummer", "Dateiname", "genemigt von", "Bemerkung"]
+            ["Datum", "Ressort", "User", "Betrag", "Grund", "Status", "Buchungsnummer", "Dateiname", "genemigt von", "Bemerkung"]
         )
         for t in qs:
             approved_by = t.approved_by.username if t.approved_by else ""
             writer.writerow(
                 [
                     t.date,
-                    t.resort.name,
+                    t.ressort.name,
                     t.user.username,
                     t.amount,
                     t.reason,
@@ -328,7 +328,7 @@ def download(request: AuthenticatedHttpRequest) -> Union[HttpResponse, HttpRespo
 def invoice(request: AuthenticatedHttpRequest, pdf: int) -> Union[HttpResponse, FileResponse, HttpResponseNotFound]:
     specific_invoice = get_object_or_404(Transaction, pk=pdf)
 
-    if specific_invoice.user == request.user or request.user.is_accountant_user or specific_invoice.resort.head == request.user:
+    if specific_invoice.user == request.user or request.user.is_accountant_user or specific_invoice.ressort.head == request.user:
         try:
             return FileResponse(
                 open(path.join(MEDIA_ROOT, specific_invoice.invoice_path.path), "rb"),
@@ -341,11 +341,11 @@ def invoice(request: AuthenticatedHttpRequest, pdf: int) -> Union[HttpResponse, 
     return HttpResponse(status=403)
 
 
-@is_resort_user
+@is_ressort_user
 @login_required
 def approve_payment(request: AuthenticatedHttpRequest) -> HttpResponse:
     c = {}
-    qs = Resort.objects.filter(head=request.user).values_list("id")
+    qs = Ressort.objects.filter(head=request.user).values_list("id")
     if request.method == "POST":
         response_dict = loads(request.body.decode("utf-8"))
 
@@ -355,7 +355,7 @@ def approve_payment(request: AuthenticatedHttpRequest) -> HttpResponse:
             except Transaction.DoesNotExist:
                 return HttpResponse("Not Found", status=404)
 
-            if (transaction.resort.id,) in list(qs):
+            if (transaction.ressort.id,) in list(qs):
                 msg = ""
                 if response_dict["isApproved"]:
                     transaction.status = Transaction.StatusChoice.APPROVED
@@ -380,5 +380,5 @@ def approve_payment(request: AuthenticatedHttpRequest) -> HttpResponse:
                 return HttpResponse("OK", status=200)
             return HttpResponse("Forbidden", status=403)
 
-    c["transactions"] = Transaction.objects.filter(status=Transaction.StatusChoice.RECEIVED, resort__in=qs)
+    c["transactions"] = Transaction.objects.filter(status=Transaction.StatusChoice.RECEIVED, ressort__in=qs)
     return render(request, "approve_payment.html", c)

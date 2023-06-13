@@ -17,10 +17,10 @@
         </div>
 
         <div class="input-group mb-3">
-            <span class="input-group-text">Resort</span>
-            <select class="form-select col-auto" name="resort" id="id_resort">
-                {% for resort in resorts %}
-                    <option value="{{ resort.id }}">{{resort.name}}</option>
+            <span class="input-group-text">Ressort</span>
+            <select class="form-select col-auto" name="ressort" id="id_ressort">
+                {% for ressort in ressorts %}
+                    <option value="{{ ressort.id }}">{{ressort.name}}</option>
                 {% endfor %}
             </select>
         </div>

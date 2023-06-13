@@ -1,18 +1,26 @@
 from datetime import datetime
+from io import BytesIO
 from typing import Any
 
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse
+from django.db.models.query import QuerySet
+from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic.list import ListView
+from django_filters import FilterSet, NumberFilter
+from django_filters.views import FilterView
+from openpyxl import Workbook
 
 from clubapp.club.models import User
-from clubapp.clubapp.decorators import is_resort_user
+from clubapp.clubapp.decorators import is_ressort_user
 from clubapp.clubapp.utils import AuthenticatedHttpRequest
 
 from .forms import ClubWorkForm, ClubWorkParticipationForm
@@ -114,16 +122,16 @@ def mod_own_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
 
 
 @login_required
-@is_resort_user
+@is_ressort_user
 def approve_clubwork_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
-    cw = ClubWorkParticipation.objects.filter(approved_by=None, resort__head=request.user, date_time__lte=datetime.now()).order_by(
+    cw = ClubWorkParticipation.objects.filter(approved_by=None, ressort__head=request.user, date_time__lte=datetime.now()).order_by(
         "date_time"
     )
     return render(request, template_name="approve_clubwork.html", context={"clubworks": cw})
 
 
 @login_required
-@is_resort_user
+@is_ressort_user
 def approve_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     if request.method == "POST":
         part = ClubWorkParticipation.objects.get(pk=pk)
@@ -155,7 +163,7 @@ def register_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
             ClubWorkParticipation.objects.create(
                 title=cw.title,
                 user=request.user,
-                resort=cw.resort,
+                ressort=cw.ressort,
                 clubwork=cw,
                 date_time=cw.date_time,
                 duration=cw.max_duration,
@@ -180,7 +188,7 @@ def unregister_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpR
         return redirect("clubwork_index")
 
 
-@is_resort_user
+@is_ressort_user
 @login_required
 def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     c: dict[str, Any] = {}
@@ -195,11 +203,130 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, template_name="clubwork_history.html", context=c)
 
 
-@login_required
-def user_history(request: AuthenticatedHttpRequest) -> HttpResponse:
-    qs = ClubWorkParticipation.objects.filter(user=request.user, date_time__lte=datetime.now())
-    c = {"clubworks": qs}
-    return render(request, template_name="clubwork_user_history.html", context=c)
+class YearFilter(FilterSet):  # type: ignore
+    year = NumberFilter(
+        field_name="date_time",
+        lookup_expr="year",
+        label="Year",
+        widget=forms.Select(choices=[]),
+    )
+
+    choices = ClubWorkParticipation.objects.dates("date_time", "year")
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.filters["year"].field.widget.choices = self.get_year_choices()
+
+    def get_year_choices(self) -> list[tuple[str, str]]:
+        return [("", "all")] + [(str(x.year), str(x.year)) for x in self.choices]
+
+    class Meta:
+        model = ClubWorkParticipation
+        fields = ["year"]
+
+
+class HistoryFilter(YearFilter):
+    class Meta(YearFilter.Meta):
+        fields = YearFilter.Meta.fields + ["ressort"]
+
+
+class IsStaffMixin(UserPassesTestMixin):
+    request: HttpRequest
+
+    def test_func(self) -> bool:
+        return self.request.user.is_staff
+
+
+class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type: ignore
+    model = ClubWorkParticipation
+    template_name = "clubwork_history.html"
+    filterset_class = HistoryFilter
+
+    def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
+        return super().get_queryset().filter(date_time__lte=datetime.now())  # type: ignore
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c.update({"clubworks": self.get_queryset()})
+        return c  # type: ignore
+
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse | FileResponse | Any:
+        if request.GET.get("xlsx", "false").lower() == "true":
+            year = request.GET.get("year", None)
+            if ClubWorkParticipation.objects.filter(date_time__year=year, approved_by=None).exists():
+                messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
+            if year:
+                r = FileResponse(
+                    self.get_xlsx(int(year)),
+                    status=200,
+                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    as_attachment=True,
+                )
+                r["Content-Disposition"] = f"attachment; filename=arbeitsdienst_{year}.xlsx"
+                return r
+            else:
+                messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
+        return super().get(request, *args, **kwargs)
+
+    def get_xlsx(self, year: int) -> BytesIO:
+        users = User.objects.filter(is_active=True, membership_type__isnull=False)
+        wb = Workbook()
+        ws = wb.active
+        ws.append(
+            [
+                "Name",
+                "Vorname",
+                "Email",
+                "Mitgliedsnummer",
+                "Mitgliedschaftstyp",
+                "Stunden Basis",
+                "Stunden Clubbootnutzer",
+                "Stunden Bootseigner",
+                "Verrechnungssatz",
+                "Stunden gleistet",
+                "Stunden versäumt",
+                "Kompensation",
+            ]
+        )
+        for user in users:
+            m = user.membership_type
+            if not m:
+                continue
+            be = m.work_hours_boat_owner if user.is_boat_owner else 0
+            cb = m.work_hours_club_boat_user if user.is_clubboat_user else 0
+            ws.append(
+                [
+                    user.last_name,
+                    user.first_name,
+                    user.email,
+                    "0",
+                    m.name,
+                    m.work_hours,
+                    cb,
+                    be,
+                    m.work_compensation,
+                    user.hours_done_year(year),
+                    user.missing_hours(year),
+                    user.club_work_compensation(year),
+                ]
+            )
+        bio = BytesIO()
+        wb.save(bio)
+        bio.seek(0)
+        return bio
+
+
+class UserHistroyView(LoginRequiredMixin, ListView):  # type: ignore
+    model = ClubWorkParticipation
+    template_name = "clubwork_user_history.html"
+
+    def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
+        return super().get_queryset().filter(user=self.request.user, date_time__lte=datetime.now())  # type: ignore
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c.update({"clubworks": self.get_queryset()})
+        return c
 
 
 @login_required

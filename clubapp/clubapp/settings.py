@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.admin",
     "crispy_forms",
+    "django_filters",
     "crispy_bootstrap5",
     "clubapp.refundflow",
     "clubapp.club",

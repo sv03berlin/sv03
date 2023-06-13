@@ -1,6 +1,6 @@
 from django.db import models
 
-from clubapp.club.models import Resort, User
+from clubapp.club.models import Ressort, User
 
 
 class Transaction(models.Model):
@@ -13,7 +13,7 @@ class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, null=False, related_name="user_applying")
     date = models.DateField()
     reason = models.CharField(max_length=255)
-    resort = models.ForeignKey(Resort, on_delete=models.PROTECT, null=False)
+    ressort = models.ForeignKey(Ressort, on_delete=models.PROTECT, null=False)
     amount = models.DecimalField(decimal_places=2, max_digits=16)
     approved_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="user_approving")
     approve_date = models.DateTimeField(auto_now_add=True)
@@ -34,7 +34,7 @@ class Tracking(models.Model):
     hour_rate = models.DecimalField(decimal_places=2, max_digits=16, null=True)
     amount = models.DecimalField(decimal_places=2, max_digits=16)
     transaction = models.ForeignKey(Transaction, on_delete=models.PROTECT, null=True)
-    resort = models.ForeignKey(Resort, on_delete=models.PROTECT, null=False)
+    ressort = models.ForeignKey(Ressort, on_delete=models.PROTECT, null=False)
     annotation = models.CharField(max_length=1023, default="", null=True)
 
     def __str__(self) -> str:
