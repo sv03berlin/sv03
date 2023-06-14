@@ -6,10 +6,10 @@
             <p class="card-text mb-2">Datum und Uhrzeit: {{ clubwork.date_time }}, Dauer: {{ clubwork.max_duration }} Stunden</p>
         </div>
         <div class="col-md-4">
-            <p class="card-text">Teilnehmer: {{ clubwork.num_participants }}/{{ clubwork.max_participants }}</p>
+            <p class="card-text">Teilnehmer:innen: {{ clubwork.num_participants }}/{{ clubwork.max_participants }}</p>
             <ul>
             {% for participant in clubwork.registered_users %}
-                <li class="card-text">{{ participant }} ({{ participant.email }})</li>
+                <li class="card-text">{{ participant }}</li>
             {% endfor %}
             </ul>
         </div>
@@ -17,22 +17,22 @@
             {% if user not in clubwork.registered_users %}
             <form action="{% url 'register' clubwork.id %}" method="post" class="mr-2">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-primary mx-1">Anmelden</button>
+                <button type="submit" class="btn btn-sm btn-primary mx-1">Anmelden</button>
             </form>
             {% else %}
             <form action="{% url 'unregister' clubwork.id %}" method="post" class="mr-2">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger mx-1">Abmelden</button>
+                <button type="submit" class="btn btn-sm btn-danger mx-1">Abmelden</button>
             </form>
             {% endif %}
-            {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
-                <a href="{% url 'mod_clubwork' clubwork.id %}" class="btn btn-primary mx-1">Bearbeiten</a>
+            {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+                <a href="{% url 'mod_clubwork' clubwork.id %}" class="btn btn-sm btn-primary mx-1">Bearbeiten</a>
                 <form action="{% url 'mod_clubwork' clubwork.id %}" method="post" class="mr-2">
                     {% csrf_token %}
                     <input type="hidden" id="post_action" name="post_action" value="delete">
-                    <button type="submit" class="btn btn-danger mx-1">Löschen</button>
+                    <button type="submit" class="btn btn-sm btn-danger mx-1">Löschen</button>
                 </form>
-                <a href="{% url 'select_user_mail' clubwork.id %}" class="btn btn-outline-success mx-1">Mitglieder zur Benachichtigung auswählen</a>
+                <a href="{% url 'select_user_mail' clubwork.id %}" class="btn btn-sm btn-outline-success mx-1">Mitglieder zur Benachichtigung auswählen</a>
             {% endif %}
         </div>
     </div>

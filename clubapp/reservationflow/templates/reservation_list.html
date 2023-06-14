@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3">Meine Reservierungen</p>
+    <table class="table align-middle mb-3">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Was?</th>
+                <th scope="col">von</th>
+                <th scope="col">bis</th>
+                {% if user.is_staff %}
+                <th scope="col">Wer?</th>
+                {% endif %}
+                <th scope="col">Optionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reservations %}
+            <tr id="row{{ forloop.counter0 }}">
+                <th scope="row">{{r.id}}</th>
+                <td>{{r.thing}}</td>
+                <td>{{r.start}}</td>
+                <td>{{r.end}}</td>
+                {% if user.is_staff %}
+                <td>{{user}}</td>
+                {% endif %}
+                <td>
+                    <div class="d-flex">
+                        <a class="btn btn-primary btn-sm me-2" href="{% url 'reservation_update' r.id %}">Bearbeiten</a>
+                        <a class="btn btn-danger btn-sm" href="{% url 'reservation_delete' r.id %}">Löschen</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+                <p>Du hast keine Reservierungen angelegt</p>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

@@ -25,14 +25,17 @@ class CustomUserAdmin(UserAdmin):
         ("Important dates", {"fields": ("last_login", "date_joined")}),
         ("Membership", {"fields": ("membership_type",)}),
     )
+    autocomplete_fields = ["membership_type"]
 
 
 class MembershipAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     list_display = ("name", "work_hours", "work_hours_boat_owner", "work_hours_club_boat_user", "work_compensation")
+    search_fields = ["name"]
 
 
 class RessortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     list_display = ("name", "head", "is_accounting_ressort")
+    autocomplete_fields = ["head"]
 
 
 admin.site.register(Ressort, RessortAdmin)

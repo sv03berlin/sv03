@@ -61,6 +61,21 @@
                                                 {% endif %}
                                             </ul>
                                         </div>
+                                    </div>
+
+                                    <div class="navbar-collapse" id="navbarsExample">
+                                        <div class="navbar-nav nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Reservierungen</a>
+                                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                                <li><a class="dropdown-item" href="{% url 'calendar_month' %}">Reservierungsübersicht</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'reservation_list' %}">Meine Reservierungen</a></li>
+                                                {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+                                                <li><a class="dropdown-item" href="{% url 'staff_reservation_list' %}">Alle Reservierungen</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+
                             </ul>
 
                             <div class="navbar-nav px-2"></ul>
@@ -111,3 +126,13 @@
         </div>        
     </body>
 </html>
+
+<script>
+// enable tooltips
+document.addEventListener('DOMContentLoaded', function() {
+  var elements = document.querySelectorAll('[data-toggle="tooltip"]');
+  elements.forEach(function(element) {
+    var tooltip = new Tooltip(element);
+  });
+});
+</script>

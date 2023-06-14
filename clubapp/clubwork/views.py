@@ -1,6 +1,6 @@
 from datetime import datetime
 from io import BytesIO
-from typing import Any
+from typing import Any, no_type_check
 
 from django import forms
 from django.conf import settings
@@ -14,6 +14,8 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.generic import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView
@@ -84,41 +86,48 @@ def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     return render(request, template_name="create_form.html", context=c)
 
 
-@login_required
-def add_own_clubwork(request: AuthenticatedHttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        form = ClubWorkParticipationForm(request.POST)
-        if form.is_valid():
-            form.instance.user = request.user
-            form.save()
-            return redirect("clubwork_index")
-        else:
-            messages.error(request, str(form.errors))
-    c = {"form": ClubWorkParticipationForm(), "heading": "Eigenen Clubdienst anmelden"}
-    return render(request, template_name="create_form.html", context=c)
+class OwnClubworkMixin:
+    model = ClubWorkParticipation
+
+    @no_type_check
+    def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
+        if self.request.user.is_staff:
+            return super().get_queryset()
+        return super().get_queryset().filter(user=self.request.user)
+
+    def get_success_url(self) -> str:
+        return reverse("clubwork_index")
+
+    @no_type_check
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c["heading"] = "Eigenen Arbeitsdienst anmelden"
+        return c
 
 
-@login_required
-def mod_own_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
-    cw = ClubWorkParticipation.objects.get(pk=pk)
-    if cw.approved_by is not None and cw.approved_by != request.user:
-        messages.error(request, "Du kannst nur deine eigenen Anmeldungen bearbeiten.")
-        return redirect("clubwork_index")
-    if is_post_action(request):
-        form = ClubWorkParticipationForm(request.POST, instance=cw)
-        if form.is_valid():
-            form.save()
-            return redirect("clubwork_index")
-        else:
-            messages.error(request, str(form.errors))
-    elif is_delete_action(request):
-        ClubWorkParticipation.objects.get(pk=pk).delete()
-        return redirect("clubwork_index")
-    c = {
-        "form": ClubWorkParticipationForm(instance=ClubWorkParticipation.objects.get(pk=pk)),
-        "heading": "Eigenen Clubdienst bearbeiten",
-    }
-    return render(request, template_name="create_form.html", context=c)
+class OwnClubWorkCreate(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # type: ignore[type-arg, misc]
+    template_name = "create_form.html"
+    form_class = ClubWorkParticipationForm
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+
+class OwnClubWorkUpdate(LoginRequiredMixin, OwnClubworkMixin, UpdateView):  # type: ignore[type-arg, misc]
+    template_name = "create_form.html"
+    form_class = ClubWorkParticipationForm
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        kwargs["instance"] = self.get_object()
+        return kwargs
+
+
+class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # type: ignore[type-arg, misc]
+    template_name = "delete_form.html"
 
 
 @login_required

@@ -11,5 +11,5 @@ class Command(BaseCommand):
     requires_migrations_checks = False
 
     def handle(self, *args: Any, **options: Any) -> None:
-        cmd = "ruff ."
+        cmd = "ruff . --fix"
         subprocess.run(cmd, shell=True, check=True, stderr=subprocess.PIPE)
