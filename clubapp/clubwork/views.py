@@ -1,26 +1,21 @@
 from datetime import datetime
-
-from typing import Any, no_type_check
 from io import BytesIO
-from typing import Any
+from typing import Any, no_type_check
 
 from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.http import HttpResponse
+from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, DeleteView, UpdateView
-from django.http import FileResponse, HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.list import ListView
 from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView

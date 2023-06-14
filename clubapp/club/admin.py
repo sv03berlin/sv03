@@ -33,8 +33,8 @@ class MembershipAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     search_fields = ["name"]
 
 
-class ResortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
-    list_display = ("name", "head", "is_accounting_resort")
+class RessortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("name", "head", "is_accounting_ressort")
     autocomplete_fields = ["head"]
 
 
