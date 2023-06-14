@@ -1,6 +1,6 @@
 <div class="card m-3" id="clubwork-user-{{ clubworkpart.id }}">
     <div class="card-body">
-        <h5 class="card-title mb-2">{{ clubworkpart.title }} für {{ clubworkpart.resort }}</h5>
+        <h5 class="card-title mb-2">{{ clubworkpart.title }} für {{ clubworkpart.ressort }}</h5>
         <p class="card-text">{{ clubworkpart.description }}</p>
         <p class="card-text mb-2">{% if clubworkpart.date_time %}Datum und Uhrzeit: {{ clubworkpart.date_time }}{% endif %}{% if clubworkpart.duration %}, Dauer: {{ clubworkpart.duration }} Stunden{% endif %}</p>
         <div class="d-flex">

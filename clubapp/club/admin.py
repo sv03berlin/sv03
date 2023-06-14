@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from clubapp.club.models import Membership, Resort, User
+from clubapp.club.models import Membership, Ressort, User
 
 
 class CustomUserAdmin(UserAdmin):
@@ -38,6 +38,6 @@ class ResortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     autocomplete_fields = ["head"]
 
 
-admin.site.register(Resort, ResortAdmin)
+admin.site.register(Ressort, RessortAdmin)
 admin.site.register(Membership, MembershipAdmin)
 admin.site.register(User, CustomUserAdmin)

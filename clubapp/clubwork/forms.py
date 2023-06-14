@@ -13,7 +13,7 @@ class ClubWorkForm(forms.ModelForm[models.ClubWork]):
         model = models.ClubWork
         fields = [
             "title",
-            "resort",
+            "ressort",
             "date_time",
             "max_duration",
             "max_participants",
@@ -29,7 +29,7 @@ class ClubWorkParticipationForm(forms.ModelForm[models.ClubWorkParticipation]):
         model = models.ClubWorkParticipation
         fields = [
             "title",
-            "resort",
+            "ressort",
             "date_time",
             "duration",
             "description",

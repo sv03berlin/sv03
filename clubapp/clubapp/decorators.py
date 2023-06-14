@@ -32,14 +32,14 @@ def is_invoice_user(view_func: F) -> F:
     return user_passes_test(check_user)(view_func)
 
 
-def is_resort_user(view_func: F) -> F:
+def is_ressort_user(view_func: F) -> F:
     """
-    Decorator for views that checks that the user is resort head or admin
+    Decorator for views that checks that the user is ressort head or admin
     """
 
     def check_user(user: Union[User, AbstractBaseUser, AnonymousUser]) -> bool:
         assert isinstance(user, User)
-        return user.is_resort_user or user.is_superuser
+        return user.is_ressort_user or user.is_superuser
 
     return user_passes_test(check_user)(view_func)
 

@@ -39,7 +39,7 @@
                                                 <li><a class="dropdown-item" href="{% url 'tracking_overview' %}">Meine Abrechnungen</a></li>
                                             {% endif %}
             
-                                            {% if user.is_resort_user %}
+                                            {% if user.is_ressort_user %}
                                                 <li><a class="dropdown-item" href="{% url 'approve_payment' %}">Genehmigen</a></li>
                                             {% endif %}
             
@@ -55,7 +55,7 @@
                                             <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
                                                 <li><a class="dropdown-item" href="{% url 'clubwork_index' %}">Meine Übersicht</a></li>
                                                 <li><a class="dropdown-item" href="{% url 'clubwork_user_history' %}">Meine vergangenen Arbeitsdienste</a></li>
-                                                {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+                                                {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
                                                 <li><a class="dropdown-item" href="{% url 'approve_clubwork_overview' %}">Arbeitsdienste genehmigen</a></li>
                                                 <li><a class="dropdown-item" href="{% url 'clubwork_history' %}">Arbeitsdienst Historie</a></li>
                                                 {% endif %}

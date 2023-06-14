@@ -7,7 +7,7 @@ class SubmitRefund(forms.Form):
     file = forms.FileField(required=True)
     reason = forms.CharField(required=True, max_length=255)
     amount = forms.DecimalField(required=True, max_digits=16, decimal_places=2)
-    resort = forms.CharField(required=True, max_length=255)
+    ressort = forms.CharField(required=True, max_length=255)
     annotation = forms.CharField(required=False, max_length=1023)
 
 
@@ -19,7 +19,7 @@ class AddTracking(forms.ModelForm[models.Tracking]):
     class Meta:
         model = models.Tracking
         fields = [
-            "resort",
+            "ressort",
             "date",
             "reason",
             "amount",

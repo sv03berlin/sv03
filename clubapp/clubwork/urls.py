@@ -13,7 +13,7 @@ urlpatterns = [
     path("unregister/<int:pk>/", views.unregister_for_clubwork, name="unregister"),
     path("approve/", views.approve_clubwork_overview, name="approve_clubwork_overview"),
     path("approve/<int:pk>/", views.approve_clubwork, name="approve_clubwork"),
-    path("clubwork_history/", views.history, name="clubwork_history"),
-    path("clubwork_user_history/", views.user_history, name="clubwork_user_history"),
+    path("clubwork_history/", views.ClubworkHistoryView.as_view(), name="clubwork_history"),
+    path("clubwork_user_history/", views.UserHistroyView.as_view(), name="clubwork_user_history"),
     path("select_user_mail/<int:pk>/", views.select_users_to_email_about, name="select_user_mail"),
 ]
