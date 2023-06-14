@@ -39,6 +39,8 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
             qs = ReservabelThing.objects.all()
         else:
             qs = ReservabelThing.objects.filter(reservation_group__memberships__user=self.user)
+            qs |= ReservabelThing.objects.filter(all_can_reserve=True)
+            qs = qs.distinct()
         return [(thing.id, thing.name) for thing in qs]
 
     def is_valid(self) -> bool:
