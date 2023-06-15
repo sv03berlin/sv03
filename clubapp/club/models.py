@@ -47,14 +47,14 @@ class User(AbstractUser):
 
     @cached_property
     def club_work_hours(self) -> int:
+        work_hours = 0
         if self.membership_type:
-            work_hours = self.membership_type.work_hours
+            work_hours += self.membership_type.work_hours
             if self.is_boat_owner:
-                work_hours = self.membership_type.work_hours_boat_owner
+                work_hours += self.membership_type.work_hours_boat_owner
             if self.is_clubboat_user:
-                work_hours = self.membership_type.work_hours_club_boat_user
-            return work_hours
-        return 0
+                work_hours += self.membership_type.work_hours_club_boat_user
+        return work_hours
 
     @cached_property
     def hours_to_do(self) -> int:
