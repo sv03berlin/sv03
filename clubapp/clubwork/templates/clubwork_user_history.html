@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="">
+<div class="container">
     <p class="h4 mb-3">Meine vergangenen Arbeitsdienste</p>
-    <table class="table align-middle">
+    <table class="table align-middle" style="font-size: 16px;">
         <thead>
             <tr>
                 <th scope="col">ID</th>
@@ -24,7 +24,7 @@
                 <td>{{t.title}}</td>
                 <td>{{t.date_time}}</td>
                 <td>{{t.description}}</td>
-                <td>{{t.duration}}h</td>
+                <td>{{t.duration}}min</td>
                 {% if t.approved_by == None %}
                 <td>Ausstehend</td>
                 <td>-</td>
