@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3">Reservierungsdetails</p>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ reservation.thing }}</h5>
+            <p class="card-text">ID: {{ reservation.id }}</p>
+            <p class="card-text">Von: {{ reservation.start }}</p>
+            <p class="card-text">Bis: {{ reservation.end }}</p>
+            <p class="card-text">Wer: {{ reservation.user }}</p>
+            {% if edit_allowed %}
+            <div class="d-flex">
+                <a class="btn btn-primary" href="{% url 'reservation_update' reservation.id %}">Bearbeiten</a>
+                <a class="btn btn-danger ml-2" href="{% url 'reservation_delete' reservation.id %}">Löschen</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

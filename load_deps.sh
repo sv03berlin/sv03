@@ -14,3 +14,7 @@ wget https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.m
 mv tom-select.complete.min.js /code/clubapp/static/ext/tom-select.min.js
 wget https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css
 mv tom-select.min.css /code/clubapp/static/ext/tom-select.min.css
+
+# calendar
+wget https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js
+mv index.global.min.js /code/clubapp/static/ext/fullcalendar.min.js

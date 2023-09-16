@@ -3,6 +3,13 @@
 {% block content %}
 <div class="container">
     <h3 class="mt-4">Benachrichtigungen über Arbeitsdienst {{clubwork}} an Mitglieder senden</h1>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="users" value="all">
+        <button type="submit" class="btn btn-outline-success mb-4">Email an alle Mitglieder</button>
+    </form>
+
     {% include 'member_select.html' with users=users action_target="" action_desc="Email senden" tomselect_id="select-user" %}
 </div>
 
