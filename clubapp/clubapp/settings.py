@@ -34,6 +34,8 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 STATIC_ROOT = "/clubapp_static/"
 
+VIRTUAL_HOST = os.environ.get("VIRTUAL_HOST", "localhost:8000").removesuffix("/")
+
 
 # Application definition
 

@@ -3,17 +3,15 @@
 
 {% block content %}
 
-<p class="me-2 mb-0">Filtern nach:</p>
-<form action="" method="get" class="d-flex">
-    <div class="me-2">
-    {{ filter.form }}
-    </div>
-    <button class="btn btn-primary btn-sm me-2" type="submit">Filtern</button>
-</form>
-<a class="btn btn-sm btn-outline-secondary me-2 col-auto" href="?">Reset</a>
-</div>
-
 <div class="container">
+    <p class="h1 mb-3">Reservierungen</p>
+    <form action="" method="get" class="d-flex mb-3">
+        <div class="me-2">
+            {{ filter.form }}
+        </div>
+        <button class="btn btn-primary btn-sm me-2" type="submit">Filtern</button>
+        <a class="btn btn-sm btn-outline-secondary me-2 col-auto" href="?">Reset</a>
+    </form>
     <div id='calendar'></div>
 </div>
 
@@ -23,6 +21,10 @@
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
+            eventClick: function (info) {
+                window.location.href = info.event.url;
+                info.el.style.borderColor = 'red';
+            },
             customButtons: {
                 add_event: {
                     text: '+',

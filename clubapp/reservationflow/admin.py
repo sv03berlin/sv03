@@ -3,19 +3,20 @@ from django.contrib import admin
 from .models import ReservabelThing, Reservation, ReservationGroup
 
 
-class ReservationsAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+class ReservationsAdmin(admin.ModelAdmin[Reservation]):
     model = Reservation
     autocomplete_fields = ["user", "thing"]
     search_fields = ["user", "thing"]
 
 
-class ReservabelThingAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+class ReservabelThingAdmin(admin.ModelAdmin[ReservabelThing]):
     model = ReservabelThing
     search_fields = ["name"]
 
-class ReservationGroupAdmin(admin.ModelAdmin):
+
+class ReservationGroupAdmin(admin.ModelAdmin[ReservationGroup]):
     model = ReservationGroup
-    filter_horizontal = ["users"] 
+    filter_horizontal = ["users"]
 
 
 admin.site.register(ReservationGroup, ReservationGroupAdmin)
