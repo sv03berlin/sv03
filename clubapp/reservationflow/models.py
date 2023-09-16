@@ -3,7 +3,6 @@ from django.utils.translation import gettext_lazy as _
 
 from clubapp.club.models import User
 
-
 class ReservationGroup(models.Model):
     class Meta:
         verbose_name = _("Reservierungsgruppe")
@@ -11,6 +10,12 @@ class ReservationGroup(models.Model):
 
     name = models.CharField(max_length=100)
     description = models.TextField()
+
+    users = models.ManyToManyField(
+        User,
+        related_name="reservation_groups",
+        verbose_name=_("Benutzer:innen in Reservierungsgruppe")
+    )
 
     def __str__(self) -> str:
         return self.name
@@ -28,18 +33,6 @@ class ReservabelThing(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
-
-class ReservationGroupMembership(models.Model):
-    class Meta:
-        verbose_name = _("Zugehörigkeit in Reservierungsgruppe")
-        verbose_name_plural = _("Zugehörigkeiten in Reservierungsgruppen")
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reservation_group_memberships", verbose_name=_("Benutzer:innen"))
-    group = models.ForeignKey(ReservationGroup, on_delete=models.CASCADE, related_name="memberships", verbose_name=_("Reservierungsgruppe"))
-
-    def __str__(self) -> str:
-        return f"{self.user} {self.group}"
 
 
 class Reservation(models.Model):

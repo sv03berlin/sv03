@@ -1,11 +1,6 @@
 from django.contrib import admin
 
-from .models import ReservabelThing, Reservation, ReservationGroup, ReservationGroupMembership
-
-
-class ReservationGroupMembershipInline(admin.ModelAdmin):  # type: ignore[type-arg]
-    model = ReservationGroupMembership
-    autocomplete_fields = ["user"]
+from .models import ReservabelThing, Reservation, ReservationGroup
 
 
 class ReservationsAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
@@ -18,8 +13,11 @@ class ReservabelThingAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     model = ReservabelThing
     search_fields = ["name"]
 
+class ReservationGroupAdmin(admin.ModelAdmin):
+    model = ReservationGroup
+    filter_horizontal = ["users"] 
 
-admin.site.register(ReservationGroup)
+
+admin.site.register(ReservationGroup, ReservationGroupAdmin)
 admin.site.register(ReservabelThing, ReservabelThingAdmin)
-admin.site.register(ReservationGroupMembership, ReservationGroupMembershipInline)
 admin.site.register(Reservation, ReservationsAdmin)
