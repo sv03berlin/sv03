@@ -375,7 +375,7 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],
                 )
-            except User.DoesNotExist:
+            except Exception:
                 messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
         return redirect("clubwork_index")
 

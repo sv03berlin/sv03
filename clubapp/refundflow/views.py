@@ -97,7 +97,7 @@ def add_refund(request: AuthenticatedHttpRequest) -> HttpResponse:
                 t.invoice_path.save(content=pdf, name=f"{t.id}.pdf")
                 t.save()
 
-            send_mail_transation_approve(t)
+            send_mail_transaction_approve(request, t)
 
             return redirect("transaction_overview")
         c["messages"] = ["Invalid form"]
@@ -106,18 +106,22 @@ def add_refund(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, "add_refund.html", c)
 
 
-def send_mail_transation_approve(t: Transaction) -> None:
+def send_mail_transaction_approve(request: HttpRequest, t: Transaction) -> None:
     if t.ressort.head:
-        send_mail(
-            subject="Neue Rechnung zur Genehmigung",
-            message=f"""Es ist eine neue Rechnung für {t.ressort.name} von {t.user.first_name} zur Genehmigung eingetroffen.
-                        Bitte melde dich im System an, um sie zu bearbeiten.""",
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[t.ressort.head.email],
-            fail_silently=False,
-            auth_user=EMAIL_HOST_USER,
-            auth_password=EMAIL_HOST_PASSWORD,
-        )
+        try:
+            send_mail(
+                subject="Neue Rechnung zur Genehmigung",
+                message=f"""Es ist eine neue Rechnung für {t.ressort.name} von {t.user.first_name} zur Genehmigung eingetroffen.
+                            Bitte melde dich im System an, um sie zu bearbeiten.""",
+                from_email=EMAIL_HOST_USER,
+                recipient_list=[t.ressort.head.email],
+                fail_silently=False,
+                auth_user=EMAIL_HOST_USER,
+                auth_password=EMAIL_HOST_PASSWORD,
+            )
+        except Exception:  # pylint: disable=broad-except
+            print("Error while sending mail")
+            messages.error(request, "Error while sending mail")
 
 
 @is_invoice_user
@@ -212,7 +216,7 @@ def invoice_generate(request: AuthenticatedHttpRequest) -> HttpResponse:
                 lot.transaction = t
                 lot.save()
 
-            send_mail_transation_approve(t)
+            send_mail_transaction_approve(request, t)
 
         except Exception:  # pylint: disable=broad-except
             messages.error(request, "Error while Saving in Database")
@@ -235,15 +239,19 @@ def manage_payment(request: HttpRequest) -> HttpResponse:
             transaction.status = Transaction.StatusChoice.TRANSFERRED
             transaction.save()
 
-            send_mail(
-                subject="Deine Zahlung wurde überwiesen",
-                message=f"Deine Zahlung für {transaction.ressort.name} wurde als überwiesen markiert",
-                from_email=EMAIL_HOST_USER,
-                recipient_list=[transaction.user.email],
-                fail_silently=False,
-                auth_user=EMAIL_HOST_USER,
-                auth_password=EMAIL_HOST_PASSWORD,
-            )
+            try:
+                send_mail(
+                    subject="Deine Zahlung wurde überwiesen",
+                    message=f"Deine Zahlung für {transaction.ressort.name} wurde als überwiesen markiert",
+                    from_email=EMAIL_HOST_USER,
+                    recipient_list=[transaction.user.email],
+                    fail_silently=False,
+                    auth_user=EMAIL_HOST_USER,
+                    auth_password=EMAIL_HOST_PASSWORD,
+                )
+            except Exception:
+                print("Error while sending mail")
+                messages.error(request, "Error while sending mail")
 
             return HttpResponse("OK", status=200)
         return HttpResponse("Not Found", status=404)
@@ -367,16 +375,20 @@ def approve_payment(request: AuthenticatedHttpRequest) -> HttpResponse:
                 transaction.save()
 
                 msg = f"Deine Rechnung vom {transaction.date} wurde von {request.user.username} {transaction.get_status_display()}." + msg
+                try:
+                    send_mail(
+                        subject=f"Abrechnung wurde {transaction.get_status_display()}",
+                        message=msg,
+                        from_email=EMAIL_HOST_USER,
+                        recipient_list=[transaction.user.email],
+                        fail_silently=False,
+                        auth_user=EMAIL_HOST_USER,
+                        auth_password=EMAIL_HOST_PASSWORD,
+                    )
+                except Exception:
+                    print("Error while sending mail")
+                    messages.error(request, "Error while sending mail")
 
-                send_mail(
-                    subject=f"Abrechnung wurde {transaction.get_status_display()}",
-                    message=msg,
-                    from_email=EMAIL_HOST_USER,
-                    recipient_list=[transaction.user.email],
-                    fail_silently=False,
-                    auth_user=EMAIL_HOST_USER,
-                    auth_password=EMAIL_HOST_PASSWORD,
-                )
                 return HttpResponse("OK", status=200)
             return HttpResponse("Forbidden", status=403)
 
