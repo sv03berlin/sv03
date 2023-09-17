@@ -85,9 +85,10 @@
                                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
                                         <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        {% if user.is_superuser %}
+                                        {% if user.is_superuser or user.is_staff %}
                                             <h6 class="dropdown-header">Admin</h6>
                                             <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a></li>
+                                            <li><a class="dropdown-item" href="{% url 'sewobe_import' %}">SEWOBE Import</a></li>
                                             <li><hr class="dropdown-divider"></li>
                                         {% endif %}
                                         <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>

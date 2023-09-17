@@ -11,4 +11,5 @@ urlpatterns = [
     path("clubwork/", include("clubapp.clubwork.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("reservations/", include("clubapp.reservationflow.urls")),
+    path("club/", include("clubapp.club.urls")),
 ]
