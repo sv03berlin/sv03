@@ -1,14 +1,31 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
+from django.db.models.query import QuerySet
+from django.http import HttpRequest
 
+from clubapp.club.importer import send_new_password
 from clubapp.club.models import Membership, Ressort, User
+
+
+@admin.action(description="neues Passworz Zusenden")
+def make_send_new_password(modeladmin: admin.ModelAdmin[User], request: HttpRequest, queryset: QuerySet["User"]) -> None:
+    for user in queryset:
+        send_new_password(user)
 
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "email", "license")}),
+        (
+            None,
+            {
+                "fields": (
+                    "username",
+                    "password",
+                )
+            },
+        ),
+        ("Personal info", {"fields": ("first_name", "last_name", "email", "membership_id", "license")}),
         (
             "Permissions",
             {
@@ -27,6 +44,9 @@ class CustomUserAdmin(UserAdmin):
         ("Membership", {"fields": ("membership_type",)}),
     )
     autocomplete_fields = ["membership_type"]
+    search_fields = ["membership_id", "first_name", "last_name", "email"]
+    list_display = ("__str__", "membership_id", "is_staff", "is_active", "is_superuser", "is_boat_owner", "is_clubboat_user")
+    actions = [make_send_new_password]
 
 
 class MembershipAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
