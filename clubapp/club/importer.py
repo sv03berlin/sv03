@@ -29,6 +29,8 @@ def send_new_password(user: User) -> tuple[User, list[str]]:
     pw = User.objects.make_random_password()
     user.set_password(pw)
     user.save()
+    if not user.email:
+        return user, [f"Benutzer:in {user} wurde erstellt, aber hat keine E-Mail Adresse hinterlegt."]
     try:
         send_mail(
             "Neue Anmeldedaten für {settings.VIRTUAL_HOST}",
@@ -47,6 +49,7 @@ def send_new_password(user: User) -> tuple[User, list[str]]:
             settings.DEFAULT_FROM_EMAIL,
             [user.email],
         )
+        print("Mail sent")
     except Exception:
         return user, [f"Benutzer:in {user} wurde erstellt, aber die E-Mail konnte nicht versendet werden."]
     return user, []

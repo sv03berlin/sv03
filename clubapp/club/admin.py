@@ -25,7 +25,7 @@ class CustomUserAdmin(UserAdmin):
                 )
             },
         ),
-        ("Personal info", {"fields": ("first_name", "last_name", "email", "membership_id", "license")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "email")}),
         (
             "Permissions",
             {
@@ -41,7 +41,7 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
-        ("Membership", {"fields": ("membership_type",)}),
+        ("Membership", {"fields": ("membership_type", "membership_id", "license")}),
     )
     autocomplete_fields = ["membership_type"]
     search_fields = ["membership_id", "first_name", "last_name", "email"]
