@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 class Membership(models.Model):
     name = models.CharField(max_length=63, unique=True, verbose_name=_("Mitgliedschaftsart"))
+    membership_id_for_import = models.CharField(max_length=63, blank=True, null=True, verbose_name=_("Mitgliedschaftartkennung für Import"))
     work_hours = models.IntegerField(verbose_name=_("Arbeitsstunden"))
     work_hours_boat_owner = models.IntegerField(verbose_name=_("Arbeitsstunden Bootseigner:in"))
     work_hours_club_boat_user = models.IntegerField(verbose_name=_("Arbeitsstunden Clubbootnutzer:in"))
@@ -19,6 +20,7 @@ class Membership(models.Model):
 
 
 class User(AbstractUser):
+    membership_id = models.CharField(max_length=63, blank=True, null=True, verbose_name=_("Mitgliedsnummer"))
     license = models.CharField(max_length=63, blank=True, null=True, verbose_name=_("Lizenznummer"))
 
     membership_type = models.ForeignKey(
