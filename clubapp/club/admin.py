@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
@@ -63,3 +64,6 @@ admin.site.unregister(Group)
 admin.site.register(Ressort, RessortAdmin)
 admin.site.register(Membership, MembershipAdmin)
 admin.site.register(User, CustomUserAdmin)
+admin.site.site_header = f"{settings.THIS_APP_NAME}-Admin | {settings.CLUB_NAME}"
+admin.site.site_title = settings.CLUB_NAME_SHORT
+admin.site.index_title = f"{settings.THIS_APP_NAME}-Admin"
