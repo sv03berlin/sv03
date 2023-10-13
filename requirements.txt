@@ -7,3 +7,4 @@ django-stubs-ext
 mozilla-django-oidc==3.0.0
 django-filter==23.2
 openpyxl==3.1.2
+mozilla-django-oidc==3.0.0

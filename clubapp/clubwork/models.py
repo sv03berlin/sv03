@@ -16,7 +16,7 @@ class ClubWork(models.Model):
     max_participants = models.IntegerField(verbose_name=_("Maximale Teilnehmer:innenanzahl"))
 
     def __str__(self) -> str:
-        return f"{self.title} ({self.date_time})"
+        return f"{self.title} am {self.date_time.strftime('%d.%m.%Y %H:%M')}"
 
     @cached_property
     def num_participants(self) -> int:
@@ -41,3 +41,6 @@ class ClubWorkParticipation(models.Model):
     )
     approve_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Genehmigt am"))
     description = models.TextField(verbose_name=_("Beschreibung"))
+
+    def __str__(self) -> str:
+        return f"{self.user} hilft bei {self.clubwork}"

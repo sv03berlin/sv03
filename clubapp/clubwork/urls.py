@@ -8,6 +8,7 @@ urlpatterns = [
     path("mod/<int:pk>/", views.mod_clubwork, name="mod_clubwork"),
     path("add_own/", views.OwnClubWorkCreate.as_view(), name="add_own_clubwork"),
     path("mod_own/<int:pk>/", views.OwnClubWorkUpdate.as_view(), name="mod_own_clubwork"),
+    path("delete/<int:pk>/", views.ClubWorkDelete.as_view(), name="delete_clubwork"),
     path("delete_own/<int:pk>/", views.OwnClubWorkDelete.as_view(), name="delete_own_clubwork"),
     path("register/<int:pk>/", views.register_for_clubwork, name="register"),
     path("unregister/<int:pk>/", views.unregister_for_clubwork, name="unregister"),

@@ -14,3 +14,5 @@ wget https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.m
 mv tom-select.complete.min.js /code/clubapp/static/ext/tom-select.min.js
 wget https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css
 mv tom-select.min.css /code/clubapp/static/ext/tom-select.min.css
+wget https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css.map
+mv tom-select.min.css.map /code/clubapp/static/ext/tom-select.min.css.map

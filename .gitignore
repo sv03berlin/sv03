@@ -10,3 +10,4 @@ data/*
 clubapp/static/gh.css
 **/bootstrap/*
 **/ext/*
+bootstrap-*/*

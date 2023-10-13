@@ -66,6 +66,17 @@ class User(AbstractUser):
     def hours_done(self) -> int:
         return self.hours_done_year(datetime.now().year)
 
+    @cached_property
+    def hours_done_formatted(self) -> str:
+        return self.get_time_formatted(self.hours_done)
+
+    @cached_property
+    def hours_to_do_formatted(self) -> str:
+        return self.get_time_formatted(self.missing_hours(datetime.now().year))
+
+    def get_time_formatted(self, time: float) -> str:
+        return "{0:02.0f}:{1:02.0f}".format(*divmod(time * 60, 60))
+
     def hours_done_year(self, year: int) -> int:
         return (
             self.clubwork_participations.filter(date_time__year=year)
@@ -81,7 +92,24 @@ class User(AbstractUser):
         return 0
 
     def missing_hours(self, year: int) -> int:
-        return self.club_work_hours - self.hours_done_year(year)
+        left = self.club_work_hours - self.hours_done_year(year)
+        if left < 0:
+            return 0
+        return left
+
+    @cached_property
+    def unconfirmed_hours(self) -> int:
+        return (
+            self.clubwork_participations.filter(date_time__year=datetime.now().year)
+            .filter(approved_by=None)
+            .aggregate(models.Sum("duration"))
+            .get("duration__sum")
+            or 0
+        )
+
+    @cached_property
+    def unconfirmed_hours_formatted(self) -> str:
+        return self.get_time_formatted(self.unconfirmed_hours)
 
 
 class Ressort(models.Model):

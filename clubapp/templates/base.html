@@ -5,8 +5,8 @@
 <link rel="stylesheet" type="text/css" href={% static "customcss/custom.css" %} />
 <link rel="stylesheet" type="text/css" href={% static "ext/gh.css" %} />
 <link rel="stylesheet" type="text/css" href={% static "ext/tom-select.min.css" %} />
+<script type="text/javascript" src={% static "bootstrap/js/bootstrap.bundle.min.js" %}></script>
 <script type="text/javascript" src={% static "ext/tom-select.min.js" %}></script>
-<script type="text/javascript" src={% static "bootstrap/js/bootstrap.js" %}></script>
 <script type="text/javascript" src={% static "clubapp.js" %}></script>
 <link rel="icon" href={% static "favicon.ico" %} type="image/x-icon">
 
@@ -82,14 +82,25 @@
                                 <div class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">{{ user }}</a>
                                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                                        <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
-                                        <li><hr class="dropdown-divider"></li>
+                                        <!-- <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+                                        <li><hr class="dropdown-divider"></li> -->
                                         {% if user.is_superuser %}
                                             <h6 class="dropdown-header">Admin</h6>
                                             <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a></li>
                                             <li><hr class="dropdown-divider"></li>
                                         {% endif %}
-                                        <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
+                                        {% if enable_oidc_login %}
+                                            <li>
+                                                <form action="{% url 'oidc_logout' %}" method="post">
+                                                    {% csrf_token %}
+                                                    <input class="dropdown-item" type="submit" value="Logout">
+                                                </form> 
+                                            </li>
+                                        {% elif enable_django_login %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
+                                        </li>
+                                        {% endif %}
                                     </ul>
                                 </div>
                             </div>
@@ -103,7 +114,12 @@
                         </ul>
 
                         <div class="text-end">
-                            <a href="{% url 'login' %}" class="btn btn-outline-light me-2" role="button" aria-pressed="true">Sign in</a>
+                            {% if enable_oidc_login %}
+                                <a href="{% url 'login' %}" class="btn btn-outline-light me-2" role="button" aria-pressed="true">Sign in</a>
+                            {% endif %}
+                            {% if enable_django_login %}
+                                <a href="{% url 'oidc_authentication_init' %}" class="btn btn-outline-light me-2" role="button" aria-pressed="true">Sign in with SSO</a>
+                            {% endif %}
                         </div>
 
                         {% endif %}
@@ -127,12 +143,10 @@
     </body>
 </html>
 
-<script>
+<script type="text/javascript">
 // enable tooltips
-document.addEventListener('DOMContentLoaded', function() {
-  var elements = document.querySelectorAll('[data-toggle="tooltip"]');
-  elements.forEach(function(element) {
-    var tooltip = new Tooltip(element);
-  });
-});
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+})
 </script>

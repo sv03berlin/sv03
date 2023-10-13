@@ -26,7 +26,7 @@ class Calendar(HTMLCalendar):
                 start = start.replace(hour=0, minute=0)
                 end = end.replace(hour=23, minute=59)
 
-        return f"""<p data-toggle="tooltip" data-placement="bottom" title="{reservation}">
+        return f"""<p data-bs-toggle="tooltip" data-placement="bottom" title="{reservation}">
                     {reservation.thing.name} {start.strftime('%H:%M')} - {end.strftime('%H:%M')}
                 </p>"""
 
