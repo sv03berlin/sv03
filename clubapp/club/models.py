@@ -47,14 +47,14 @@ class User(AbstractUser):
 
     @cached_property
     def club_work_hours(self) -> int:
+        work_hours = 0
         if self.membership_type:
-            work_hours = self.membership_type.work_hours
+            work_hours += self.membership_type.work_hours
             if self.is_boat_owner:
-                work_hours = self.membership_type.work_hours_boat_owner
+                work_hours += self.membership_type.work_hours_boat_owner
             if self.is_clubboat_user:
-                work_hours = self.membership_type.work_hours_club_boat_user
-            return work_hours
-        return 0
+                work_hours += self.membership_type.work_hours_club_boat_user
+        return work_hours
 
     @cached_property
     def hours_to_do(self) -> int:
@@ -63,7 +63,7 @@ class User(AbstractUser):
         return 0
 
     @cached_property
-    def hours_done(self) -> int:
+    def hours_done(self) -> float:
         return self.hours_done_year(datetime.now().year)
 
     @cached_property
@@ -84,11 +84,11 @@ class User(AbstractUser):
             .aggregate(models.Sum("duration"))
             .get("duration__sum")
             or 0
-        )
+        ) / 60
 
     def club_work_compensation(self, year: int) -> float:
         if self.membership_type:
-            return float(self.membership_type.work_compensation * self.missing_hours(year))
+            return float(float(self.membership_type.work_compensation) * self.missing_hours(year))
         return 0
 
     def missing_hours(self, year: int) -> int:

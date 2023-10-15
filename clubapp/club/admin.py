@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group
 
 from clubapp.club.models import Membership, Ressort, User
 
@@ -38,6 +39,7 @@ class RessortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     autocomplete_fields = ["head"]
 
 
+admin.site.unregister(Group)
 admin.site.register(Ressort, RessortAdmin)
 admin.site.register(Membership, MembershipAdmin)
 admin.site.register(User, CustomUserAdmin)

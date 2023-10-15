@@ -76,6 +76,14 @@ def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         form = ClubWorkForm(request.POST, instance=ClubWork.objects.get(pk=pk))
         if form.is_valid():
             form.save()
+            for application in form.instance.participations.all():
+                if application.approved_by is None:
+                    application.title = form.instance.title
+                    application.description = form.instance.description
+                    application.date_time = form.instance.date_time
+                    application.duration = form.instance.max_duration
+                    application.ressort = form.instance.ressort
+                    application.save()
             return redirect("clubwork_index")
         else:
             messages.error(request, str(form.errors))
@@ -275,8 +283,12 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
 
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse | FileResponse | Any:
         if request.GET.get("xlsx", "false").lower() == "true":
-            year = request.GET.get("year", None)
-            if ClubWorkParticipation.objects.filter(date_time__year=year, approved_by=None).exists():
+            year = request.GET.get("year")
+            print(year)
+            if not year:
+                messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
+                return super().get(request, *args, **kwargs)
+            if ClubWorkParticipation.objects.filter(date_time__year=int(year), approved_by=None).exists():
                 messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
             if year:
                 r = FileResponse(
@@ -361,20 +373,23 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
         if users is None:
             messages.error(request, "Es wurden keine Nutzer:innen ausgewählt.")
             return redirect("clubwork_index")
-        for user_id in users.split(","):
+        qs = User.objects.all()
+        if "all" not in users:
+            qs = qs.filter(pk__in=users.split(","))
+        for user in qs:
             try:
-                user = User.objects.get(pk=int(user_id))
                 send_mail(
                     subject=f"Arbeitsdienst {cw.title}",
                     message=f"Hallo {user.first_name},\n\n"
                     f"es ist ein neuer Arbeitsdienst verfügbar: {cw.title} am {cw.date_time}.\n"
                     f"Beschreibung: {cw.description}\n\n"
+                    f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
                     f"Viele Grüße,\n"
                     f"{request.user.first_name} {request.user.last_name}",
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],
                 )
-            except User.DoesNotExist:
+            except Exception:
                 messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
         return redirect("clubwork_index")
 

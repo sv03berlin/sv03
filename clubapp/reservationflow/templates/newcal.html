@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+    <p class="h1 mb-3">Reservierungen</p>
+    <form action="" method="get" class="d-flex mb-3">
+        <div class="me-2">
+            {{ filter.form }}
+        </div>
+        <button class="btn btn-primary btn-sm me-2" type="submit">Filtern</button>
+        <a class="btn btn-sm btn-outline-secondary me-2 col-auto" href="?">Reset</a>
+    </form>
+    <div id='calendar'></div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            eventClick: function (info) {
+                window.location.href = info.event.url;
+                info.el.style.borderColor = 'red';
+            },
+            customButtons: {
+                add_event: {
+                    text: '+',
+                    click: function () {
+                        window.location.href = "{% url 'reservation_create' %}";
+                    }
+                },
+                see_my: {
+                    text: 'Meine Reservierungen',
+                    click: function () {
+                        window.location.href = "{% url 'reservation_list' %}";
+                    }
+                }
+            },
+            headerToolbar: {
+                left: 'prev,next today see_my,add_event',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            height: "auto",
+
+            events: {{ events }},
+        });
+    calendar.render();
+    });
+
+</script>
+
+
+{% endblock content %}

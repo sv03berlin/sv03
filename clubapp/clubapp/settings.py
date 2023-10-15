@@ -40,6 +40,8 @@ ENABLE_DJANGO_LOGIN = os.environ.get("ENABLE_DJANGO_LOGIN", "False").lower() == 
 
 if not ENABLE_OIDC_LOGIN and not ENABLE_DJANGO_LOGIN:
     raise ValueError("ENABLE_OIDC_LOGIN and ENABLE_DJANGO_LOGIN cannot be both False")
+VIRTUAL_HOST = os.environ.get("VIRTUAL_HOST", "localhost:8000").removesuffix("/")
+
 
 # Application definition
 
