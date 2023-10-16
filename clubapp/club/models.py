@@ -77,7 +77,7 @@ class User(AbstractUser):
     def get_time_formatted(self, time: float) -> str:
         return "{0:02.0f}:{1:02.0f}".format(*divmod(time * 60, 60))
 
-    def hours_done_year(self, year: int) -> int:
+    def hours_done_year(self, year: int) -> float:
         return (
             self.clubwork_participations.filter(date_time__year=year)
             .exclude(approved_by=None)
@@ -91,14 +91,14 @@ class User(AbstractUser):
             return float(float(self.membership_type.work_compensation) * self.missing_hours(year))
         return 0
 
-    def missing_hours(self, year: int) -> int:
+    def missing_hours(self, year: int) -> float:
         left = self.club_work_hours - self.hours_done_year(year)
         if left < 0:
             return 0
         return left
 
     @cached_property
-    def unconfirmed_hours(self) -> int:
+    def unconfirmed_hours(self) -> float:
         return (
             self.clubwork_participations.filter(date_time__year=datetime.now().year)
             .filter(approved_by=None)

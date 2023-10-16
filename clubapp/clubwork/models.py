@@ -26,6 +26,10 @@ class ClubWork(models.Model):
     def registered_users(self) -> list[User]:
         return [p.user for p in self.participations.all()]
 
+    @cached_property
+    def mailto(self) -> str:
+        return "mailto:" + ",".join([u.email for u in self.registered_users])
+
 
 class ClubWorkParticipation(models.Model):
     title = models.CharField(max_length=127, verbose_name=_("Titel"))

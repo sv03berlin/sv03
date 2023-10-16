@@ -43,4 +43,4 @@ class Reservation(models.Model):
     end = models.DateTimeField(verbose_name=_("Ende der Reservierung"))
 
     def __str__(self) -> str:
-        return f"{self.thing.name} {self.start} {self.end} - {self.user}"
+        return f"{self.thing.name} - {self.user}"

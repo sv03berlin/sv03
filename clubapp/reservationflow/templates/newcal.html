@@ -21,13 +21,20 @@
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
+            timeFormat: 'hh:mm',
+            eventTimeFormat: {
+                hour: 'numeric',
+                minute: '2-digit',
+                meridiem: false,
+                hour12: false
+            },
             eventClick: function (info) {
                 window.location.href = info.event.url;
                 info.el.style.borderColor = 'red';
             },
             customButtons: {
                 add_event: {
-                    text: '+',
+                    text: 'Neue Reservierung',
                     click: function () {
                         window.location.href = "{% url 'reservation_create' %}";
                     }

@@ -43,6 +43,7 @@
                                 <a href="{% url 'mod_clubwork' clubwork.id %}" class="dropdown-item">Bearbeiten</a>
                                 <a href="{% url 'delete_clubwork' clubwork.id %}" class="dropdown-item">Löschen</a>
                                 <a href="{% url 'select_user_mail' clubwork.id %}" class="dropdown-item">Mitglieder zur Benachichtigung auswählen</a>
+                                <a href="{{ clubwork.mailto }}" class="dropdown-item">Nachicht an Teilnehmende senden</a>
                             </div>
                         </div>
                         {% endif %}
