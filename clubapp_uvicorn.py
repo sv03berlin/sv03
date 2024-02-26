@@ -7,7 +7,7 @@ if __name__ == "__main__":
         app=app,
         host="0.0.0.0",
         port=8000,
-        uds="/tmp/uvicorn.sock",
+        # uds="/tmp/uvicorn.sock",
         http="h11",
         lifespan="off",
         forwarded_allow_ips="*",
