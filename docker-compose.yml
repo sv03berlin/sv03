@@ -26,6 +26,7 @@ services:
       - OIDC_OP_USER_ENDPOINT=http://localhost:28080/realms/master/protocol/openid-connect/userinfo
       - OIDC_OP_JWKS_ENDPOINT=http://localhost:28080/realms/master/protocol/openid-connect/certs
       - OIDC_OP_LOGOUT_ENDPOINT=http://localhost:28080/realms/master/protocol/openid-connect/logout
+      - LOGOUT_REDIRECT_URL
     volumes:
       - ./:/code
       - ./data:/clubapp_data
