@@ -16,3 +16,4 @@ RUN /code/load_deps.sh
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "python3", "/code/clubapp_uvicorn.py" ]
