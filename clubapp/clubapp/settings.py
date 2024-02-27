@@ -192,6 +192,8 @@ MESSAGE_TAGS = {
     messages.ERROR: "alert-danger",
 }
 
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # OIDC
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 60 * 60 * 24  # 24 hours
