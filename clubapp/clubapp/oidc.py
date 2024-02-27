@@ -57,8 +57,8 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
 
 
 def provider_logout(request: "HttpRequest") -> "str":
-    kc_params = {"post_logout_redirect_uri": settings.OIDC_OP_LOGOUT_ENDPOINT, "client_id": settings.OIDC_RP_CLIENT_ID}
-    return request.build_absolute_uri(settings.LOGOUT_REDIRECT_URL) + "?" + urlencode(kc_params)
+    redirect_url = request.build_absolute_uri("/")
+    return settings.OIDC_OP_LOGOUT_ENDPOINT + "?" + urlencode({"post_logout_redirect_uri": redirect_url, "client_id": settings.OIDC_RP_CLIENT_ID})
 
 
 def provider_account_settings(request: "HttpRequest") -> "HttpResponseRedirect":

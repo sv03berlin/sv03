@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
@@ -207,6 +207,7 @@ OIDC_OP_TOKEN_ENDPOINT = environ.get("OIDC_OP_TOKEN_ENDPOINT")
 OIDC_OP_USER_ENDPOINT = environ.get("OIDC_OP_USER_ENDPOINT")
 OIDC_OP_JWKS_ENDPOINT = environ.get("OIDC_OP_JWKS_ENDPOINT")
 OIDC_OP_LOGOUT_ENDPOINT = environ.get("OIDC_OP_LOGOUT_ENDPOINT", "")
-OIDC_OP_LOGOUT_URL_METHOD = "clubapp.oidc.provider_logout"
+OIDC_OP_LOGOUT_URL_METHOD = "clubapp.clubapp.oidc.provider_logout"
+ALLOW_LOGOUT_GET_METHOD = True
 
 KEYCLOAK_ACCOUNT_URL = environ.get("KEYCLOAK_ACCOUNT_URL", "")
