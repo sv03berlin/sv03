@@ -34,7 +34,6 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return True
 
     def create_user(self, claims: dict[Any, Any]) -> User:
-        print(claims)
         user = User.objects.create_user(
             username=claims.get("username", claims.get("preferred_username", claims.get("email"))),
             email=claims["email"],
@@ -63,7 +62,6 @@ def provider_logout(request: "HttpRequest") -> "str":
 
 
 def provider_account_settings(request: "HttpRequest") -> "HttpResponseRedirect":
-    print(request)
     kc_params = {"referrer": settings.THIS_APP_NAME, "referrer_uri": settings.VIRTUAL_HOST}
     url = request.build_absolute_uri(settings.KEYCLOAK_ACCOUNT_URL) + "?" + urlencode(kc_params)
     return HttpResponseRedirect(url)

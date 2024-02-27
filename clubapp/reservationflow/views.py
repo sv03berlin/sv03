@@ -135,5 +135,4 @@ class CalendarDetailView(LoginRequiredMixin, FilterView):  # type: ignore[misc]
                 ]
             )
         )
-        print(c["events"])
         return c

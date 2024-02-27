@@ -84,5 +84,4 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
             self.add_error("thing", f"{thing.name} ist in diesem Zeitraum bereits reserviert.")
             return False
 
-        print("valid")
         return True
