@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+from os import environ
 from pathlib import Path
 
 import django_stubs_ext
@@ -25,15 +26,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 STATIC_ROOT = "/clubapp_static/"
 
+ENABLE_OIDC_LOGIN = os.environ.get("ENABLE_OIDC_LOGIN", "False").lower() == "true"
+ENABLE_DJANGO_LOGIN = os.environ.get("ENABLE_DJANGO_LOGIN", "True").lower() == "true"
+
+if not ENABLE_OIDC_LOGIN and not ENABLE_DJANGO_LOGIN:
+    raise ValueError("ENABLE_OIDC_LOGIN and ENABLE_DJANGO_LOGIN cannot be both False")
 VIRTUAL_HOST = os.environ.get("VIRTUAL_HOST", "localhost:8000").removesuffix("/")
 
 
@@ -46,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.admin",
+    "mozilla_django_oidc",
     "crispy_forms",
     "django_filters",
     "crispy_bootstrap5",
@@ -63,7 +70,16 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "mozilla_django_oidc.middleware.SessionRefresh",
 ]
+
+AUTHENTICATION_BACKENDS = []
+if ENABLE_OIDC_LOGIN:
+    AUTHENTICATION_BACKENDS.append("clubapp.clubapp.oidc.ClubOIDCAuthenticationBackend")
+if ENABLE_DJANGO_LOGIN:
+    AUTHENTICATION_BACKENDS.append("django.contrib.auth.backends.ModelBackend")
+
+SESSION_COOKIE_HTTPONLY = True
 
 ROOT_URLCONF = "clubapp.clubapp.urls"
 
@@ -175,3 +191,25 @@ MESSAGE_TAGS = {
     messages.WARNING: "alert-warning",
     messages.ERROR: "alert-danger",
 }
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# OIDC
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 60 * 60 * 24  # 24 hours
+OIDC_RP_SIGN_ALGO = "RS256"
+# OIDC_USERNAME_ALGO = ""
+OIDC_RP_SCOPES = "openid email profile roles"
+
+OIDC_RP_CLIENT_ID = environ.get("OIDC_RP_CLIENT_ID", "")
+OIDC_RP_CLIENT_SECRET = environ.get("OIDC_RP_CLIENT_SECRET")
+
+OIDC_OP_AUTHORIZATION_ENDPOINT = environ.get("OIDC_OP_AUTHORIZATION_ENDPOINT")
+OIDC_OP_TOKEN_ENDPOINT = environ.get("OIDC_OP_TOKEN_ENDPOINT")
+OIDC_OP_USER_ENDPOINT = environ.get("OIDC_OP_USER_ENDPOINT")
+OIDC_OP_JWKS_ENDPOINT = environ.get("OIDC_OP_JWKS_ENDPOINT")
+OIDC_OP_LOGOUT_ENDPOINT = environ.get("OIDC_OP_LOGOUT_ENDPOINT", "")
+OIDC_OP_LOGOUT_URL_METHOD = "clubapp.clubapp.oidc.provider_logout"
+ALLOW_LOGOUT_GET_METHOD = True
+
+KEYCLOAK_ACCOUNT_URL = environ.get("KEYCLOAK_ACCOUNT_URL", "")

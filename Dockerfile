@@ -1,6 +1,5 @@
-FROM python:3.11.2-slim-bullseye
+FROM python:3.11-slim-bullseye
 
-ARG ISDEPLOY
 RUN apt-get update -y && apt-get install sudo python3-dev gettext wget unzip python3-pip git -y
 
 # install

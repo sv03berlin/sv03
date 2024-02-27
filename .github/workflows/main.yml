@@ -18,10 +18,15 @@ jobs:
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
 
       - name: Docker meta
         id: meta
@@ -36,6 +41,7 @@ jobs:
             type=sha,format=short
             type=semver,pattern={{raw}}
             type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
+            type=raw,value=${{ steps.extract_branch.outputs.branch }}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -58,7 +64,7 @@ jobs:
     name: mypy
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup python
         uses: ./.github/setup_python
       - name: MyPy
@@ -69,7 +75,7 @@ jobs:
     name: ruff
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup python
         uses: ./.github/setup_python
       - name: ruff
@@ -80,10 +86,8 @@ jobs:
     name: format
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup python
         uses: ./.github/setup_python
-      - name: isort
-        run: isort . --check-only
-      - name: black
-        run: black . --check
+      - name: ruff
+        run: ruff format --check

@@ -9,5 +9,4 @@ class Command(BaseCommand):
     requires_migrations_checks = False
 
     def handle(self, *args: Any, **options: Any) -> None:
-        subprocess.run(["isort", "."], check=True)  # nosec
-        subprocess.run(["black", ".", "--config", "/code/pyproject.toml"], check=True)  # nosec
+        subprocess.run(["ruff", "format", "."], check=True)  # nosec

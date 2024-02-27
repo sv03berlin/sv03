@@ -1,8 +1,6 @@
 -r requirements.txt
-black
 mypy
 django-stubs[compatible-mypy]
 ruff
-isort
 pylint-django
 types-Pygments

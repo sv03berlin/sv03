@@ -66,7 +66,7 @@ class ReservationsListView(LoginRequiredMixin, ListView[Reservation]):
 
     def get_queryset(self) -> Any:
         user = cast(User, self.request.user)
-        return Reservation.objects.filter(user=user).order_by("start")
+        return Reservation.objects.filter(user=user).order_by("-start")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)

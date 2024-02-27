@@ -9,12 +9,12 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
-from django.db import transaction
+from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.http import FileResponse, HttpRequest, HttpResponse
+from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet, NumberFilter
@@ -94,6 +94,27 @@ def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     return render(request, template_name="create_form.html", context=c)
 
 
+class IsStaffMixin(UserPassesTestMixin):
+    request: HttpRequest
+
+    def test_func(self) -> bool:
+        return self.request.user.is_staff
+
+
+class ClubWorkDelete(IsStaffMixin, DeleteView):  # type: ignore[type-arg, misc]
+    template_name = "delete_form.html"
+    queryset = ClubWork.objects.all()
+    success_url = reverse_lazy("clubwork_index")
+
+    def form_valid(self, form: Any) -> HttpResponse:
+        success_url = self.get_success_url()
+        try:
+            self.object.delete()
+        except models.ProtectedError:
+            messages.error(self.request, "Dieser Arbeitsdienst kann nicht gelöscht werden, da es angemeldete Benutzer gibt.")
+        return HttpResponseRedirect(success_url)
+
+
 class OwnClubworkMixin:
     model = ClubWorkParticipation
 
@@ -135,7 +156,7 @@ class OwnClubWorkUpdate(LoginRequiredMixin, OwnClubworkMixin, UpdateView):  # ty
 
 
 class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # type: ignore[type-arg, misc]
-    template_name = "delete_form.html"
+    template_name = "abmelden_delete_form.html"
 
 
 @login_required
@@ -247,13 +268,6 @@ class HistoryFilter(YearFilter):
         fields = YearFilter.Meta.fields + ["ressort"]
 
 
-class IsStaffMixin(UserPassesTestMixin):
-    request: HttpRequest
-
-    def test_func(self) -> bool:
-        return self.request.user.is_staff
-
-
 class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type: ignore
     model = ClubWorkParticipation
     template_name = "clubwork_history.html"
@@ -270,7 +284,6 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse | FileResponse | Any:
         if request.GET.get("xlsx", "false").lower() == "true":
             year = request.GET.get("year")
-            print(year)
             if not year:
                 messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
                 return super().get(request, *args, **kwargs)

@@ -30,7 +30,7 @@ exclude = [
 ]
 
 [[tool.mypy.overrides]]
-module = ["xhtml2pdf", "uvicorn", "django_filters.*", "openpyxl.*"]  # those are untyped and don't plan to add stubs
+module = ["xhtml2pdf", "uvicorn", "django_filters.*", "openpyxl.*", "mozilla_django_oidc.*"]  # those are untyped and don't plan to add stubs
 ignore_missing_imports = true
 disallow_any_generics = false
 

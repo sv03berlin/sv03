@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <form method="post">{% csrf_token %}
+        <p>Bist du dir sicher, dass dich von "{{ object }}" Abmelden möchtest?</p>
+        <input class="btn btn-danger" type="submit" value="Bestätigen">
+    </form>
+</div>
+{% endblock %}

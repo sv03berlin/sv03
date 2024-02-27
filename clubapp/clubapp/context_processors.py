@@ -11,4 +11,6 @@ def club_processor(request: HttpRequest) -> dict[str, Any]:
         "club_name_short": settings.CLUB_NAME_SHORT,
         "app_name": settings.THIS_APP_NAME,
         "club_imprint": settings.CLUB_IMPRINT,
+        "enable_oidc_login": settings.ENABLE_OIDC_LOGIN,
+        "enable_django_login": settings.ENABLE_DJANGO_LOGIN,
     }

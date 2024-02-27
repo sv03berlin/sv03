@@ -1,0 +1,55 @@
+<table class="table align-middle mb-3">
+    <thead>
+        <tr>
+            <th>Titel</th>
+            <th>Ressort</th>
+            <th>Beschreibung</th>
+            <th>Datum und Uhrzeit</th>
+            <th>Dauer</th>
+            <th>Teilnehmende</th>
+            <th>Aktionen</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for clubwork in clubworks %}
+            <tr id="clubwork-{{ clubwork.id }}">
+                <td>{{ clubwork.title }}</td>
+                <td>{{ clubwork.ressort }}</td>
+                <td>{{ clubwork.description }}</td>
+                <td>{{ clubwork.date_time }}</td>
+                <td>{{ clubwork.max_duration }} Min</td>
+                <td>
+                    <p data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="Teilnehmende: <ul>{% for participant in clubwork.registered_users %}<li>{{ participant }}</li>{% endfor %}</ul>">{{ clubwork.num_participants }}/{{ clubwork.max_participants }}</p>
+                </td>
+                <td>
+                    <div class = "d-flex">
+                        {% if user not in clubwork.registered_users %}
+                        <form action="{% url 'register' clubwork.id %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-primary m-1">Anmelden</button>
+                        </form>
+                        {% else %}
+                        <form action="{% url 'unregister' clubwork.id %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger m-1">Abmelden</button>
+                        </form>
+                        {% endif %}
+                        {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle m-1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Administration
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a href="{% url 'mod_clubwork' clubwork.id %}" class="dropdown-item">Bearbeiten</a>
+                                <a href="{% url 'delete_clubwork' clubwork.id %}" class="dropdown-item">Löschen</a>
+                                <a href="{% url 'select_user_mail' clubwork.id %}" class="dropdown-item">Mitglieder zur Benachichtigung auswählen</a>
+                                <a href="{{ clubwork.mailto }}" class="dropdown-item">Nachicht an Teilnehmende senden</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
