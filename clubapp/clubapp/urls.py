@@ -15,4 +15,6 @@ urlpatterns = [
 ]
 
 if settings.ENABLE_OIDC_LOGIN:
+    from clubapp.clubapp.oidc import provider_account_settings
     urlpatterns.append(path("oidc/", include("mozilla_django_oidc.urls")))
+    urlpatterns.append(path("oidc/account/", provider_account_settings, name="oidc_account"))

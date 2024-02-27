@@ -3,7 +3,7 @@ from typing import Any
 
 from django.conf import settings
 from django.db.models.query import QuerySet
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.utils.http import urlencode
 from josepy.b64 import b64decode
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
@@ -34,8 +34,9 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return True
 
     def create_user(self, claims: dict[Any, Any]) -> User:
+        print(claims)
         user = User.objects.create_user(
-            username=claims["username"],
+            username=claims.get("username", claims.get("preferred_username", claims.get("email"))),
             email=claims["email"],
             first_name=claims.get("firstName", ""),
             last_name=claims.get("lastName", ""),
@@ -61,6 +62,8 @@ def provider_logout(request: "HttpRequest") -> "str":
     return request.build_absolute_uri(settings.LOGOUT_REDIRECT_URL) + "?" + urlencode(kc_params)
 
 
-def provider_account_settings(request: "HttpRequest") -> "str":
+def provider_account_settings(request: "HttpRequest") -> "HttpResponseRedirect":
+    print(request)
     kc_params = {"referrer": settings.THIS_APP_NAME, "referrer_uri": settings.VIRTUAL_HOST}
-    return request.build_absolute_uri(settings.KEYCLOAK_ACCOUNT_URL) + "?" + urlencode(kc_params)
+    url = request.build_absolute_uri(settings.KEYCLOAK_ACCOUNT_URL) + "?" + urlencode(kc_params)
+    return HttpResponseRedirect(url)
