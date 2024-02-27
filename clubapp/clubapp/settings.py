@@ -36,7 +36,7 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 STATIC_ROOT = "/clubapp_static/"
 
 ENABLE_OIDC_LOGIN = os.environ.get("ENABLE_OIDC_LOGIN", "False").lower() == "true"
-ENABLE_DJANGO_LOGIN = os.environ.get("ENABLE_DJANGO_LOGIN", "False").lower() == "true"
+ENABLE_DJANGO_LOGIN = os.environ.get("ENABLE_DJANGO_LOGIN", "True").lower() == "true"
 
 if not ENABLE_OIDC_LOGIN and not ENABLE_DJANGO_LOGIN:
     raise ValueError("ENABLE_OIDC_LOGIN and ENABLE_DJANGO_LOGIN cannot be both False")
@@ -208,3 +208,5 @@ OIDC_OP_USER_ENDPOINT = environ.get("OIDC_OP_USER_ENDPOINT")
 OIDC_OP_JWKS_ENDPOINT = environ.get("OIDC_OP_JWKS_ENDPOINT")
 OIDC_OP_LOGOUT_ENDPOINT = environ.get("OIDC_OP_LOGOUT_ENDPOINT", "")
 OIDC_OP_LOGOUT_URL_METHOD = "clubapp.oidc.provider_logout"
+
+KEYCLOAK_ACCOUNT_URL = environ.get("KEYCLOAK_ACCOUNT_URL", "")
