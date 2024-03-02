@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    if settings.INDEX_IS_LOGIN:
+    if settings.INDEX_IS_LOGIN and request.user.is_anonymous:
         return render(request, "registration/login.html")
     return render(request, "index.html")
 

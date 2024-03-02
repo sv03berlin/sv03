@@ -77,6 +77,17 @@
                                         </div>
                                     </div>
 
+                                    <div class="navbar-collapse" id="navbarsExample">
+                                        <div class="navbar-nav nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Hilfe</a>
+                                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                                {% for user in staff %}
+                                                <li><a class="dropdown-item" href="mailto:{{ user.email }}">Email an {{ user }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+
                             </ul>
 
                             <div class="navbar-nav px-2"></ul>
