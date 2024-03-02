@@ -11,9 +11,9 @@ def get_admins() -> list[User]:
     if (cached_admins := cache.get("admins")) is None:
         admins = list(User.objects.filter(Q(is_staff=True) | Q(is_superuser=True)))
         cache.set("admins", admins, 600)
-        return admins # type: ignore[no-any-return]
+        return admins
     else:
-        return cached_admins
+        return cached_admins  # type: ignore[no-any-return]
 
 
 def club_processor(request: HttpRequest) -> dict[str, Any]:
