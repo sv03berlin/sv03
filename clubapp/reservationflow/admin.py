@@ -14,8 +14,10 @@ class ReservabelThingAdmin(admin.ModelAdmin[ReservabelThing]):
     search_fields = ["name"]
 
 
+# make users not required
 class ReservationGroupAdmin(admin.ModelAdmin[ReservationGroup]):
     model = ReservationGroup
+    
     filter_horizontal = ["users"]
 
 

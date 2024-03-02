@@ -12,7 +12,13 @@ class ReservationGroup(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
 
-    users = models.ManyToManyField(User, related_name="reservation_groups", verbose_name=_("Benutzer:innen in Reservierungsgruppe"))
+    users = models.ManyToManyField(
+        User,
+        related_name="reservation_groups",
+        verbose_name=_("Benutzer:innen in Reservierungsgruppe"),
+        blank=True,
+        default=None,
+    )
 
     def __str__(self) -> str:
         return self.name
