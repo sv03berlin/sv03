@@ -41,7 +41,7 @@ class ClubWorkParticipation(models.Model):
     date_time = models.DateTimeField(verbose_name=_("Datum und Uhrzeit"))
     duration = models.IntegerField(verbose_name=_("Dauer (in Minuten)"))
     approved_by = models.ForeignKey(
-        User, related_name="approved_work", on_delete=models.SET_NULL, null=True, verbose_name=_("Genehmigt von")
+        User, related_name="approved_work", on_delete=models.SET_NULL, null=True, verbose_name=_("Genehmigt von"), blank=True, default=None
     )
     approve_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Genehmigt am"))
     description = models.TextField(verbose_name=_("Beschreibung"))

@@ -22,7 +22,13 @@ class User(AbstractUser):
     license = models.CharField(max_length=63, blank=True, null=True, verbose_name=_("Lizenznummer"))
 
     membership_type = models.ForeignKey(
-        Membership, on_delete=models.PROTECT, related_name="users", null=True, verbose_name=_("Mitgliedschaftsart")
+        Membership,
+        on_delete=models.PROTECT,
+        related_name="users",
+        null=True,
+        verbose_name=_("Mitgliedschaftsart"),
+        blank=True,
+        default=None,
     )
     can_create_invoices = models.BooleanField(default=False, verbose_name=_("Nutzer darf Rechnungen erstellen"))
     is_boat_owner = models.BooleanField(default=False, verbose_name=_("Nutzer ist Bootseigner:in"))

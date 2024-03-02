@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='reservationgroup',
             name='users',
-            field=models.ManyToManyField(related_name='reservation_groups', to=settings.AUTH_USER_MODEL, verbose_name='Benutzer:innen in Reservierungsgruppe'),
+            field=models.ManyToManyField(related_name='reservation_groups', to=settings.AUTH_USER_MODEL, verbose_name='Benutzer:innen in Reservierungsgruppe', default=None, null=True),
         ),
         migrations.DeleteModel(
             name='ReservationGroupMembership',
