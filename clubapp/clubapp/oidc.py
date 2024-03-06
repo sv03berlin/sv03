@@ -32,12 +32,15 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         scopes = self.get_settings("OIDC_RP_SCOPES", "openid email")
         if "email" in scopes.split() and "username" in scopes.split():
             return "email" in claims
-        return True
+        return False
+
+    def get_username(self, claims: dict[Any, Any]) -> str:
+        return claims.get("username", claims.get("email"))  # type: ignore[no-any-return]
 
     @transaction.atomic
     def create_user(self, claims: dict[Any, Any]) -> User:
         user = User.objects.create_user(
-            username=claims.get("username", claims.get("preferred_username", claims.get("email"))),
+            username=self.get_username(claims),
             email=claims["email"],
             first_name=claims.get("firstName", ""),
             last_name=claims.get("lastName", ""),
@@ -53,7 +56,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return user
 
     def update_user(self, user: User, claims: dict[Any, Any]) -> User:
-        user.email = claims["email"]
+        user.email = self.get_username(claims)
         user.first_name = claims.get("firstName", "")
         user.last_name = claims.get("lastName", "")
         user.is_staff = "staff" in claims.get("group", [])
@@ -65,7 +68,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         user.save()
 
         if not user.is_active:
-            raise self.DoesNotExist("User is inactive: {}".format(user.get_username()))
+            raise User.DoesNotExist("User is inactive: {}".format(user.get_username()))
 
         return user
 
