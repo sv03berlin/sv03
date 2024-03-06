@@ -37,6 +37,9 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
     def get_username(self, claims: dict[Any, Any]) -> str:
         return claims.get("username", claims.get("email"))  # type: ignore[no-any-return]
 
+    def get_membership(self, claims: dict[Any, Any]) -> Membership | None:
+        return Membership.objects.filter(name=claims.get("membership")).first()
+
     @transaction.atomic
     def create_user(self, claims: dict[Any, Any]) -> User:
         user = User.objects.create_user(
@@ -48,7 +51,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
             is_clubboat_user=claims.get("clubboat", False),
             is_boat_owner=claims.get("boat", False),
             is_superuser="admin" in claims.get("group", []),
-            membership_type=Membership.objects.get(name=claims.get("membership")),
+            membership_type=self.get_membership(claims),
         )
         user.set_unusable_password()
         user.save()
@@ -63,7 +66,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         user.is_clubboat_user = claims.get("clubboat", False)
         user.is_boat_owner = claims.get("boat", False)
         user.is_superuser = "admin" in claims.get("group", [])
-        user.membership_type = Membership.objects.filter(name=claims.get("membership")).first()
+        user.membership_type = self.get_membership(claims)
         print(claims)
         user.save()
 
