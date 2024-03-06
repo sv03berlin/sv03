@@ -32,7 +32,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         scopes = self.get_settings("OIDC_RP_SCOPES", "openid email")
         if "email" in scopes.split() and "username" in scopes.split():
             return "email" in claims
-        return False
+        return True
 
     def get_username(self, claims: dict[Any, Any]) -> str:
         return claims.get("username", claims.get("email"))  # type: ignore[no-any-return]
