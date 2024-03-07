@@ -1,4 +1,5 @@
 from json import loads
+from clubapp.reservationflow.models import ReservationGroup
 from typing import Any
 
 from django.conf import settings
@@ -21,7 +22,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return response
 
     def filter_users_by_claims(self, claims: dict[Any, Any]) -> "QuerySet[User]":
-        if claims.get("username"):  # this assumes that the username is the member number
+        if claims.get("username"):
             return User.objects.filter(username=claims["username"])
         if claims.get("email_verified"):
             return User.objects.filter(email=claims["email"])
@@ -40,6 +41,29 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
     def get_membership(self, claims: dict[Any, Any]) -> Membership | None:
         return Membership.objects.filter(name=claims.get("membership")).first()
 
+    def get_staff(self, claims: dict[Any, Any]) -> bool:
+        return "staff" in claims.get("group", []) or self.get_superuser(claims)
+
+    def get_superuser(self, claims: dict[Any, Any]) -> bool:
+        return "admin" in claims.get("group", [])
+
+    def member_permissions(self, claims: dict[Any, Any]) -> list[str]:
+        return list(claims.get("member_permissions", "").strip().split(","))
+
+    def grant_reservation_permissions(self, claims: dict[Any, Any], user: User) -> None:
+        uc = self.member_permissions(claims)
+
+        # add permissions to user
+        for pm in list(ReservationGroup.objects.filter(internal_name__in=uc)):
+            pm.users.add(user)
+            pm.save()
+
+        # remove permissions from user
+        for pm in user.reservation_groups.all():
+            if pm.internal_name not in uc:
+                pm.users.remove(user)
+                pm.save()
+
     @transaction.atomic
     def create_user(self, claims: dict[Any, Any]) -> User:
         user = User.objects.create_user(
@@ -47,28 +71,28 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
             email=claims["email"],
             first_name=claims.get("firstName", ""),
             last_name=claims.get("lastName", ""),
-            is_staff="staff" in claims.get("group", []),
+            is_staff=self.get_staff(claims),
             is_clubboat_user=claims.get("clubboat", False),
             is_boat_owner=claims.get("boat", False),
-            is_superuser="admin" in claims.get("group", []),
+            is_superuser=self.get_superuser(claims),
             membership_type=self.get_membership(claims),
         )
         user.set_unusable_password()
         user.save()
-        print(claims)
+        self.grant_reservation_permissions(claims, user)
         return user
 
     def update_user(self, user: User, claims: dict[Any, Any]) -> User:
         user.email = self.get_username(claims)
         user.first_name = claims.get("firstName", "")
         user.last_name = claims.get("lastName", "")
-        user.is_staff = "staff" in claims.get("group", [])
+        user.is_staff = self.get_staff(claims)
         user.is_clubboat_user = claims.get("clubboat", False)
         user.is_boat_owner = claims.get("boat", False)
-        user.is_superuser = "admin" in claims.get("group", [])
+        user.is_superuser = self.get_superuser(claims)
         user.membership_type = self.get_membership(claims)
-        print(claims)
         user.save()
+        self.grant_reservation_permissions(claims, user)
 
         if not user.is_active:
             raise User.DoesNotExist("User is inactive: {}".format(user.get_username()))
