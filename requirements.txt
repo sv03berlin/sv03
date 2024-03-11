@@ -2,7 +2,7 @@ django == 5.0.2
 xhtml2pdf==0.2.11 # replace with weasyprint
 crispy-bootstrap5
 gunicorn==20.1.0
-uvicorn[standard]==0.27
+uvicorn[standard]==0.28.0
 django-stubs-ext
 mozilla-django-oidc==4.0.0
 django-filter==23.5
