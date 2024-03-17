@@ -10,6 +10,7 @@ class ReservationGroup(models.Model):
         verbose_name_plural = _("Reservierungsgruppen")
 
     name = models.CharField(max_length=100)
+    internal_name = models.CharField(max_length=64, default="")
     description = models.TextField()
 
     users = models.ManyToManyField(

@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from typing import Any
 
 from django.forms import ModelForm
@@ -51,7 +51,7 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
         start_time = self.cleaned_data["start"]
         end_time = self.cleaned_data["end"]
 
-        if start_time < datetime.now():
+        if start_time < timezone.now():
             self.add_error("start", "Startzeit muss in der Zukunft liegen.")
             return False
 
