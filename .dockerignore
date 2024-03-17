@@ -1,0 +1,6 @@
+.DS_Store
+.vagrant
+*.pyc
+.vscode
+invoices/*
+.ruff_cache/*
