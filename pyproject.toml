@@ -8,7 +8,7 @@ readme = "readme.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 django = "^5.0.3"
-xhtml2pdf = "0.2.11"
+# xhtml2pdf = "0.2.11"
 crispy-bootstrap5 = "^2024.2"
 gunicorn = "20.1.0"
 uvicorn = {version = "0.27", extras = ["standard"]}
@@ -38,7 +38,7 @@ exclude = [
 
 [tool.ruff.lint]
 select = [ "ALL",]
-ignore = [ "E501", "ANN101", "ANN102", "D100", "D102", "D104", "D106", "D203", "D212", "S104", "COM812", "ISC001", "D101", "RUF012", "D", "ANN401", "RUF005", "FBT" ]
+ignore = [ "E501", "ANN101", "ANN102", "D100", "D102", "D104", "D106", "D203", "D212", "S104", "COM812", "ISC001", "D101", "RUF012", "D", "ANN401", "RUF005", "FBT", "ERA001" ]
 
 [tool.ruff.lint.per-file-ignores]
 "cli.py" = [ "T201" ]

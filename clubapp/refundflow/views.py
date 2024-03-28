@@ -1,6 +1,5 @@
 import csv
-from decimal import Decimal
-from io import BytesIO, StringIO
+from io import BytesIO
 from json import loads
 from pathlib import Path
 from typing import Any
@@ -13,10 +12,9 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
 from django.utils import timezone
-from xhtml2pdf import pisa
 
+# from xhtml2pdf import pisa
 from clubapp.club.models import Ressort
 from clubapp.clubapp.decorators import is_accountant_user, is_invoice_user, is_ressort_user
 from clubapp.clubapp.settings import EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, MEDIA_ROOT
@@ -177,49 +175,49 @@ def add_tracking(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-def invoice_generate(request: AuthenticatedHttpRequest) -> HttpResponse:
-    for for_ressort in Ressort.objects.filter(tracking__user=request.user, tracking__transaction=None).distinct():
-        c: dict[str, Any] = {}
-        c["lots"] = Tracking.objects.filter(user=request.user, transaction=None, ressort=for_ressort)
-        c["total"] = sum(t.amount for t in c["lots"])
+def invoice_generate(request: AuthenticatedHttpRequest) -> HttpResponse:  # noqa: ARG001
+    # for for_ressort in Ressort.objects.filter(tracking__user=request.user, tracking__transaction=None).distinct():
+    #     c: dict[str, Any] = {}
+    #     c["lots"] = Tracking.objects.filter(user=request.user, transaction=None, ressort=for_ressort)
+    #     c["total"] = sum(t.amount for t in c["lots"])
 
-        now = timezone.now()
-        c["date"] = now.strftime("%d.%m.%Y")
+    #     now = timezone.now()
+    #     c["date"] = now.strftime("%d.%m.%Y")
 
-        invoice_html = render_to_string("invoice.html", c, request=request)
+    #     invoice_html = render_to_string("invoice.html", c, request=request)
 
-        pisa.showLogging()
-        pdf = BytesIO()
-        pisa_status = pisa.pisaDocument(StringIO(invoice_html), pdf)
+    #     pisa.showLogging()
+    #     pdf = BytesIO()
+    #     pisa_status = pisa.pisaDocument(StringIO(invoice_html), pdf)
 
-        if pisa_status.err:
-            messages.error(request, "Error while generating invoice")
-            return redirect("tracking_overview")
+    #     if pisa_status.err:
+    #         messages.error(request, "Error while generating invoice")
+    #         return redirect("tracking_overview")
 
-        try:
-            t = Transaction(user=request.user, amount=Decimal(c["total"]))
-            t.reason = (
-                "Trainingsabrechnung von "
-                + c["lots"].order_by("date")[0].date.strftime("%d.%m.%Y")
-                + " bis "
-                + c["lots"].order_by("-date")[0].date.strftime("%d.%m.%Y")
-            )
-            t.date = str(timezone.now())
-            t.ressort = for_ressort
-            t.status = Transaction.StatusChoice.RECEIVED
-            t.save()
+    #     try:
+    #         t = Transaction(user=request.user, amount=Decimal(c["total"]))
+    #         t.reason = (
+    #             "Trainingsabrechnung von "
+    #             + c["lots"].order_by("date")[0].date.strftime("%d.%m.%Y")
+    #             + " bis "
+    #             + c["lots"].order_by("-date")[0].date.strftime("%d.%m.%Y")
+    #         )
+    #         t.date = str(timezone.now())
+    #         t.ressort = for_ressort
+    #         t.status = Transaction.StatusChoice.RECEIVED
+    #         t.save()
 
-            t.invoice_path.save(name=f"{t.id}.pdf", content=pdf)
-            t.save()
+    #         t.invoice_path.save(name=f"{t.id}.pdf", content=pdf)
+    #         t.save()
 
-            for lot in c["lots"]:
-                lot.transaction = t
-                lot.save()
+    #         for lot in c["lots"]:
+    #             lot.transaction = t
+    #             lot.save()
 
-            send_mail_transaction_approve(request, t)
+    #         send_mail_transaction_approve(request, t)
 
-        except Exception:  # noqa: BLE001
-            messages.error(request, "Error while Saving in Database")
+    #     except Exception:
+    #         messages.error(request, "Error while Saving in Database")
 
     return redirect("tracking_overview")
 
