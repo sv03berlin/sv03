@@ -1,6 +1,6 @@
 FROM python:3.11-slim-bullseye
 
-RUN apt-get update -y && apt-get install sudo python3-dev gettext wget unzip python3-pip git -y
+RUN apt-get update -y && apt-get install wget unzip git -y
 
 # install
 RUN mkdir /code

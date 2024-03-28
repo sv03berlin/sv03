@@ -26,6 +26,7 @@ services:
       - LOGOUT_REDIRECT_URL
       - KEYCLOAK_ACCOUNT_URL=http://localhost:28080/realms/master/account
     volumes:
+      - /code/.venv
       - ./:/code
       - ./data:/clubapp_data
 volumes:

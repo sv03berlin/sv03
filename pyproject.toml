@@ -10,8 +10,7 @@ python = "^3.11"
 django = "^5.0.3"
 # xhtml2pdf = "0.2.11"
 crispy-bootstrap5 = "^2024.2"
-gunicorn = "20.1.0"
-uvicorn = {version = "0.27", extras = ["standard"]}
+uvicorn = {version = "0.29"}
 django-stubs-ext = "^4.2.7"
 mozilla-django-oidc = "4.0.0"
 django-filter = "23.5"

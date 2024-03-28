@@ -4,3 +4,5 @@
 .vscode
 invoices/*
 .ruff_cache/*
+Dockerfile
+deploy.Dockerfile
