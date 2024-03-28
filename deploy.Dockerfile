@@ -11,12 +11,11 @@ RUN poetry install --no-root
 RUN chmod +x /code/load_deps.sh
 RUN /code/load_deps.sh
 
-COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
 USER 1000
 EXPOSE 8000
 ENV PATH="/code/.venv/bin:$PATH"
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "entrypoint.sh" ]
 CMD [ "python3", "/code/clubapp_uvicorn.py" ]
