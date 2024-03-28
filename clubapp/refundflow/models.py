@@ -35,7 +35,7 @@ class Tracking(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=16)
     transaction = models.ForeignKey(Transaction, on_delete=models.PROTECT, null=True)
     ressort = models.ForeignKey(Ressort, on_delete=models.PROTECT, null=False)
-    annotation = models.CharField(max_length=1023, default="", null=True)
+    annotation = models.CharField(max_length=1023, default="")
 
     def __str__(self) -> str:
         return f"{self.user} - {self.reason} - {self.date}"

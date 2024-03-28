@@ -1,4 +1,3 @@
-from datetime import datetime
 from io import BytesIO
 from typing import Any, no_type_check
 
@@ -15,6 +14,7 @@ from django.db.models.query import QuerySet
 from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet, NumberFilter
@@ -46,12 +46,12 @@ def is_post_action(request: AuthenticatedHttpRequest) -> bool:
 @login_required
 def clubwork_index(request: AuthenticatedHttpRequest) -> HttpResponse:
     c = {
-        "this_year": datetime.now().year,
+        "this_year": timezone.now().year,
         "user": request.user,
-        "upcoming_clubwork_user": request.user.clubwork_participations.filter(date_time__gte=datetime.now(), approved_by=None).order_by(
-            "date_time"
-        ),
-        "clubworks": ClubWork.objects.filter(date_time__gte=datetime.now()).order_by("date_time"),
+        "upcoming_clubwork_user": request.user.clubwork_participations.filter(
+            date_time__gte=timezone.now(), approved_by=None
+        ).order_by("date_time"),
+        "clubworks": ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("date_time"),
     }
     return render(request, template_name="clubwork.html", context=c)
 
@@ -64,8 +64,7 @@ def add_clubwork(request: AuthenticatedHttpRequest) -> HttpResponse:
         if form.is_valid():
             form.save()
             return redirect("clubwork_index")
-        else:
-            messages.error(request, str(form.errors))
+        messages.error(request, str(form.errors))
     c = {"form": ClubWorkForm(), "heading": "Ausschreibung erstellen"}
     return render(request, template_name="create_form.html", context=c)
 
@@ -85,8 +84,7 @@ def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                     application.ressort = form.instance.ressort
                     application.save()
             return redirect("clubwork_index")
-        else:
-            messages.error(request, str(form.errors))
+        messages.error(request, str(form.errors))
     elif is_delete_action(request):
         ClubWork.objects.get(pk=pk).delete()
         return redirect("clubwork_index")
@@ -106,12 +104,14 @@ class ClubWorkDelete(IsStaffMixin, DeleteView):  # type: ignore[type-arg, misc]
     queryset = ClubWork.objects.all()
     success_url = reverse_lazy("clubwork_index")
 
-    def form_valid(self, form: Any) -> HttpResponse:
+    def form_valid(self, form: Any) -> HttpResponse:  # noqa: ARG002
         success_url = self.get_success_url()
         try:
             self.object.delete()
         except models.ProtectedError:
-            messages.error(self.request, "Dieser Arbeitsdienst kann nicht gelöscht werden, da es angemeldete Benutzer gibt.")
+            messages.error(
+                self.request, "Dieser Arbeitsdienst kann nicht gelöscht werden, da es angemeldete Benutzer gibt."
+            )
         return HttpResponseRedirect(success_url)
 
 
@@ -162,9 +162,9 @@ class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # ty
 @login_required
 @is_ressort_user
 def approve_clubwork_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
-    cw = ClubWorkParticipation.objects.filter(approved_by=None, ressort__head=request.user, date_time__lte=datetime.now()).order_by(
-        "date_time"
-    )
+    cw = ClubWorkParticipation.objects.filter(
+        approved_by=None, ressort__head__in=[request.user.pk], date_time__lte=timezone.now()
+    ).order_by("date_time")
     return render(request, template_name="approve_clubwork.html", context={"clubworks": cw})
 
 
@@ -175,7 +175,7 @@ def approve_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
         part = ClubWorkParticipation.objects.get(pk=pk)
         if part.approved_by is None:
             part.approved_by = request.user
-            part.approve_date = datetime.now()
+            part.approve_date = timezone.now()
             part.save()
             return HttpResponse(status=204)
     if request.method == "DELETE":
@@ -241,7 +241,7 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, template_name="clubwork_history.html", context=c)
 
 
-class YearFilter(FilterSet):  # type: ignore
+class YearFilter(FilterSet):  # type: ignore[misc]
     year = NumberFilter(
         field_name="date_time",
         lookup_expr="year",
@@ -265,23 +265,26 @@ class YearFilter(FilterSet):  # type: ignore
 
 class HistoryFilter(YearFilter):
     class Meta(YearFilter.Meta):
-        fields = YearFilter.Meta.fields + ["ressort"]
+        fields = [*YearFilter.Meta.fields, "ressort"]
 
 
-class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type: ignore
+class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type: ignore[misc]
     model = ClubWorkParticipation
     template_name = "clubwork_history.html"
     filterset_class = HistoryFilter
 
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
-        return super().get_queryset().filter(date_time__lte=datetime.now())  # type: ignore
+        return super().get_queryset().filter(date_time__lte=timezone.now())  # type: ignore[no-any-return]
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
         c.update({"clubworks": self.get_queryset()})
-        return c  # type: ignore
+        return c  # type: ignore[no-any-return]
 
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse | FileResponse | Any:
+        if not request.user.is_ressort_user:
+            return redirect("clubwork_index")
+
         if request.GET.get("xlsx", "false").lower() == "true":
             year = request.GET.get("year")
             if not year:
@@ -298,12 +301,11 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
                 )
                 r["Content-Disposition"] = f"attachment; filename=arbeitsdienst_{year}.xlsx"
                 return r
-            else:
-                messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
+            messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
         return super().get(request, *args, **kwargs)
 
     def get_xlsx(self, year: int) -> BytesIO:
-        users = User.objects.filter(is_active=True, membership_type__isnull=False)
+        users = User.objects.filter(is_active=True, membership_years__year=year)
         wb = Workbook()
         ws = wb.active
         ws.append(
@@ -313,13 +315,13 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
                 "Email",
                 "Mitgliedsnummer",
                 "Mitgliedschaftstyp",
-                "Stunden Basis",
+                "Stunden durch Mitgliedschaft",
                 "Stunden Clubbootnutzer",
                 "Stunden Bootseigner",
                 "Verrechnungssatz",
                 "Stunden gleistet",
                 "Stunden versäumt",
-                "Kompensation",
+                "Ausbezahlt am Jahresanfang" "Kompensation",
             ]
         )
         for user in users:
@@ -341,6 +343,7 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
                     m.work_compensation,
                     user.hours_done_year(year),
                     user.missing_hours(year),
+                    m.full_work_compensation,
                     user.club_work_compensation(year),
                 ]
             )
@@ -350,12 +353,12 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
         return bio
 
 
-class UserHistroyView(LoginRequiredMixin, ListView):  # type: ignore
+class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
     model = ClubWorkParticipation
     template_name = "clubwork_user_history.html"
 
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
-        return super().get_queryset().filter(user=self.request.user, date_time__lte=datetime.now())  # type: ignore
+        return super().get_queryset().filter(user=self.request.user, date_time__lte=timezone.now())  # type: ignore[no-any-return,attr-defined]
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
@@ -388,7 +391,7 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],
                 )
-            except Exception:
+            except Exception:  # noqa: BLE001
                 messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
         return redirect("clubwork_index")
 

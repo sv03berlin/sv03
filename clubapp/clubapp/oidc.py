@@ -1,16 +1,18 @@
 from json import loads
-from clubapp.reservationflow.models import ReservationGroup
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
-from django.db.models.query import QuerySet
+from django.db import transaction
 from django.http import HttpRequest, HttpResponseRedirect
 from django.utils.http import urlencode
 from josepy.b64 import b64decode
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
-from django.db import transaction
 
-from clubapp.club.models import User, Membership
+from clubapp.club.models import Membership, User
+from clubapp.reservationflow.models import ReservationGroup
+
+if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
 
 
 class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[misc]
@@ -26,8 +28,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
             return User.objects.filter(username=claims["username"])
         if claims.get("email_verified"):
             return User.objects.filter(email=claims["email"])
-        else:
-            return User.objects.none()
+        return User.objects.none()
 
     def verify_claims(self, claims: dict[Any, Any]) -> bool:
         scopes = self.get_settings("OIDC_RP_SCOPES", "openid email")
@@ -82,6 +83,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         self.grant_reservation_permissions(claims, user)
         return user
 
+    @transaction.atomic
     def update_user(self, user: User, claims: dict[Any, Any]) -> User:
         user.email = self.get_username(claims)
         user.first_name = claims.get("firstName", "")
@@ -90,12 +92,15 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         user.is_clubboat_user = claims.get("clubboat", False)
         user.is_boat_owner = claims.get("boat", False)
         user.is_superuser = self.get_superuser(claims)
-        user.membership_type = self.get_membership(claims)
         user.save()
         self.grant_reservation_permissions(claims, user)
 
+        if m := self.get_membership(claims):
+            user.update_membership_year(m)
+
         if not user.is_active:
-            raise User.DoesNotExist("User is inactive: {}".format(user.get_username()))
+            msg = f"User is inactive: {user.get_username()}"
+            raise User.DoesNotExist(msg)
 
         return user
 

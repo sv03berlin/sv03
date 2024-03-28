@@ -33,18 +33,34 @@ class ClubWork(models.Model):
 
 class ClubWorkParticipation(models.Model):
     title = models.CharField(max_length=127, verbose_name=_("Titel"))
-    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="clubwork_participations", verbose_name=_("Teilnehmer:in"))
-    ressort = models.ForeignKey(Ressort, on_delete=models.PROTECT, related_name="clubwork_participations", verbose_name=_("Ressort"))
+    user = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name="clubwork_participations", verbose_name=_("Teilnehmer:in")
+    )
+    ressort = models.ForeignKey(
+        Ressort, on_delete=models.PROTECT, related_name="clubwork_participations", verbose_name=_("Ressort")
+    )
     clubwork = models.ForeignKey(
-        ClubWork, on_delete=models.PROTECT, related_name="participations", null=True, verbose_name=_("Arbeitsdienst")
+        ClubWork,
+        on_delete=models.PROTECT,
+        related_name="participations",
+        null=True,
+        verbose_name=_("Arbeitsdienst"),
+        default=None,
+        blank=True,
     )
     date_time = models.DateTimeField(verbose_name=_("Datum und Uhrzeit"))
     duration = models.IntegerField(verbose_name=_("Dauer (in Minuten)"))
     approved_by = models.ForeignKey(
-        User, related_name="approved_work", on_delete=models.SET_NULL, null=True, verbose_name=_("Genehmigt von"), blank=True, default=None
+        User,
+        related_name="approved_work",
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name=_("Genehmigt von"),
+        blank=True,
+        default=None,
     )
     approve_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Genehmigt am"))
     description = models.TextField(verbose_name=_("Beschreibung"))
 
     def __str__(self) -> str:
-        return f"{self.user} hilft bei {self.clubwork}"
+        return f"{self.user} hilft bei {self.clubwork or self.title}"

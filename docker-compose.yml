@@ -3,16 +3,13 @@ services:
   clubapp-dev:
     container_name: clubapp-dev
     command: python3 /code/clubapp/manage.py runserver 0.0.0.0:8000
-    build:
-      context: .
-      args:
-        - ISDEPLOY=0
+    build: .
     ports:
-      - "8010:8000"
+      - "8000:8000"
     environment:
       - SECRET_KEY=secret
       - ALLOWED_HOSTS=*
-      - DJANGO_DEBUG=True
+      - DEBUG=True
 
       - ENABLE_OIDC_LOGIN=True
       - ENABLE_DJANGO_LOGIN=True

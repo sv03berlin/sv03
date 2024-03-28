@@ -1,9 +1,10 @@
-from datetime import datetime
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+
+ARBEITDIENST_FREI_AB = 67
 
 
 class Membership(models.Model):
@@ -12,27 +13,21 @@ class Membership(models.Model):
     work_hours_boat_owner = models.IntegerField(verbose_name=_("Arbeitsstunden Bootseigner:in"))
     work_hours_club_boat_user = models.IntegerField(verbose_name=_("Arbeitsstunden Clubbootnutzer:in"))
 
-    work_compensation = models.DecimalField(decimal_places=2, max_digits=5, verbose_name=_("Entschädigung pro Stunde in €"))
+    work_compensation = models.DecimalField(
+        decimal_places=2, max_digits=5, verbose_name=_("Entschädigung pro Stunde in €")
+    )
 
     def __str__(self) -> str:
         return self.name
 
 
 class User(AbstractUser):
-    license = models.CharField(max_length=63, blank=True, null=True, verbose_name=_("Lizenznummer"))
+    license = models.CharField(max_length=63, blank=True, verbose_name=_("Lizenznummer"))
 
-    membership_type = models.ForeignKey(
-        Membership,
-        on_delete=models.PROTECT,
-        related_name="users",
-        null=True,
-        verbose_name=_("Mitgliedschaftsart"),
-        blank=True,
-        default=None,
-    )
     can_create_invoices = models.BooleanField(default=False, verbose_name=_("Nutzer darf Rechnungen erstellen"))
     is_boat_owner = models.BooleanField(default=False, verbose_name=_("Nutzer ist Bootseigner:in"))
     is_clubboat_user = models.BooleanField(default=False, verbose_name=_("Nutzer ist Clubbootnutzer:in"))
+    birthday = models.DateField(verbose_name=_("Geburtstag"), default=None, null=True)
 
     def __str__(self) -> str:
         if self.first_name and self.last_name:
@@ -40,26 +35,47 @@ class User(AbstractUser):
         return self.username
 
     @cached_property
+    def membership_type(self) -> "MembershipYear|None":
+        if (m := self.membership_years.filter(year=timezone.now().year).first()) is not None:
+            return m
+        return None
+
+    @cached_property
     def is_invoice_user(self) -> bool:
         return self.can_create_invoices or self.is_superuser
 
     @cached_property
     def is_ressort_user(self) -> bool:
-        return Ressort.objects.filter(head=self).exists() or self.is_superuser
+        return Ressort.objects.filter(head__in=[self.pk]).exists() or self.is_superuser
 
     @cached_property
     def is_accountant_user(self) -> bool:
-        return Ressort.objects.filter(head=self, is_accounting_ressort=True).exists() or self.is_superuser
+        return Ressort.objects.filter(head__in=[self.pk], is_accounting_ressort=True).exists() or self.is_superuser
 
     @cached_property
     def club_work_hours(self) -> int:
+        return self.get_clubwork_year(timezone.now().year)
+
+    def member_is_freed_from_work_by_age(self, year: int | None) -> bool:
+        if year is None:
+            year = timezone.now().year
+        if self.birthday and year - self.birthday.year > ARBEITDIENST_FREI_AB:
+            return True
+        return False
+
+    def get_clubwork_year(self, year: int) -> int:
         work_hours = 0
-        if self.membership_type:
-            work_hours += self.membership_type.work_hours
+        if self.member_is_freed_from_work_by_age(year):
+            return 0
+        if self.member_is_freed_from_work_by_age(year):
+            return 0
+        membership_year = self.membership_years.filter(year=year).first()
+        if membership_year:
+            work_hours += membership_year.work_hours
             if self.is_boat_owner:
-                work_hours += self.membership_type.work_hours_boat_owner
+                work_hours += membership_year.work_hours_boat_owner
             if self.is_clubboat_user:
-                work_hours += self.membership_type.work_hours_club_boat_user
+                work_hours += membership_year.work_hours_club_boat_user
         return work_hours
 
     @cached_property
@@ -70,7 +86,7 @@ class User(AbstractUser):
 
     @cached_property
     def hours_done(self) -> float:
-        return self.hours_done_year(datetime.now().year)
+        return self.hours_done_year(timezone.now().year)
 
     @cached_property
     def hours_done_formatted(self) -> str:
@@ -78,10 +94,10 @@ class User(AbstractUser):
 
     @cached_property
     def hours_to_do_formatted(self) -> str:
-        return self.get_time_formatted(self.missing_hours(datetime.now().year))
+        return self.get_time_formatted(self.missing_hours(timezone.now().year))
 
     def get_time_formatted(self, time: float) -> str:
-        return "{0:02.0f}:{1:02.0f}".format(*divmod(time * 60, 60))
+        return "{:02.0f}:{:02.0f}".format(*divmod(time * 60, 60))
 
     def hours_done_year(self, year: int) -> float:
         return (
@@ -106,7 +122,7 @@ class User(AbstractUser):
     @cached_property
     def unconfirmed_hours(self) -> float:
         return (
-            self.clubwork_participations.filter(date_time__year=datetime.now().year)
+            self.clubwork_participations.filter(date_time__year=timezone.now().year)
             .filter(approved_by=None)
             .aggregate(models.Sum("duration"))
             .get("duration__sum")
@@ -117,11 +133,69 @@ class User(AbstractUser):
     def unconfirmed_hours_formatted(self) -> str:
         return self.get_time_formatted(self.unconfirmed_hours)
 
+    def update_membership_year(self, membership_type: Membership) -> None:
+        this_year = timezone.now().year
+        membership_year = self.membership_years.filter(year=this_year).first()
+
+        work_hours = membership_type.work_hours
+        work_hours_boat_owner = membership_type.work_hours_boat_owner if self.is_boat_owner else 0
+        work_hours_club_boat_user = membership_type.work_hours_club_boat_user if self.is_clubboat_user else 0
+
+        if membership_year:
+            membership_year.membership_type = membership_type
+            membership_year.work_hours = work_hours
+            membership_year.work_hours_boat_owner = work_hours_boat_owner
+            membership_year.work_hours_club_boat_user = work_hours_club_boat_user
+            membership_year.save()
+        else:
+            MembershipYear.objects.create(
+                user=self,
+                year=this_year,
+                membership_type=membership_type,
+                work_hours=work_hours,
+                work_hours_boat_owner=work_hours_boat_owner,
+                work_hours_club_boat_user=work_hours_club_boat_user,
+                work_compensation=membership_type.work_compensation,
+            )
+
+
+class MembershipYear(models.Model):
+    year = models.IntegerField(unique=True, verbose_name=_("Jahr"))
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="membership_years", verbose_name=_("Nutzer"))
+    membership_type = models.ForeignKey(Membership, on_delete=models.PROTECT, verbose_name=_("Mitgliedschaftsart"))
+
+    work_hours = models.IntegerField(verbose_name=_("Arbeitsstunden (Überschreiben für ausgewähltes Jahr)"), default=0)
+    work_hours_boat_owner = models.IntegerField(
+        verbose_name=_("Arbeitsstunden Bootseigner:in (Überschreiben für ausgewähltes Jahr)"), default=0
+    )
+    work_hours_club_boat_user = models.IntegerField(
+        verbose_name=_("Arbeitsstunden Clubbootnutzer:in (Überschreiben für ausgewähltes Jahr)"), default=0
+    )
+    work_compensation = models.DecimalField(
+        decimal_places=2,
+        max_digits=5,
+        verbose_name=_("Entschädigung pro Stunde in € (Überschreiben für ausgewähltes Jahr)"),
+        default=0,
+    )
+
+    full_work_compensation = models.BooleanField(default=False, verbose_name=_("Vollständige Entschädigung erfolgt"))
+
+    class Meta:
+        unique_together = ("user", "year")
+        verbose_name = "Membership in year"
+        verbose_name_plural = "Memberships in years"
+
+    def __str__(self) -> str:
+        return f"{self.user} - {self.year} - {self.membership_type}"
+
+    @cached_property
+    def name(self) -> str:
+        return self.membership_type.name
+
 
 class Ressort(models.Model):
     name = models.CharField(max_length=63, unique=True, verbose_name=_("Ressortname"))
-    bank_account = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Buchungskonto"))
-    head = models.ForeignKey(User, related_name="head", null=True, on_delete=models.SET_NULL, verbose_name=_("Vorstehende:r"))
+    head = models.ManyToManyField(User, related_name="ressort_head", verbose_name=_("Leiter:in"))
     is_accounting_ressort = models.BooleanField(default=False, verbose_name=_("Buchhaltungsressort"))
 
     def __str__(self) -> str:

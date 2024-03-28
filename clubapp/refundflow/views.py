@@ -1,11 +1,9 @@
 import csv
-import os
-from datetime import date, datetime
 from decimal import Decimal
 from io import BytesIO, StringIO
 from json import loads
-from os import path, remove
-from typing import Any, Union
+from pathlib import Path
+from typing import Any
 from zipfile import ZipFile
 
 from django.contrib import messages
@@ -16,6 +14,7 @@ from django.db import transaction
 from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
+from django.utils import timezone
 from xhtml2pdf import pisa
 
 from clubapp.club.models import Ressort
@@ -47,8 +46,7 @@ def transaction_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
                     t.transaction = None
                     t.save()
 
-                remove(path.join(MEDIA_ROOT, transaction.invoice_path.path))
-                print("deleteing", path.join(MEDIA_ROOT, transaction.invoice_path.path))
+                Path(MEDIA_ROOT / transaction.invoice_path.path).unlink(missing_ok=True)
                 transaction.delete()
                 return HttpResponse("OK", status=200)
             return HttpResponse("Forbidden", status=403)
@@ -57,8 +55,10 @@ def transaction_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, "transaction_overview.html", c)
 
 
-def handle_uploaded_file(f: Union[UploadedFile, list[object]], max_size_mb: int) -> Union[BytesIO, None]:
-    assert isinstance(f, UploadedFile)
+def handle_uploaded_file(f: UploadedFile | list[object], max_size_mb: int) -> BytesIO | None:
+    if not isinstance(f, UploadedFile):
+        msg = "f is not a file"
+        raise TypeError(msg)
     bio = BytesIO()
     for chunk in f.chunks():
         bio.write(chunk)
@@ -86,7 +86,7 @@ def add_refund(request: AuthenticatedHttpRequest) -> HttpResponse:
             with transaction.atomic():
                 t = Transaction(
                     user=request.user,
-                    date=str(date.today()),
+                    date=str(timezone.now()),
                     reason=reason,
                     ressort=Ressort.objects.get(id=ressort),
                     amount=amount,
@@ -114,13 +114,12 @@ def send_mail_transaction_approve(request: HttpRequest, t: Transaction) -> None:
                 message=f"""Es ist eine neue Rechnung für {t.ressort.name} von {t.user.first_name} zur Genehmigung eingetroffen.
                             Bitte melde dich im System an, um sie zu bearbeiten.""",
                 from_email=EMAIL_HOST_USER,
-                recipient_list=[t.ressort.head.email],
+                recipient_list=[u.email for u in t.ressort.head.all()],
                 fail_silently=False,
                 auth_user=EMAIL_HOST_USER,
                 auth_password=EMAIL_HOST_PASSWORD,
             )
-        except Exception:  # pylint: disable=broad-except
-            print("Error while sending mail")
+        except Exception:  # noqa: BLE001
             messages.error(request, "Error while sending mail")
 
 
@@ -160,8 +159,9 @@ def add_tracking(request: AuthenticatedHttpRequest) -> HttpResponse:
                 t.payment_type = "hour"
                 t.hour_rate = form.cleaned_data["amount"]
                 t.hour_count = form.cleaned_data["hour_count"]
-                assert t.hour_rate is not None
-                assert t.hour_count is not None
+                if t.hour_rate is None or t.hour_count is None:
+                    c["messages"] = ["Invalid form"]
+                    return render(request, "add_tracking.html", c)
                 t.amount = t.hour_count * t.hour_rate
             else:
                 t.payment_type = "flat"
@@ -172,7 +172,7 @@ def add_tracking(request: AuthenticatedHttpRequest) -> HttpResponse:
             t.save()
             return redirect("tracking_overview")
 
-    c["ressorts"] = Ressort.objects.all()
+    c["ressorts"] = Ressort.objects.all()  # type: ignore[assignment]
     return render(request, "add_tracking.html", c)
 
 
@@ -183,7 +183,7 @@ def invoice_generate(request: AuthenticatedHttpRequest) -> HttpResponse:
         c["lots"] = Tracking.objects.filter(user=request.user, transaction=None, ressort=for_ressort)
         c["total"] = sum(t.amount for t in c["lots"])
 
-        now = datetime.now()
+        now = timezone.now()
         c["date"] = now.strftime("%d.%m.%Y")
 
         invoice_html = render_to_string("invoice.html", c, request=request)
@@ -204,7 +204,7 @@ def invoice_generate(request: AuthenticatedHttpRequest) -> HttpResponse:
                 + " bis "
                 + c["lots"].order_by("-date")[0].date.strftime("%d.%m.%Y")
             )
-            t.date = str(date.today())
+            t.date = str(timezone.now())
             t.ressort = for_ressort
             t.status = Transaction.StatusChoice.RECEIVED
             t.save()
@@ -218,7 +218,7 @@ def invoice_generate(request: AuthenticatedHttpRequest) -> HttpResponse:
 
             send_mail_transaction_approve(request, t)
 
-        except Exception:  # pylint: disable=broad-except
+        except Exception:  # noqa: BLE001
             messages.error(request, "Error while Saving in Database")
 
     return redirect("tracking_overview")
@@ -249,8 +249,7 @@ def manage_payment(request: HttpRequest) -> HttpResponse:
                     auth_user=EMAIL_HOST_USER,
                     auth_password=EMAIL_HOST_PASSWORD,
                 )
-            except Exception:
-                print("Error while sending mail")
+            except Exception:  # noqa: BLE001
                 messages.error(request, "Error while sending mail")
 
             return HttpResponse("OK", status=200)
@@ -274,7 +273,7 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     if request.user.is_accountant_user:
         c["transactions"] = reversed(year_qs)
     else:
-        ressort_qs = Ressort.objects.filter(head=request.user)
+        ressort_qs = Ressort.objects.filter(head__in=[request.user.pk])
         c["transactions"] = reversed(year_qs.filter(ressort__in=ressort_qs))
 
     return render(request, "history.html", c)
@@ -282,14 +281,14 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @is_ressort_user
 @login_required
-def download(request: AuthenticatedHttpRequest) -> Union[HttpResponse, HttpResponseNotFound]:
+def download(request: AuthenticatedHttpRequest) -> HttpResponse | HttpResponseNotFound:
     kind = request.GET.get("download", "csv")
 
     qs = Transaction.objects.filter(status=Transaction.StatusChoice.TRANSFERRED)
     if (year := request.GET.get("year", "all")) != "all":
         qs = qs.filter(date__year=year)
     if not request.user.is_accountant_user:
-        ressort_qs = Ressort.objects.filter(head=request.user)
+        ressort_qs = Ressort.objects.filter(head__in=[request.user.pk])
         qs = qs.filter(ressort__in=ressort_qs)
 
     if kind == "csv":
@@ -298,7 +297,18 @@ def download(request: AuthenticatedHttpRequest) -> Union[HttpResponse, HttpRespo
         # use ;
         writer = csv.writer(response, delimiter=";")
         writer.writerow(
-            ["Datum", "Ressort", "User", "Betrag", "Grund", "Status", "Buchungsnummer", "Dateiname", "genemigt von", "Bemerkung"]
+            [
+                "Datum",
+                "Ressort",
+                "User",
+                "Betrag",
+                "Grund",
+                "Status",
+                "Buchungsnummer",
+                "Dateiname",
+                "genemigt von",
+                "Bemerkung",
+            ]
         )
         for t in qs:
             approved_by = t.approved_by.username if t.approved_by else ""
@@ -318,12 +328,11 @@ def download(request: AuthenticatedHttpRequest) -> Union[HttpResponse, HttpRespo
             )
         return response
     if kind == "zip":
-        print("zip")
         bio = BytesIO()
         with ZipFile(bio, "w") as zf:
             for t in qs:
-                pth = path.join(MEDIA_ROOT, t.invoice_path.path)
-                if os.path.exists(pth):
+                pth = MEDIA_ROOT / t.invoice_path.path
+                if pth.exists():
                     zf.write(pth, str(t.id) + ".pdf")
         bio.seek(0)
         response = HttpResponse(bio.read(), content_type="application/zip")
@@ -333,13 +342,17 @@ def download(request: AuthenticatedHttpRequest) -> Union[HttpResponse, HttpRespo
 
 
 @login_required
-def invoice(request: AuthenticatedHttpRequest, pdf: int) -> Union[HttpResponse, FileResponse, HttpResponseNotFound]:
+def invoice(request: AuthenticatedHttpRequest, pdf: int) -> HttpResponse | FileResponse | HttpResponseNotFound:
     specific_invoice = get_object_or_404(Transaction, pk=pdf)
 
-    if specific_invoice.user == request.user or request.user.is_accountant_user or specific_invoice.ressort.head == request.user:
+    if (
+        specific_invoice.user == request.user
+        or request.user.is_accountant_user
+        or request.user in specific_invoice.ressort.head.all()
+    ):
         try:
             return FileResponse(
-                open(path.join(MEDIA_ROOT, specific_invoice.invoice_path.path), "rb"),
+                Path.open(MEDIA_ROOT / specific_invoice.invoice_path.path, "rb"),
                 content_type="application/pdf",
             )
 
@@ -353,7 +366,7 @@ def invoice(request: AuthenticatedHttpRequest, pdf: int) -> Union[HttpResponse, 
 @login_required
 def approve_payment(request: AuthenticatedHttpRequest) -> HttpResponse:
     c = {}
-    qs = Ressort.objects.filter(head=request.user).values_list("id")
+    qs = Ressort.objects.filter(head__in=[request.user.pk]).values_list("id")
     if request.method == "POST":
         response_dict = loads(request.body.decode("utf-8"))
 
@@ -374,7 +387,10 @@ def approve_payment(request: AuthenticatedHttpRequest) -> HttpResponse:
 
                 transaction.save()
 
-                msg = f"Deine Rechnung vom {transaction.date} wurde von {request.user.username} {transaction.get_status_display()}." + msg
+                msg = (
+                    f"Deine Rechnung vom {transaction.date} wurde von {request.user.username} {transaction.get_status_display()}."
+                    + msg
+                )
                 try:
                     send_mail(
                         subject=f"Abrechnung wurde {transaction.get_status_display()}",
@@ -385,8 +401,7 @@ def approve_payment(request: AuthenticatedHttpRequest) -> HttpResponse:
                         auth_user=EMAIL_HOST_USER,
                         auth_password=EMAIL_HOST_PASSWORD,
                     )
-                except Exception:
-                    print("Error while sending mail")
+                except Exception:  # noqa: BLE001
                     messages.error(request, "Error while sending mail")
 
                 return HttpResponse("OK", status=200)

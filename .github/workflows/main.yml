@@ -34,6 +34,7 @@ jobs:
         env:
           DOCKER_METADATA_PR_HEAD_SHA: true
         with:
+          dockerfile: deploy.Dockerfile
           images: |
             ${{ secrets.DOCKERHUB_USERNAME }}/sv03
           tags: |
@@ -59,35 +60,57 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           platforms: linux/amd64 #,linux/arm64
 
-  mypy:
+  lint_format_python:
     runs-on: ubuntu-latest
-    name: mypy
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-      - name: Setup python
-        uses: ./.github/setup_python
-      - name: MyPy
-        run: python3 manage.py typecheck
+      - uses: actions/checkout@v4
 
-  ruff:
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - uses: actions/cache@v3
+        id: cache-venv
+        with:
+          path: ./.venv/
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      
+      - run: pip install poetry
+      - run: |
+          poetry install --with dev --no-root
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+
+      - name: Run Ruff
+        run: |
+          poetry run ruff check  .
+          poetry run ruff format . --check
+
+  typecheck_pytohn:
     runs-on: ubuntu-latest
-    name: ruff
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-      - name: Setup python
-        uses: ./.github/setup_python
-      - name: ruff
-        run: python3 manage.py lint
-  
-  format:
-    runs-on: ubuntu-latest
-    name: format
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-      - name: Setup python
-        uses: ./.github/setup_python
-      - name: ruff
-        run: ruff format --check
+      - uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - uses: actions/cache@v3
+        id: cache-venv
+        with:
+          path: ./.venv/
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      
+      - run: pip install poetry
+      - run: |
+          poetry install --with dev --no-root
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+
+      - name: typecheck
+        run: |
+          poetry run mypy .
