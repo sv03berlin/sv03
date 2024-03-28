@@ -11,7 +11,7 @@ RUN poetry install --no-root
 RUN chmod +x /code/load_deps.sh
 RUN /code/load_deps.sh
 
-RUN chmod +x /entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 USER 1000
 EXPOSE 8000
