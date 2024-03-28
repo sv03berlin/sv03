@@ -33,7 +33,6 @@ jobs:
         env:
           DOCKER_METADATA_PR_HEAD_SHA: true
         with:
-          dockerfile: deploy.Dockerfile
           images: |
             ${{ secrets.DOCKERHUB_USERNAME }}/sv03
           tags: |
@@ -52,7 +51,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          file: Dockerfile
+          file: deploy.Dockerfile
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
