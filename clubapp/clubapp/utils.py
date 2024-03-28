@@ -13,6 +13,6 @@ class AuthenticatedHttpRequest(HttpRequest):
 class DateTimeInput(forms.DateTimeInput):
     input_type = "datetime-local"
 
-    def __init__(self, attrs: dict[str, Any] | None = None, format: str = "%Y-%m-%dT%H:%M") -> None:
+    def __init__(self, attrs: dict[str, Any] | None = None, format: str = "%Y-%m-%dT%H:%M") -> None:  # noqa: A002
         super().__init__(attrs)
         self.format = format or None
