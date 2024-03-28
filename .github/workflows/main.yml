@@ -12,9 +12,8 @@ jobs:
     name: build_and_push
     runs-on: ubuntu-20.04
     needs:
-      - format
-      - ruff
-      - mypy
+      - lint_format
+      - typecheck
 
     steps:
       - name: Check out repository code
@@ -60,7 +59,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           platforms: linux/amd64 #,linux/arm64
 
-  lint_format_python:
+  lint_format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -88,7 +87,7 @@ jobs:
           poetry run ruff check  .
           poetry run ruff format . --check
 
-  typecheck_pytohn:
+  typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

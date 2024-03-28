@@ -49,7 +49,7 @@ def clubwork_index(request: AuthenticatedHttpRequest) -> HttpResponse:
         "this_year": timezone.now().year,
         "user": request.user,
         "upcoming_clubwork_user": request.user.clubwork_participations.filter(
-            date_time__gte=timezone.now(), approved_by=None
+            date_time__gte=timezone.now(), is_approved=False
         ).order_by("date_time"),
         "clubworks": ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("date_time"),
     }
@@ -76,7 +76,7 @@ def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         if form.is_valid():
             form.save()
             for application in form.instance.participations.all():
-                if application.approved_by is None:
+                if application.is_approved is None:
                     application.title = form.instance.title
                     application.description = form.instance.description
                     application.date_time = form.instance.date_time
@@ -163,7 +163,7 @@ class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # ty
 @is_ressort_user
 def approve_clubwork_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
     cw = ClubWorkParticipation.objects.filter(
-        approved_by=None, ressort__head__in=[request.user.pk], date_time__lte=timezone.now()
+        is_approved=False, ressort__head__in=[request.user.pk], date_time__lte=timezone.now()
     ).order_by("date_time")
     return render(request, template_name="approve_clubwork.html", context={"clubworks": cw})
 
@@ -173,8 +173,9 @@ def approve_clubwork_overview(request: AuthenticatedHttpRequest) -> HttpResponse
 def approve_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     if request.method == "POST":
         part = ClubWorkParticipation.objects.get(pk=pk)
-        if part.approved_by is None:
+        if not part.is_approved:
             part.approved_by = request.user
+            part.is_approved = True
             part.approve_date = timezone.now()
             part.save()
             return HttpResponse(status=204)
@@ -219,7 +220,7 @@ def unregister_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpR
             if not request.user.is_staff or request.user != part.user:
                 messages.error(request, "Du kannst nur deine eigenen Anmeldungen löschen.")
                 return redirect("clubwork_index")
-            if part.approved_by is None:
+            if not part.is_approved:
                 part.delete()
             else:
                 messages.error(request, "Du kannst nur nicht noch nicht genehmigte Anmeldungen löschen.")
@@ -234,7 +235,7 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
     c["selected_year"] = request.GET.get("year", "all")
     c["years"].remove(c["selected_year"])
 
-    year_qs = ClubWorkParticipation.objects.filter(~Q(approved_by=None))
+    year_qs = ClubWorkParticipation.objects.filter(~Q(is_approved=False))
     if c["selected_year"] != "all":
         year_qs = year_qs.filter(date__year=c["selected_year"])
     c["clubworks"] = year_qs
@@ -290,7 +291,7 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
             if not year:
                 messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
                 return super().get(request, *args, **kwargs)
-            if ClubWorkParticipation.objects.filter(date_time__year=int(year), approved_by=None).exists():
+            if ClubWorkParticipation.objects.filter(date_time__year=int(year), is_approved=False).exists():
                 messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
             if year:
                 r = FileResponse(

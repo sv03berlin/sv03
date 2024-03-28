@@ -102,7 +102,7 @@ class User(AbstractUser):
     def hours_done_year(self, year: int) -> float:
         return (
             self.clubwork_participations.filter(date_time__year=year)
-            .exclude(approved_by=None)
+            .exclude(is_approved=False)
             .aggregate(models.Sum("duration"))
             .get("duration__sum")
             or 0
@@ -123,7 +123,7 @@ class User(AbstractUser):
     def unconfirmed_hours(self) -> float:
         return (
             self.clubwork_participations.filter(date_time__year=timezone.now().year)
-            .filter(approved_by=None)
+            .filter(is_approved=False)
             .aggregate(models.Sum("duration"))
             .get("duration__sum")
             or 0

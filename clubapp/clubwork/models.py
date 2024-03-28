@@ -50,6 +50,7 @@ class ClubWorkParticipation(models.Model):
     )
     date_time = models.DateTimeField(verbose_name=_("Datum und Uhrzeit"))
     duration = models.IntegerField(verbose_name=_("Dauer (in Minuten)"))
+    is_approved = models.BooleanField(verbose_name=_("Genehmigt"), default=False)
     approved_by = models.ForeignKey(
         User,
         related_name="approved_work",
