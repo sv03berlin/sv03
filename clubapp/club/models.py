@@ -29,6 +29,8 @@ class User(AbstractUser):
     is_clubboat_user = models.BooleanField(default=False, verbose_name=_("Nutzer ist Clubbootnutzer:in"))
     birthday = models.DateField(verbose_name=_("Geburtstag"), default=None, null=True)
 
+    openid_sub = models.UUIDField(blank=True, null=True, verbose_name=_("OpenID Sub"))
+
     def __str__(self) -> str:
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"

@@ -1,8 +1,16 @@
 import uvicorn
-
+import subprocess
 from clubapp.clubapp.asgi import application as app
+import pathlib
+from time import sleep
+import threading
+
+def runjobs():
+    subprocess.run(["python", pathlib.Path(__file__).parent.absolute() / "manage.py", "runjobs"])
 
 if __name__ == "__main__":
+    
+
     config = uvicorn.Config(
         app=app,
         host="0.0.0.0",
@@ -15,4 +23,9 @@ if __name__ == "__main__":
         workers=4,
     )
     server = uvicorn.Server(config)
-    server.run()
+    thread = threading.Thread(target=server.run)
+    thread.start()
+
+    while True:
+        runjobs()
+        sleep(60)

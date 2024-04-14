@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "clubapp.club",
     "clubapp.clubwork",
     "clubapp.reservationflow",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [

@@ -16,6 +16,7 @@ mozilla-django-oidc = "4.0.0"
 django-filter = "23.5"
 openpyxl = "3.1.2"
 django-extensions = "3.2.3"
+keycloak = "^3.1.4"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.9.0"

@@ -24,6 +24,8 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return response
 
     def filter_users_by_claims(self, claims: dict[Any, Any]) -> "QuerySet[User]":
+        if claims.get("sub"):
+            return User.objects.filter(openid_sub=claims["sub"])
         if claims.get("username"):
             return User.objects.filter(username=claims["username"])
         if claims.get("email_verified"):
@@ -77,6 +79,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
             is_boat_owner=claims.get("boat", False),
             is_superuser=self.get_superuser(claims),
             membership_type=self.get_membership(claims),
+            openid_sub=claims.get("sub"),
         )
         user.set_unusable_password()
         user.save()
@@ -92,6 +95,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         user.is_clubboat_user = claims.get("clubboat", False)
         user.is_boat_owner = claims.get("boat", False)
         user.is_superuser = self.get_superuser(claims)
+        user.openid_sub = claims.get("sub")
         user.save()
         self.grant_reservation_permissions(claims, user)
 
