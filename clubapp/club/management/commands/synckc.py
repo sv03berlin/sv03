@@ -24,19 +24,23 @@ class Command(BaseCommand):
     help = "KeyCloak Sync Job"
 
     def _get_users(self) -> Any:
-        keycloak_connection = KeycloakOpenIDConnection(
-            server_url=kc_url,
-            username=kc_username,
-            password=kc_password,
-            verify=True,
-            client_id=kc_client_id,
-            client_secret_key=kc_client_secret,
-            realm_name=kc_realm
-        )
+        try:
+            keycloak_connection = KeycloakOpenIDConnection(
+                server_url=kc_url,
+                username=kc_username,
+                password=kc_password,
+                verify=True,
+                client_id=kc_client_id,
+                client_secret_key=kc_client_secret,
+                realm_name=kc_realm
+            )
 
-        keycloak_admin = KeycloakAdmin(connection=keycloak_connection)
+            keycloak_admin = KeycloakAdmin(connection=keycloak_connection)
 
-        return keycloak_admin.get_users()
+            return keycloak_admin.get_users()
+        except Exception as e:
+            logger.error("Error while fetching users from KeyCloak: %s", e)
+            return []
     
     def get_user(self, oidc_sub: str, email: str, username: str) -> User | None:
         user = User.objects.filter(openid_sub=oidc_sub)
