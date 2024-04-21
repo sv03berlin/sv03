@@ -14,17 +14,25 @@ services:
       - ENABLE_OIDC_LOGIN=True
       - ENABLE_DJANGO_LOGIN=True
 
-      # see http://{keycloakurl}:{port}/realms/{realm}/.well-known/openid-configuration
-  
-      - OIDC_RP_CLIENT_ID=clubapp-local
-      - OIDC_RP_CLIENT_SECRET=bvSuLTfZypwiCjhgLW6zXFa5SkLNeBrR
-      - OIDC_OP_AUTHORIZATION_ENDPOINT=http://localhost:28080/realms/master/protocol/openid-connect/auth
-      - OIDC_OP_TOKEN_ENDPOINT=http://localhost:28080/realms/master/protocol/openid-connect/token
-      - OIDC_OP_USER_ENDPOINT=http://localhost:28080/realms/master/protocol/openid-connect/userinfo
-      - OIDC_OP_JWKS_ENDPOINT=http://localhost:28080/realms/master/protocol/openid-connect/certs
-      - OIDC_OP_LOGOUT_ENDPOINT=http://localhost:28080/realms/master/protocol/openid-connect/logout
-      - LOGOUT_REDIRECT_URL
-      - KEYCLOAK_ACCOUNT_URL=http://localhost:28080/realms/master/account
+      # login with keycloak
+      # see http://{keycloakurl}:{port}/realms/{realm}/.well-known/openid-configuration 
+      - OIDC_RP_CLIENT_ID=
+      - OIDC_RP_CLIENT_SECRET=
+      - OIDC_OP_AUTHORIZATION_ENDPOINT=
+      - OIDC_OP_TOKEN_ENDPOINT=
+      - OIDC_OP_USER_ENDPOINT=
+      - OIDC_OP_JWKS_ENDPOINT=
+      - OIDC_OP_LOGOUT_ENDPOINT=
+      - LOGOUT_REDIRECT_URL=
+      - KEYCLOAK_ACCOUNT_URL=
+
+      # keycloak sync job
+      - KC_URL=
+      - KC_REALM=
+      - KC_CLIENT_ID=
+      - KC_CLIENT_SECRET=
+      - KC_USERNAME=
+      - KC_PASSWORD=
     volumes:
       - /code/.venv
       - ./:/code

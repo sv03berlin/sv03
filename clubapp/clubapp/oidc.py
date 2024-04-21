@@ -1,3 +1,4 @@
+import datetime
 from json import loads
 from typing import TYPE_CHECKING, Any
 
@@ -42,7 +43,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return claims.get("username", claims.get("email"))  # type: ignore[no-any-return]
 
     def get_membership(self, claims: dict[Any, Any]) -> Membership | None:
-        return Membership.objects.filter(name=claims.get("membership")).first()
+        return Membership.objects.filter(name=claims.get("mitgliedschaft", "").strip()).first()
 
     def get_staff(self, claims: dict[Any, Any]) -> bool:
         return "staff" in claims.get("group", []) or self.get_superuser(claims)
@@ -52,6 +53,13 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
 
     def member_permissions(self, claims: dict[Any, Any]) -> list[str]:
         return list(claims.get("member_permissions", "").strip().split(","))
+
+    def get_birthdate(self, claims: dict[Any, Any]) -> datetime.date | None:
+        return (
+            datetime.datetime.strptime(claims.get("birth_date", ""), "%Y-%m-%d").date()  # noqa: DTZ007
+            if claims.get("birth_date")
+            else None
+        )
 
     def grant_reservation_permissions(self, claims: dict[Any, Any], user: User) -> None:
         uc = self.member_permissions(claims)
@@ -72,14 +80,14 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         user = User.objects.create_user(
             username=self.get_username(claims),
             email=claims["email"],
-            first_name=claims.get("firstName", ""),
-            last_name=claims.get("lastName", ""),
+            first_name=claims.get("given_name", ""),
+            last_name=claims.get("family_name", ""),
             is_staff=self.get_staff(claims),
-            is_clubboat_user=claims.get("clubboat", False),
-            is_boat_owner=claims.get("boat", False),
+            is_clubboat_user=claims.get("clubboat", "false") == "true",
+            is_boat_owner=claims.get("boat", "false") == "true",
             is_superuser=self.get_superuser(claims),
-            membership_type=self.get_membership(claims),
             openid_sub=claims.get("sub"),
+            birthday=self.get_birthdate(claims),
         )
         user.set_unusable_password()
         user.save()
@@ -89,13 +97,14 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
     @transaction.atomic
     def update_user(self, user: User, claims: dict[Any, Any]) -> User:
         user.email = self.get_username(claims)
-        user.first_name = claims.get("firstName", "")
-        user.last_name = claims.get("lastName", "")
+        user.first_name = claims.get("given_name", "")
+        user.last_name = claims.get("family_name", "")
         user.is_staff = self.get_staff(claims)
-        user.is_clubboat_user = claims.get("clubboat", False)
-        user.is_boat_owner = claims.get("boat", False)
+        user.is_clubboat_user = claims.get("clubboat", "false") == "true"
+        user.is_boat_owner = claims.get("boat", "false") == "true"
         user.is_superuser = self.get_superuser(claims)
         user.openid_sub = claims.get("sub")
+        user.birthday = self.get_birthdate(claims)
         user.save()
         self.grant_reservation_permissions(claims, user)
 

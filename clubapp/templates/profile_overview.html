@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+Vorname: {{ user.first_name }}<br>
+Nachname: {{ user.last_name }}<br>
+email: {{ user.email }}<br>
+Geburtstag: {{ user.birthday }}<br>
+OpenID Sub: {{ user.openid_sub }}<br>
+Mitgliedschaft: {{ user.membership }}<br>
+Clubbootnutzung: {{ user.is_boat_owner }}<br>
+Bootseigner: {{ user.is_clubboat_user }}<br>
+Verbleibende Arbeitsstunden: {{ user.hours_done }} von {{ user.hours_to_do }}
+
+{% endblock %}

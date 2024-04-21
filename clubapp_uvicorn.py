@@ -1,16 +1,19 @@
-import uvicorn
-import subprocess
-from clubapp.clubapp.asgi import application as app
-import pathlib
-from time import sleep
+import sys
 import threading
+from time import sleep
 
-def runjobs():
-    subprocess.run(["python", pathlib.Path(__file__).parent.absolute() / "manage.py", "runjobs"])
+import uvicorn
+from django.core.management import execute_from_command_line
+
+from clubapp.clubapp.asgi import application as app
+
+
+def runjobs() -> None:
+    sys.argv = ["manage.py", "synckc"]
+    execute_from_command_line(sys.argv)
+
 
 if __name__ == "__main__":
-    
-
     config = uvicorn.Config(
         app=app,
         host="0.0.0.0",
@@ -19,7 +22,7 @@ if __name__ == "__main__":
         lifespan="off",
         forwarded_allow_ips="*",
         proxy_headers=True,
-        log_level="debug",
+        log_level="info",
         workers=4,
     )
     server = uvicorn.Server(config)
@@ -28,4 +31,4 @@ if __name__ == "__main__":
 
     while True:
         runjobs()
-        sleep(60)
+        sleep(60 * 60 * 3)  # 3 hours

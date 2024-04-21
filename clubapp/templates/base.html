@@ -101,6 +101,9 @@
                                             <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a></li>
                                             <li><hr class="dropdown-divider"></li>
                                         {% endif %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'profile_overview' %}">Meine Daten</a>
+                                        </li>
                                         {% if enable_oidc_login %}
                                             <li>
                                                 <a class="dropdown-item" href="{% url 'oidc_account' %}">SSO Account Settings</a>

@@ -1,8 +1,13 @@
+import logging
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+
+logger = logging.getLogger(__name__)
+
 
 ARBEITDIENST_FREI_AB = 67
 
@@ -41,6 +46,12 @@ class User(AbstractUser):
         if (m := self.membership_years.filter(year=timezone.now().year).first()) is not None:
             return m
         return None
+
+    @cached_property
+    def membership(self) -> "str":
+        if self.membership_type:
+            return self.membership_type.membership_type.name
+        return "Keine Mitgliedschaftsart hinterlegt"
 
     @cached_property
     def is_invoice_user(self) -> bool:
@@ -150,6 +161,7 @@ class User(AbstractUser):
             membership_year.work_hours_club_boat_user = work_hours_club_boat_user
             membership_year.save()
         else:
+            logger.info("Creating new membership year for %s in %s", self, this_year)
             MembershipYear.objects.create(
                 user=self,
                 year=this_year,
@@ -162,7 +174,7 @@ class User(AbstractUser):
 
 
 class MembershipYear(models.Model):
-    year = models.IntegerField(unique=True, verbose_name=_("Jahr"))
+    year = models.IntegerField(verbose_name=_("Jahr"))
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="membership_years", verbose_name=_("Nutzer"))
     membership_type = models.ForeignKey(Membership, on_delete=models.PROTECT, verbose_name=_("Mitgliedschaftsart"))
 

@@ -13,3 +13,8 @@ def index(request: HttpRequest) -> HttpResponse:
 @login_required
 def user_settings(request: HttpRequest) -> HttpResponse:
     return render(request, "settings.html")
+
+
+@login_required
+def profile_overview(request: HttpRequest) -> HttpResponse:
+    return render(request, "profile_overview.html", context={"user": request.user})

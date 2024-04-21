@@ -16,11 +16,14 @@ from pathlib import Path
 
 import django_stubs_ext
 from django.contrib.messages import constants as messages
+from dotenv import load_dotenv
 
 django_stubs_ext.monkeypatch()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENV_FILE = BASE_DIR.parent / ".env"
+load_dotenv(ENV_FILE)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/

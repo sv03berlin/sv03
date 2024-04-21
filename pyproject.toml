@@ -16,7 +16,8 @@ mozilla-django-oidc = "4.0.0"
 django-filter = "23.5"
 openpyxl = "3.1.2"
 django-extensions = "3.2.3"
-keycloak = "^3.1.4"
+python-keycloak = "^3.3.0"
+python-dotenv = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.9.0"
@@ -56,7 +57,7 @@ exclude = [
 ]
 
 [[tool.mypy.overrides]]
-module = ["xhtml2pdf", "uvicorn", "django_filters.*", "openpyxl.*", "mozilla_django_oidc.*"]  # those are untyped and don't plan to add stubs
+module = ["xhtml2pdf", "uvicorn", "django_filters.*", "openpyxl.*", "mozilla_django_oidc.*", "keycloak.*"]
 ignore_missing_imports = true
 disallow_any_generics = false
 

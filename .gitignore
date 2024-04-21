@@ -11,3 +11,4 @@ clubapp/static/gh.css
 **/ext/*
 bootstrap-*/*
 .ruff_cache/*
+.env

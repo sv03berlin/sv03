@@ -24,7 +24,6 @@
         "is_active": true,
         "date_joined": "2023-05-31T08:08:20",
         "license": "",
-        "membership_type": 1,
         "can_create_invoices": false,
         "is_boat_owner": false,
         "is_clubboat_user": false,
@@ -37,7 +36,6 @@
     "pk": 1,
     "fields": {
         "name": "Spaß und Unsinn",
-        "bank_account": "alle",
         "head": [
             "superuser"
         ],

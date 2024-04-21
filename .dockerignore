@@ -6,3 +6,4 @@ invoices/*
 .ruff_cache/*
 Dockerfile
 deploy.Dockerfile
+.env

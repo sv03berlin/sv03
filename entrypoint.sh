@@ -10,7 +10,7 @@ set -m
 #     mv "/etc/nginx/vhost.d/nginx_domain_file" "/etc/nginx/vhost.d/${VIRTUAL_HOST}"
 #     cp "/code/nginx/nginx_domain_file_location" "/etc/nginx/vhost.d/"
 #     mv "/etc/nginx/vhost.d/nginx_domain_file_location" "/etc/nginx/vhost.d/${VIRTUAL_HOST}_location"
-#     cp /code/nginx/backend.conf /etc/nginx/conf.d
+#     cp /code/nginx/uvicornsock.conf /etc/nginx/conf.d
 # fi
 
 echo "collectstatic is in progress"
