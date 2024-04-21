@@ -15,6 +15,12 @@ from clubapp.reservationflow.models import ReservationGroup
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
+from logging import getLogger
+
+logger = getLogger(__name__)
+
+USERNAME_DESCRIPTOR = "preferred_username"
+
 
 class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[misc]
     def get_userinfo(self, access_token: str, id_token: str, payload: str) -> Any:
@@ -27,20 +33,21 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
     def filter_users_by_claims(self, claims: dict[Any, Any]) -> "QuerySet[User]":
         if claims.get("sub"):
             return User.objects.filter(openid_sub=claims["sub"])
-        if claims.get("username"):
-            return User.objects.filter(username=claims["username"])
-        if claims.get("email_verified"):
+        if claims.get(USERNAME_DESCRIPTOR):
+            return User.objects.filter(username=claims[USERNAME_DESCRIPTOR])
+        if claims.get("email"):
             return User.objects.filter(email=claims["email"])
         return User.objects.none()
 
     def verify_claims(self, claims: dict[Any, Any]) -> bool:
+        logger.debug("Claims: %s", claims)
         scopes = self.get_settings("OIDC_RP_SCOPES", "openid email")
-        if "email" in scopes.split() and "username" in scopes.split():
+        if "email" in scopes.split() and USERNAME_DESCRIPTOR in scopes.split():
             return "email" in claims
         return True
 
     def get_username(self, claims: dict[Any, Any]) -> str:
-        return claims.get("username", claims.get("email"))  # type: ignore[no-any-return]
+        return claims.get(USERNAME_DESCRIPTOR, claims.get("email"))  # type: ignore[no-any-return]
 
     def get_membership(self, claims: dict[Any, Any]) -> Membership | None:
         return Membership.objects.filter(name=claims.get("mitgliedschaft", "").strip()).first()
@@ -112,7 +119,8 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
             user.update_membership_year(m)
 
         if not user.is_active:
-            msg = f"User is inactive: {user.get_username()}"
+            msg = f"Inactive User tried to log in: {user.get_username()}"
+            logger.error(msg)
             raise User.DoesNotExist(msg)
 
         return user
