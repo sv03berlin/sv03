@@ -31,11 +31,14 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return response
 
     def filter_users_by_claims(self, claims: dict[Any, Any]) -> "QuerySet[User]":
-        if claims.get("sub") and (qs:= User.objects.filter(openid_sub=claims["sub"])).exists():
+        if claims.get("sub") and (qs := User.objects.filter(openid_sub=claims["sub"])).exists():
             return qs
-        if claims.get(USERNAME_DESCRIPTOR) and (qs:= User.objects.filter(username=claims[USERNAME_DESCRIPTOR])).exists():
+        if (
+            claims.get(USERNAME_DESCRIPTOR)
+            and (qs := User.objects.filter(username=claims[USERNAME_DESCRIPTOR])).exists()
+        ):
             return qs
-        if claims.get("email") and (qs:= User.objects.filter(email=claims["email"])).exists():
+        if claims.get("email") and (qs := User.objects.filter(email=claims["email"])).exists():
             return qs
         return User.objects.none()
 
