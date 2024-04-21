@@ -84,6 +84,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
 
     @transaction.atomic
     def create_user(self, claims: dict[Any, Any]) -> User:
+        logger.info("Creating User: %s", claims["email"])
         user = User.objects.create_user(
             username=self.get_username(claims),
             email=claims["email"],
@@ -103,7 +104,9 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
 
     @transaction.atomic
     def update_user(self, user: User, claims: dict[Any, Any]) -> User:
-        user.email = self.get_username(claims)
+        logger.info("Updating User: %s", user.get_username())
+        user.username = self.get_username(claims)
+        user.email = claims["email"]
         user.first_name = claims.get("given_name", "")
         user.last_name = claims.get("family_name", "")
         user.is_staff = self.get_staff(claims)
