@@ -31,12 +31,12 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return response
 
     def filter_users_by_claims(self, claims: dict[Any, Any]) -> "QuerySet[User]":
-        if claims.get("sub"):
-            return User.objects.filter(openid_sub=claims["sub"])
-        if claims.get(USERNAME_DESCRIPTOR):
-            return User.objects.filter(username=claims[USERNAME_DESCRIPTOR])
-        if claims.get("email"):
-            return User.objects.filter(email=claims["email"])
+        if claims.get("sub") and (qs:= User.objects.filter(openid_sub=claims["sub"])).exists():
+            return qs
+        if claims.get(USERNAME_DESCRIPTOR) and (qs:= User.objects.filter(username=claims[USERNAME_DESCRIPTOR])).exists():
+            return qs
+        if claims.get("email") and (qs:= User.objects.filter(email=claims["email"])).exists():
+            return qs
         return User.objects.none()
 
     def verify_claims(self, claims: dict[Any, Any]) -> bool:
