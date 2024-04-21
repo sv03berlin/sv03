@@ -26,3 +26,7 @@ superuser : superuser
 
 ``docker exec -it clubapp python3 /code/clubapp/manage.py migrate``
 ``docker exec -it clubapp python3 /code/clubapp/manage.py createsuperuser``
+
+## test data and fixtures
+
+`manage.py dumpdata --natural-foreign --natural-primary --indent 4 -o test_data.json`
