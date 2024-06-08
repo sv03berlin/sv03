@@ -7,3 +7,4 @@ invoices/*
 Dockerfile
 deploy.Dockerfile
 .env
+clubapp_data/*

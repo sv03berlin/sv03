@@ -62,7 +62,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return "admin" in claims.get("group", [])
 
     def member_permissions(self, claims: dict[Any, Any]) -> list[str]:
-        return list(claims.get("member_permissions", "").strip().split(","))
+        return list(claims.get("group", ""))
 
     def get_birthdate(self, claims: dict[Any, Any]) -> datetime.date | None:
         return (
@@ -107,6 +107,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
 
     @transaction.atomic
     def update_user(self, user: User, claims: dict[Any, Any]) -> User:
+        print(claims)
         logger.info("Updating User: %s", user.get_username())
         user.username = self.get_username(claims)
         user.email = claims["email"]

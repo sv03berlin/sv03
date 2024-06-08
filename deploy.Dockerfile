@@ -14,7 +14,7 @@ RUN poetry install
 COPY . .
 
 RUN chmod +x /code/load_deps.sh
-RUN /code/load_deps.sh
+RUN ./load_deps.sh
 
 RUN mkdir /clubapp_static
 # allow user 1000 to acces and wriote /clubapp_static 

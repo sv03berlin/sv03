@@ -17,8 +17,15 @@ from pathlib import Path
 import django_stubs_ext
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
+import sentry_sdk
 
 django_stubs_ext.monkeypatch()
+
+sentry_sdk.init(
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -111,7 +118,7 @@ WSGI_APPLICATION = "clubapp.clubapp.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-MEDIA_ROOT = Path("/clubapp_data/")
+MEDIA_ROOT = Path("./clubapp_data/")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",

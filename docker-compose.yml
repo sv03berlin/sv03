@@ -36,6 +36,6 @@ services:
     volumes:
       - /code/.venv
       - ./:/code
-      - ./data:/clubapp_data
+      - ./data:/code/clubapp_data
 volumes:
   data:
