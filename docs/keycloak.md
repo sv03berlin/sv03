@@ -90,3 +90,4 @@ Add Members to group. After log out and log in the user should have the role in 
 Membership Type is directly matched via name. Name from membership in Keycloak User == Name in Database.
 For Group matching for reservations this is done via an internal name, which has to match the group name.
 Members from the keycloak admin group will be superusers in clubapp.
+For all groups managed, all attributes and membership types have a look at the importer.

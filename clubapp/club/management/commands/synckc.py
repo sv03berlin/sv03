@@ -53,31 +53,37 @@ class Command(BaseCommand):
         if user.exists():
             return user.first()
         return User.objects.create(openid_sub=oidc_sub, email=email, username=username)
-
+    
     def handle(self, *args: Any, **options: Any) -> None:
         logger.info("Starting KeyCloak Sync Job")
         users = self._get_users()
         for kc_user in users:
             try:
-                if "sewobe_parser" not in kc_user.get("managed_by", []):
-                    logger.info("Ignoring non Sewobe Managed User")
+                managed_by = kc_user.get("attributes", {}).get("managed_by", [])
+                if "sewobe_parser" not in managed_by:
+                    logger.info("Ignoring non Sewobe Managed User %s", kc_user.get("username"))
                     continue
 
                 with transaction.atomic():
                     db_user = self.get_user(kc_user["id"], kc_user["email"], kc_user["username"])
                     if db_user is None:
-                        logger.error(f"Could not find user {kc_user.get('username')}")
+                        logger.error("Could not find user %s", kc_user.get('username'))
                         continue
                     m_name = kc_user.get("attributes", {}).get("mitgliedschaft")
+                    if m_name is None:
+                        logger.error("User is no member %s", kc_user.get('username'))
+                        continue
                     m = Membership.objects.filter(name__in=m_name).first()
                     if m is None:
-                        logger.error("Could not find membership (%s) for user ", kc_user.get('username'), m_name)
+                        logger.error("Could not find membership (%s) for user %s", m_name, kc_user.get('username'))
                         continue
+                    
+                    logger.info("Syncing user %s", kc_user.get('username'))
 
                     db_user.update_membership_year(m)
-
-                    db_user.is_boat_owner = kc_user.get("attributes", {}).get("boat", "false") == "true"
-                    db_user.is_clubboat_user = kc_user.get("attributes", {}).get("clubboat", "false") == "true"
+                    db_user.is_boat_owner = kc_user.get("attributes", {}).get("boat", ["false"])[0] == "true"
+                    db_user.is_clubboat_user = kc_user.get("attributes", {}).get("clubboat", ["false"])[0] == "true"
+                    db_user.save()
             except Exception as e:
-                logger.error(f"Error while syncing user ({kc_user.get('username')}): {e}")
+                logger.error("Error while syncing user (%s): %s", kc_user.get('username'), e)
 

@@ -15,9 +15,9 @@ from os import environ
 from pathlib import Path
 
 import django_stubs_ext
+import sentry_sdk
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
-import sentry_sdk
 
 django_stubs_ext.monkeypatch()
 
