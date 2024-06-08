@@ -18,6 +18,7 @@ openpyxl = "3.1.2"
 django-extensions = "3.2.3"
 python-keycloak = "^3.3.0"
 python-dotenv = "^1.0.1"
+sentry-sdk = { version = "^2.5.1", extras = ["django"] }
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.9.0"
