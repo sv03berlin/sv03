@@ -1,0 +1,10 @@
+[
+{
+    "model": "club.ressort",
+    "pk": 1,
+    "fields": {
+        "name": "Haus",
+        "is_accounting_ressort": false
+    }
+}
+]

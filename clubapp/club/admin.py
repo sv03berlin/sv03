@@ -13,7 +13,7 @@ class CustomUserAdmin(UserAdmin):
 
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "email", "license")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "email", "license", "member_id")}),
         (
             "Permissions",
             {
@@ -24,7 +24,6 @@ class CustomUserAdmin(UserAdmin):
                     "is_boat_owner",
                     "is_clubboat_user",
                     "can_create_invoices",
-                    "groups",
                 )
             },
         ),

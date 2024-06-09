@@ -1,0 +1,11 @@
+[
+{
+    "model": "reservationflow.reservationgroup",
+    "pk": 1,
+    "fields": {
+        "name": "Clubboote",
+        "internal_name": "clubboat",
+        "description": "boote"
+    }
+}
+]

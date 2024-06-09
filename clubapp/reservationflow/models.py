@@ -25,7 +25,7 @@ class ReservationGroup(models.Model):
         return self.name
 
 
-class ReservabelThing(models.Model):
+class ReservableThing(models.Model):
     name = models.CharField(max_length=100, verbose_name=_("Name"))
     description = models.TextField(verbose_name=_("Beschreibung"))
     reservation_group = models.ForeignKey(
@@ -42,7 +42,7 @@ class ReservabelThing(models.Model):
 
 
 class Reservation(models.Model):
-    thing = models.ForeignKey(ReservabelThing, on_delete=models.CASCADE, verbose_name=_("Reservierungsobjekt"))
+    thing = models.ForeignKey(ReservableThing, on_delete=models.CASCADE, verbose_name=_("Reservierungsobjekt"))
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Benutzer:in"))
     start = models.DateTimeField(verbose_name=_("Beginn der Reservierung"))
     end = models.DateTimeField(verbose_name=_("Ende der Reservierung"))

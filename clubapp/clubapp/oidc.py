@@ -99,6 +99,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
             is_superuser=self.get_superuser(claims),
             openid_sub=claims.get("sub"),
             birthday=self.get_birthdate(claims),
+            member_id=claims.get("member_id", ""),
         )
         user.set_unusable_password()
         user.save()
@@ -118,6 +119,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         user.is_superuser = self.get_superuser(claims)
         user.openid_sub = claims.get("sub")
         user.birthday = self.get_birthdate(claims)
+        user.member_id = claims.get("member_id", "")
         user.save()
         self.grant_reservation_permissions(claims, user)
 

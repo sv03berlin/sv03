@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="ReservabelThing",
+            name="ReservableThing",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(max_length=100)),
@@ -55,12 +55,12 @@ class Migration(migrations.Migration):
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("start", models.DateTimeField()),
                 ("end", models.DateTimeField()),
-                ("thing", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="reservationflow.reservabelthing")),
+                ("thing", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="reservationflow.reservablething")),
                 ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
-            model_name="reservabelthing",
+            model_name="reservablething",
             name="reservation_group",
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="reservationflow.reservationgroup"),
         ),

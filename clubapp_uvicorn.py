@@ -1,16 +1,14 @@
-import sys
 import threading
 from time import sleep
 
 import uvicorn
-from django.core.management import execute_from_command_line
+from django.core.management import call_command
 
 from clubapp.clubapp.asgi import application as app
 
 
 def runjobs() -> None:
-    sys.argv = ["manage.py", "synckc"]
-    execute_from_command_line(sys.argv)
+    call_command("synckc")
 
 
 if __name__ == "__main__":

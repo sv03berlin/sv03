@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('reservationflow', '0002_alter_reservabelthing_options_and_more'),
+        ('reservationflow', '0002_alter_reservablething_options_and_more'),
     ]
 
     operations = [

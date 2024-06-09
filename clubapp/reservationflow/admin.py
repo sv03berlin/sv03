@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ReservabelThing, Reservation, ReservationGroup
+from .models import ReservableThing, Reservation, ReservationGroup
 
 
 class ReservationsAdmin(admin.ModelAdmin[Reservation]):
@@ -9,8 +9,8 @@ class ReservationsAdmin(admin.ModelAdmin[Reservation]):
     search_fields = ["user", "thing"]
 
 
-class ReservabelThingAdmin(admin.ModelAdmin[ReservabelThing]):
-    model = ReservabelThing
+class ReservableThingAdmin(admin.ModelAdmin[ReservableThing]):
+    model = ReservableThing
     search_fields = ["name"]
 
 
@@ -21,5 +21,5 @@ class ReservationGroupAdmin(admin.ModelAdmin[ReservationGroup]):
 
 
 admin.site.register(ReservationGroup, ReservationGroupAdmin)
-admin.site.register(ReservabelThing, ReservabelThingAdmin)
+admin.site.register(ReservableThing, ReservableThingAdmin)
 admin.site.register(Reservation, ReservationsAdmin)

@@ -6,7 +6,7 @@ from django.utils import timezone
 from clubapp.club.models import User
 from clubapp.clubapp.utils import DateTimeInput
 
-from .models import ReservabelThing, Reservation
+from .models import ReservableThing, Reservation
 
 
 class ReservationForm(ModelForm):  # type: ignore[type-arg]
@@ -36,10 +36,10 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
 
     def allowed_to_borrow(self) -> list[tuple[int, str]]:
         if self.user.is_staff:
-            qs = ReservabelThing.objects.all()
+            qs = ReservableThing.objects.all()
         else:
-            qs = ReservabelThing.objects.filter(reservation_group__memberships__user=self.user)
-            qs |= ReservabelThing.objects.filter(all_can_reserve=True)
+            qs = ReservableThing.objects.filter(reservation_group__memberships__user=self.user)
+            qs |= ReservableThing.objects.filter(all_can_reserve=True)
             qs = qs.distinct()
         return [(thing.id, thing.name) for thing in qs]
 

@@ -36,6 +36,8 @@ class User(AbstractUser):
 
     openid_sub = models.UUIDField(blank=True, null=True, verbose_name=_("OpenID Sub"))
 
+    member_id = models.CharField(max_length=32, blank=True, default="", verbose_name=_("Mitgliedsnummer"))
+
     def __str__(self) -> str:
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"

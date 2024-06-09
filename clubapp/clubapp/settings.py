@@ -92,6 +92,7 @@ if ENABLE_DJANGO_LOGIN:
     AUTHENTICATION_BACKENDS.append("django.contrib.auth.backends.ModelBackend")
 
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 60 * 60 * 24  # 24 hours
 
 ROOT_URLCONF = "clubapp.clubapp.urls"
 

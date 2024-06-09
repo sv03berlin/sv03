@@ -7,6 +7,7 @@ from django.core.management.base import BaseCommand
 from typing import Any
 from dotenv import load_dotenv
 import logging
+import datetime
 
 load_dotenv()
 
@@ -54,6 +55,17 @@ class Command(BaseCommand):
             return user.first()
         return User.objects.create(openid_sub=oidc_sub, email=email, username=username)
     
+    def update_user(self, user: User, first_name: str, member_id: str | None, last_name: str, birthday: str | None) -> User:
+        user.first_name = first_name
+        user.last_name = last_name
+        if birthday is not None:
+            user.birthday = datetime.datetime.strptime(birthday, "%Y-%m-%d").date()
+        if member_id is not None:
+            user.member_id = member_id
+        user.save()
+        return user
+
+    
     def handle(self, *args: Any, **options: Any) -> None:
         logger.info("Starting KeyCloak Sync Job")
         users = self._get_users()
@@ -65,10 +77,12 @@ class Command(BaseCommand):
                     continue
 
                 with transaction.atomic():
+                    print(kc_user)
                     db_user = self.get_user(kc_user["id"], kc_user["email"], kc_user["username"])
                     if db_user is None:
                         logger.error("Could not find user %s", kc_user.get('username'))
                         continue
+                    db_user = self.update_user(user=db_user, first_name=kc_user.get("firstName", ""), member_id=kc_user.get("attributes", {}).get("member_id", [None])[0], last_name=kc_user.get("lastName", ""), birthday=kc_user.get("attributes", {}).get("birth_date", [None])[0])
                     m_name = kc_user.get("attributes", {}).get("mitgliedschaft")
                     if m_name is None:
                         logger.error("User is no member %s", kc_user.get('username'))

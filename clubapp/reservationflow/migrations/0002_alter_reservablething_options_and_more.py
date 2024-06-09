@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name="reservabelthing",
+            name="reservablething",
             options={"verbose_name": "Reservierbares Objekt", "verbose_name_plural": "Reservierbare Objekte"},
         ),
         migrations.AlterModelOptions(
@@ -32,22 +32,22 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AddField(
-            model_name="reservabelthing",
+            model_name="reservablething",
             name="all_can_reserve",
             field=models.BooleanField(default=False, verbose_name="Reservierbar von allen"),
         ),
         migrations.AlterField(
-            model_name="reservabelthing",
+            model_name="reservablething",
             name="description",
             field=models.TextField(verbose_name="Beschreibung"),
         ),
         migrations.AlterField(
-            model_name="reservabelthing",
+            model_name="reservablething",
             name="name",
             field=models.CharField(max_length=100, verbose_name="Name"),
         ),
         migrations.AlterField(
-            model_name="reservabelthing",
+            model_name="reservablething",
             name="reservation_group",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="reservationflow.reservationgroup", verbose_name="Reservierungsgruppe"
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
             model_name="reservation",
             name="thing",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="reservationflow.reservabelthing", verbose_name="Reservierungsobjekt"
+                on_delete=django.db.models.deletion.CASCADE, to="reservationflow.reservablething", verbose_name="Reservierungsobjekt"
             ),
         ),
         migrations.AlterField(
