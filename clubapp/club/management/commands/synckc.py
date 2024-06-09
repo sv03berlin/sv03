@@ -77,7 +77,7 @@ class Command(BaseCommand):
                     continue
 
                 with transaction.atomic():
-                    print(kc_user)
+
                     db_user = self.get_user(kc_user["id"], kc_user["email"], kc_user["username"])
                     if db_user is None:
                         logger.error("Could not find user %s", kc_user.get('username'))
