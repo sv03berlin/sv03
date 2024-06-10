@@ -321,7 +321,8 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
                 "Stunden Bootseigner",
                 "Stunden gleistet",
                 "Stunden versäumt",
-                "Stunden Gesamt" "Verrechnungssatz pro Stunde in Euro",
+                "Stunden Gesamt",
+                "Verrechnungssatz pro Stunde in Euro",
                 "Ausbezahlt am Jahresanfang",
                 "Kompensation in Euro",
             ]
