@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 logger = logging.getLogger(__name__)
 
 
-ARBEITDIENST_FREI_AB = 67
+ARBEITDIENST_FREI_AB_ALTER = 67
 
 
 class Membership(models.Model):
@@ -74,7 +74,7 @@ class User(AbstractUser):
     def member_is_freed_from_work_by_age(self, year: int | None) -> bool:
         if year is None:
             year = timezone.now().year
-        if self.birthday and year - self.birthday.year > ARBEITDIENST_FREI_AB:
+        if self.birthday and year - self.birthday.year > ARBEITDIENST_FREI_AB_ALTER:
             return True
         return False
 
@@ -124,7 +124,7 @@ class User(AbstractUser):
         ) / 60
 
     def club_work_compensation(self, year: int) -> float:
-        if self.membership_type:
+        if self.membership_type and not self.membership_type.full_work_compensation:
             return float(float(self.membership_type.work_compensation) * self.missing_hours(year))
         return 0
 

@@ -319,10 +319,11 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
                 "Stunden durch Mitgliedschaft",
                 "Stunden Clubbootnutzer",
                 "Stunden Bootseigner",
-                "Verrechnungssatz",
                 "Stunden gleistet",
                 "Stunden versäumt",
-                "Ausbezahlt am Jahresanfang" "Kompensation",
+                "Stunden Gesamt" "Verrechnungssatz pro Stunde in Euro",
+                "Ausbezahlt am Jahresanfang",
+                "Kompensation in Euro",
             ]
         )
         for user in users:
@@ -341,9 +342,10 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
                     m.work_hours,
                     cb,
                     be,
-                    m.work_compensation,
                     user.hours_done_year(year),
                     user.missing_hours(year),
+                    m.work_hours + cb + be,
+                    m.work_compensation,
                     m.full_work_compensation,
                     user.club_work_compensation(year),
                 ]
