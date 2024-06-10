@@ -336,7 +336,7 @@ class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type
                     user.last_name,
                     user.first_name,
                     user.email,
-                    "0",
+                    user.member_id,
                     m.name,
                     m.work_hours,
                     cb,
