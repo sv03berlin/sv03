@@ -82,8 +82,6 @@ class User(AbstractUser):
         work_hours = 0
         if self.member_is_freed_from_work_by_age(year):
             return 0
-        if self.member_is_freed_from_work_by_age(year):
-            return 0
         membership_year = self.membership_years.filter(year=year).first()
         if membership_year:
             work_hours += membership_year.work_hours
