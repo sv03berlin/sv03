@@ -372,6 +372,26 @@ class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
         return c
 
 
+class AllClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type: ignore[misc]
+    model = ClubWork
+    template_name = "clubwork_all.html"
+    filterset_class = HistoryFilter
+
+    def get_queryset(self) -> QuerySet[ClubWork]:
+        return super().get_queryset()  # type: ignore[no-any-return]
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c.update({"clubworks": self.get_queryset()})
+        return c  # type: ignore[no-any-return]
+
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse | FileResponse | Any:
+        if not request.user.is_ressort_user:
+            return redirect("clubwork_index")
+
+        return super().get(request, *args, **kwargs)
+
+
 @login_required
 @staff_member_required
 def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:

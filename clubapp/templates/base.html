@@ -57,8 +57,11 @@
                                                 <li><a class="dropdown-item" href="{% url 'clubwork_index' %}">Meine Übersicht</a></li>
                                                 <li><a class="dropdown-item" href="{% url 'clubwork_user_history' %}">Meine vergangenen Arbeitsdienste</a></li>
                                                 {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+                                                <li><hr class="dropdown-divider"></li>
+                                                <h6 class="dropdown-header">Ressortleitung</h6>
                                                 <li><a class="dropdown-item" href="{% url 'approve_clubwork_overview' %}">Arbeitsdienste genehmigen</a></li>
-                                                <li><a class="dropdown-item" href="{% url 'clubwork_history' %}">Arbeitsdienst Historie</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'clubwork_history' %}">Alle Arbeitsdienstteilnahmen</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'clubwork_all' %}">Alle ausgeschriebenen Arbeitsdienst</a></li>
                                                 {% endif %}
                                             </ul>
                                         </div>

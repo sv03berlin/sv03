@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <p class="h2 mb-3">Alle ausgeschribenen Arbeitsdienste</p>
+
+    <div class="d-flex">
+        <p class="me-2 mb-2">Filtern nach:</p>
+        <form action="" method="get" class="d-flex">
+            {{ filter.form }}
+            <button class="btn btn-primary btn-sm me-2" type="submit">Filtern</button>
+        </form>
+        <a class="btn btn-sm btn-outline-secondary me-2 col-auto" href="?">Reset</a>
+    </div>
+
+    {% include 'clubwork_future.html' with clubworks=clubworks user=user %}    
+
+</div>
+{% endblock content %}
