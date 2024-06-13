@@ -76,7 +76,7 @@ def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         if form.is_valid():
             form.save()
             for application in form.instance.participations.all():
-                if application.is_approved is None:
+                if not application.is_approved:
                     application.title = form.instance.title
                     application.description = form.instance.description
                     application.date_time = form.instance.date_time

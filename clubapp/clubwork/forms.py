@@ -15,6 +15,7 @@ class ClubWorkForm(forms.ModelForm[models.ClubWork]):
             "title",
             "ressort",
             "date_time",
+            "async_date",
             "max_duration",
             "max_participants",
             "description",

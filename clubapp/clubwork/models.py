@@ -12,6 +12,10 @@ class ClubWork(models.Model):
     description = models.TextField(verbose_name=_("Beschreibung"))
 
     date_time = models.DateTimeField(verbose_name=_("Datum und Uhrzeit"))
+    async_date = models.BooleanField(
+        verbose_name=_("Eigenständige Abarbeitung mit Terminplanung. Das Datum ist als Frist zu interpretieren."),
+        default=False,
+    )
     max_duration = models.IntegerField(verbose_name=_("Maximale Dauer (in Minuten)"))
     max_participants = models.IntegerField(verbose_name=_("Maximale Teilnehmer:innenanzahl"))
 
@@ -65,3 +69,9 @@ class ClubWorkParticipation(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} hilft bei {self.clubwork or self.title}"
+
+    @property
+    def async_date(self) -> bool:
+        if self.clubwork:
+            return self.clubwork.async_date
+        return False
