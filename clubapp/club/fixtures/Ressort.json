@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
         "name": "Haus",
+        "internal_name": "Haus",
         "is_accounting_ressort": false
     }
 }

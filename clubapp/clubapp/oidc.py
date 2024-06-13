@@ -53,7 +53,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return claims.get(USERNAME_DESCRIPTOR, claims.get("email"))  # type: ignore[no-any-return]
 
     def get_membership(self, claims: dict[Any, Any]) -> Membership | None:
-        return Membership.objects.filter(name=claims.get("mitgliedschaft", "").strip()).first()
+        return Membership.objects.filter(internal_name=claims.get("mitgliedschaft", "").strip()).first()
 
     def get_staff(self, claims: dict[Any, Any]) -> bool:
         return "staff" in claims.get("group", []) or self.get_superuser(claims)

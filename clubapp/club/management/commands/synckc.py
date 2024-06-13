@@ -87,7 +87,7 @@ class Command(BaseCommand):
                     if m_name is None:
                         logger.error("User is no member %s", kc_user.get('username'))
                         continue
-                    m = Membership.objects.filter(name__in=m_name).first()
+                    m = Membership.objects.filter(internal_name__in=m_name).first()
                     if m is None:
                         logger.error("Could not find membership (%s) for user %s", m_name, kc_user.get('username'))
                         continue

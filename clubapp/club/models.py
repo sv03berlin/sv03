@@ -14,6 +14,7 @@ ARBEITDIENST_FREI_AB_ALTER = 67
 
 class Membership(models.Model):
     name = models.CharField(max_length=63, unique=True, verbose_name=_("Mitgliedschaftsart"))
+    internal_name = models.CharField(max_length=63, unique=True, verbose_name=_("Interner Name"))
     work_hours = models.IntegerField(verbose_name=_("Arbeitsstunden"))
     work_hours_boat_owner = models.IntegerField(verbose_name=_("Arbeitsstunden Bootseigner:in"))
     work_hours_club_boat_user = models.IntegerField(verbose_name=_("Arbeitsstunden Clubbootnutzer:in"))
@@ -209,6 +210,7 @@ class MembershipYear(models.Model):
 
 class Ressort(models.Model):
     name = models.CharField(max_length=63, unique=True, verbose_name=_("Ressortname"))
+    internal_name = models.CharField(max_length=63, unique=True, verbose_name=_("Interner Ressortname"))
     head = models.ManyToManyField(User, related_name="ressort_head", verbose_name=_("Leiter:in"))
     is_accounting_ressort = models.BooleanField(default=False, verbose_name=_("Buchhaltungsressort"))
 
