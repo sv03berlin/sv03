@@ -687,6 +687,19 @@ files = [
 ]
 
 [[package]]
+name = "schedule"
+version = "1.2.2"
+description = "Job scheduling for humans."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "schedule-1.2.2-py3-none-any.whl", hash = "sha256:5bef4a2a0183abf44046ae0d164cadcac21b1db011bdd8102e4a0c1e91e06a7d"},
+]
+
+[package.extras]
+timezone = ["pytz"]
+
+[[package]]
 name = "sentry-sdk"
 version = "2.5.1"
 description = "Python client for Sentry (https://sentry.io)"
@@ -834,4 +847,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c8118b22a3b6509253ec8230c2bc4430ff27b0e34180f3fa3df26fc59f7fe5b0"
+content-hash = "9c5341767a93eda293b2968f6ee1e0c969fd82fdd57e83b0f49575d015ca801e"

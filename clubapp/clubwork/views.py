@@ -1,4 +1,5 @@
 from io import BytesIO
+from logging import getLogger
 from typing import Any, no_type_check
 
 from django import forms
@@ -27,6 +28,8 @@ from clubapp.clubapp.utils import AuthenticatedHttpRequest
 
 from .forms import ClubWorkForm, ClubWorkParticipationForm
 from .models import ClubWork, ClubWorkParticipation
+
+logger = getLogger(__name__)
 
 
 def get_post_action(request: AuthenticatedHttpRequest) -> str:
@@ -416,8 +419,10 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
                     f"{request.user.first_name} {request.user.last_name}",
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],
+                    fail_silently=False,
                 )
-            except Exception:  # noqa: BLE001
+            except Exception:
+                logger.exception("Error while sending email to user %s", user)
                 messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
         return redirect("clubwork_index")
 

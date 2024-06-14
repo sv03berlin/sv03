@@ -67,6 +67,9 @@ class ClubWorkParticipation(models.Model):
     approve_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Genehmigt am"))
     description = models.TextField(verbose_name=_("Beschreibung"))
 
+    did_send_reminder = models.BooleanField(default=False)
+    did_send_approve_hint = models.BooleanField(default=False)
+
     def __str__(self) -> str:
         return f"{self.user} hilft bei {self.clubwork or self.title}"
 

@@ -1,15 +1,11 @@
 import threading
 from time import sleep
 
+import schedule
 import uvicorn
 from django.core.management import call_command
 
 from clubapp.clubapp.asgi import application as app
-
-
-def runjobs() -> None:
-    call_command("synckc")
-
 
 if __name__ == "__main__":
     config = uvicorn.Config(
@@ -27,6 +23,9 @@ if __name__ == "__main__":
     thread = threading.Thread(target=server.run)
     thread.start()
 
+    schedule.every(3).hours.do(lambda: call_command("synckc"))
+    schedule.every(12).hours.do(lambda: call_command("notify"))
+
     while True:
-        runjobs()
-        sleep(60 * 60 * 3)  # 3 hours
+        schedule.run_pending()
+        sleep(1)
