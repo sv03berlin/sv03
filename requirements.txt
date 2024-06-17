@@ -6,4 +6,4 @@ uvicorn[standard]==0.27
 django-stubs-ext
 mozilla-django-oidc==4.0.0
 django-filter==23.5
-openpyxl==3.1.2
+openpyxl==3.1.4
