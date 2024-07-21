@@ -237,6 +237,11 @@ LOGGING = {
             "class": "logging.StreamHandler",
         },
     },
+    "formatters": {
+        "default": {
+            "format": "%(asctime)s [%(name)s] %(levelprefix)s %(message)s",
+        },
+    },
     "root": {
         "handlers": ["console"],
         "level": os.environ.get("LOG_LEVEL", "INFO"),
