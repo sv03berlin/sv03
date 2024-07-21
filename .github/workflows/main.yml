@@ -54,7 +54,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          # file: deploy.Dockerfile
+          file: deploy.Dockerfile
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max

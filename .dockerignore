@@ -8,3 +8,4 @@ Dockerfile
 deploy.Dockerfile
 .env
 clubapp_data/*
+.git
