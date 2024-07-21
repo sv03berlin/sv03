@@ -1,6 +1,7 @@
 import csv
 from io import BytesIO
 from json import loads
+from logging import getLogger
 from pathlib import Path
 from typing import Any
 from zipfile import ZipFile
@@ -22,6 +23,8 @@ from clubapp.clubapp.utils import AuthenticatedHttpRequest
 from clubapp.refundflow.models import Tracking, Transaction
 
 from .forms import AddTracking, SubmitRefund
+
+logger = getLogger(__name__)
 
 
 @login_required
@@ -399,8 +402,9 @@ def approve_payment(request: AuthenticatedHttpRequest) -> HttpResponse:
                         auth_user=EMAIL_HOST_USER,
                         auth_password=EMAIL_HOST_PASSWORD,
                     )
-                except Exception:  # noqa: BLE001
-                    messages.error(request, "Error while sending mail")
+                except Exception:
+                    messages.error(request, "Fehler beim senden von emails")
+                    logger.exception("Error while sending mail")
 
                 return HttpResponse("OK", status=200)
             return HttpResponse("Forbidden", status=403)

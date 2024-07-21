@@ -4,10 +4,12 @@ from time import sleep
 import schedule
 import uvicorn
 from django.core.management import call_command
+from uvicorn.config import LOGGING_CONFIG
 
 from clubapp.clubapp.asgi import application as app
 
 if __name__ == "__main__":
+    LOGGING_CONFIG["formatters"]["default"]["fmt"] = "%(asctime)s [%(name)s] %(levelprefix)s %(message)s"
     config = uvicorn.Config(
         app=app,
         host="0.0.0.0",
