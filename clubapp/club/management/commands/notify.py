@@ -27,18 +27,21 @@ class Command(BaseCommand):
                 works.add(work)
 
         for user in list(users):
-            send_mail(
-                subject=f"Gegehmigungen ausstehend für Arbeitsdienste",
-                message=f"Hallo {user.first_name},\n\n"
-                f"Es stehen noch Arbeitsdienste zur Genehmigung an.\n"
-                f"Bitte überprüfe die Arbeitsdienste und genehmige diese.\n\n"
-                f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('approve_clubwork_overview')}\n\n"
-                f"Viele Grüße,\n"
-                f"Der Vorstand",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False
-            )
+            try:
+                send_mail(
+                    subject=f"Gegehmigungen ausstehend für Arbeitsdienste",
+                    message=f"Hallo {user.first_name},\n\n"
+                    f"Es stehen noch Arbeitsdienste zur Genehmigung an.\n"
+                    f"Bitte überprüfe die Arbeitsdienste und genehmige diese.\n\n"
+                    f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('approve_clubwork_overview')}\n\n"
+                    f"Viele Grüße,\n"
+                    f"Der Vorstand",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False
+                )
+            except Exception:
+                logger.exception(f"Sending approve nofification mail to {user.email}")
 
         
         for work in list(works):
@@ -68,8 +71,8 @@ class Command(BaseCommand):
                     )
                     participation.did_send_reminder = True
                     participation.save()
-                except Exception as e:
-                    logger.exception(e)
+                except Exception:
+                    logger.exception(f"Sending participation nofification mail to {user.email}")
 
 
     def handle(self, *args: Any, **options: Any) -> str | None:
