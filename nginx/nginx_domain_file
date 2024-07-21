@@ -1,4 +1,0 @@
-# rename to domain and put it into vhost.d
-location /static {
-    alias /clubapp-static;
-}

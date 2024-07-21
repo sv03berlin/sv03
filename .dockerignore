@@ -4,8 +4,10 @@
 .vscode
 invoices/*
 .ruff_cache/*
+.mypy_cache/*
 Dockerfile
-deploy.Dockerfile
 .env
 clubapp_data/*
 .git
+data/*
+bootstrap-*/*
