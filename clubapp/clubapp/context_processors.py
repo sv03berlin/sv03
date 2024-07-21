@@ -1,3 +1,4 @@
+import os
 from typing import Any
 
 from django.conf import settings
@@ -26,4 +27,6 @@ def club_processor(request: HttpRequest) -> dict[str, Any]:  # noqa: ARG001
         "enable_oidc_login": settings.ENABLE_OIDC_LOGIN,
         "enable_django_login": settings.ENABLE_DJANGO_LOGIN,
         "staff": get_admins(),
+        "git_sha": os.environ.get("GIT_SHA"),
+        "git_branch": os.environ.get("GIT_BRANCH"),
     }

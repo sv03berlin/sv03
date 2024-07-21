@@ -7,8 +7,8 @@
                 <h2>ClubApp Funktionen</h2>
                 <ul>
                     <li>Anmeldung über einen Single Sign On Dienst</li>
-                    <li>Beantragen von Erstattungen von Rechnungen</li>
-                    <li>Übersicht über getätigte Erstattungen</li>
+                    <!-- <li>Beantragen von Erstattungen von Rechnungen</li>
+                    <li>Übersicht über getätigte Erstattungen</li> -->
                     <li>Eintragen und Ausschreibungen von Arbeitsdienst</li>
                     <li>Übersicht über getätigte Arbeitsdienste</li>
                     <li>Reservieren von Clubresourcen</li>
@@ -20,6 +20,12 @@
                     {% for user in staff %}
                     <li><a href="mailto:{{ user.email }}">Email an {{ user }}</a></li>
                     {% endfor %}
+                </ul>
+
+                <h2>Version</h2>
+                <ul>
+                    <li>Git Branch: {{git_branch}}</li>
+                    <li>Git Commit Sha: {{git_sha}}</li>
                 </ul>
             </div>
         </div>

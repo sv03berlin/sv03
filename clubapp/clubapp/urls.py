@@ -13,6 +13,7 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("reservations/", include("clubapp.reservationflow.urls")),
     path("profile_overview/", views.profile_overview, name="profile_overview"),
+    path("testmail/", views.send_test_mail, name="testmail"),
 ]
 
 if settings.ENABLE_OIDC_LOGIN:

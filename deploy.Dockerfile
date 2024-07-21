@@ -25,5 +25,10 @@ EXPOSE 8000
 
 ENV PATH="/code/.venv/bin:$PATH"
 
+ARG GIT_SHA
+ARG GIT_BRANCH
+ENV GIT_SHA GIT_SHA
+ENV GIT_BRANCH GIT_BRANCH
+
 ENTRYPOINT [ "/code/entrypoint.sh" ]
 CMD [ "python", "/code/clubapp_uvicorn.py" ]

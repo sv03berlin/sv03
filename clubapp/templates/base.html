@@ -102,6 +102,7 @@
                                         {% if user.is_superuser %}
                                             <h6 class="dropdown-header">Admin</h6>
                                             <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a></li>
+                                            <li><a class="dropdown-item" href="{% url 'testmail' %}">Sende Test Email an diesen User</a></li>
                                             <li><hr class="dropdown-divider"></li>
                                         {% endif %}
                                         <li>
