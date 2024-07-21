@@ -30,7 +30,7 @@ def send_test_mail(request: HttpRequest) -> HttpResponse:
     user = cast(User, request.user)
     send_mail(
         subject="Sv03 Clubapp Test Email",
-        message="This is a Test to check if Email is working.",
+        message="This is a Test to check if email credentials are working.",
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
         fail_silently=False,
