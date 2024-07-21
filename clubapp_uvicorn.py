@@ -16,7 +16,7 @@ if __name__ == "__main__":
         lifespan="off",
         forwarded_allow_ips="*",
         proxy_headers=True,
-        log_config="logging.yaml"
+        log_config="logging.yaml",
     )
     server = uvicorn.Server(config)
     thread = threading.Thread(target=server.run)

@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def notify_ressort(self) -> None:
         users: set[User] = set()
         works: set[ClubWorkParticipation] = set()
-        print(ClubWorkParticipation.objects.filter(is_approved=False, did_send_approve_hint=False))
+        print(str(ClubWorkParticipation.objects.filter(is_approved=False, did_send_approve_hint=False)))
         for work in ClubWorkParticipation.objects.filter(is_approved=False, did_send_approve_hint=False):
             for head in work.ressort.head.all():
                 users.add(head)
