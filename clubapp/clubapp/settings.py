@@ -226,34 +226,3 @@ OIDC_OP_LOGOUT_URL_METHOD = "clubapp.clubapp.oidc.provider_logout"
 ALLOW_LOGOUT_GET_METHOD = True
 
 KEYCLOAK_ACCOUNT_URL = environ.get("KEYCLOAK_ACCOUNT_URL", "")
-
-# logging
-
-LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-        },
-    },
-    "formatters": {
-        "default": {
-            "format": "%(asctime)s [%(name)s] %(levelname)s %(message)s",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": LOG_LEVEL,
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": True,
-        },
-    },
-}
