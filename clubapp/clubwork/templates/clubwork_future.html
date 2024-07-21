@@ -38,7 +38,7 @@
                             <button type="submit" class="btn btn-sm btn-outline-danger m-1">Abmelden</button>
                         </form>
                         {% endif %}
-                        {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+                        {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
                         <div class="dropdown">
                             <button type="button" class="btn btn-sm btn-secondary dropdown-toggle m-1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Administration

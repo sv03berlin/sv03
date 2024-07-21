@@ -229,21 +229,31 @@ KEYCLOAK_ACCOUNT_URL = environ.get("KEYCLOAK_ACCOUNT_URL", "")
 
 # logging
 
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            "formatter": "default",
         },
     },
     "formatters": {
         "default": {
-            "format": "%(asctime)s [%(name)s] %(levelprefix)s %(message)s",
+            "format": "%(asctime)s [%(name)s] %(levelname)s %(message)s",
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": os.environ.get("LOG_LEVEL", "INFO"),
+        "level": LOG_LEVEL,
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+        },
     },
 }

@@ -24,6 +24,7 @@ USER 1000
 EXPOSE 8000
 
 ENV PATH="/code/.venv/bin:$PATH"
+ENV LOG_LEVEL INFO
 
 ENTRYPOINT [ "/code/entrypoint.sh" ]
 CMD [ "python", "/code/clubapp_uvicorn.py" ]
