@@ -184,6 +184,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "")
+EMAIL_USE_SSL=True
 
 CLUB_NAME = os.environ.get("CLUB_NAME", "Club")
 CLUB_NAME_SHORT = os.environ.get("CLUB_NAME_SHORT", "CN")
