@@ -128,7 +128,7 @@ class CalendarDetailView(LoginRequiredMixin, FilterView):  # type: ignore[misc]
                 [
                     {
                         "id": event.id,
-                        "title": event.__str__(),
+                        "title": f"{event.thing} reserviert von {event.user}",
                         "start": event.start.isoformat(),
                         "end": event.end.isoformat(),
                         "url": reverse("reservation_group_detail", kwargs={"pk": event.id}),

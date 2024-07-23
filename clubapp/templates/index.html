@@ -17,6 +17,7 @@
                 <h2>Hilfe benötigt?</h2>
                 <p>Bei Fragen oder Problemen wenden dich bitte an eine:n Administrator:in.</p>
                 <ul>
+                    <li><a href="mailto:{% for user in staff %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">Email an alle Administratoren</a></li>
                     {% for user in staff %}
                     <li><a href="mailto:{{ user.email }}">Email an {{ user }}</a></li>
                     {% endfor %}

@@ -37,7 +37,8 @@ line-length = 120
 exclude = [
     "**/migrations/*",
     "**/settings/__init__.py",
-    "**/commands/*.py"
+    "**/commands/*.py",
+    "**/tests.py"
 ]
 
 [tool.ruff.lint]
@@ -57,6 +58,7 @@ plugins = ["mypy_django_plugin.main"]
 exclude = [
     "test\\.py$",
     "migrations/*",
+    "tests.py"
 ]
 
 [[tool.mypy.overrides]]

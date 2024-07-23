@@ -19,3 +19,6 @@ class Command(BaseCommand):
         print("\033[1;32m" + "running type checker" + "\033[0m")
         cmd = "python3 manage.py typecheck"
         subprocess.run(cmd, shell=True, check=True)
+        print("\033[1;32m" + "running tests" + "\033[0m")
+        cmd = "python3 manage.py test"
+        subprocess.run(cmd, shell=True, check=True)

@@ -52,4 +52,4 @@ class Reservation(models.Model):
         verbose_name_plural = _("Reservierungen")
 
     def __str__(self) -> str:
-        return f"{self.thing.name} - {self.user}"
+        return f"{self.thing.name} reserviert von {self.user} von {self.start} - {self.end}"
