@@ -191,7 +191,7 @@ CLUB_NAME_SHORT = os.environ.get("CLUB_NAME_SHORT", "CN")
 CLUB_IMPRINT = os.environ.get("CLUB_IMPRINT", "#")
 THIS_APP_NAME = os.environ.get("THIS_APP_NAME", "Clubapp")
 
-STAGING = os.environ.get("STAGING", "False").lower() == "true"
+STAGING = (os.environ.get("STAGING", "False").lower() == "true") or DEBUG
 
 INDEX_IS_LOGIN = os.environ.get("INDEX_IS_LOGIN", "True").lower() == "true"
 
