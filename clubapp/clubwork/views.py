@@ -5,7 +5,6 @@ from typing import Any, no_type_check
 from django import forms
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
@@ -60,7 +59,7 @@ def clubwork_index(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@staff_member_required
+@is_ressort_user
 def add_clubwork(request: AuthenticatedHttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = ClubWorkForm(request.POST)
@@ -223,7 +222,12 @@ def unregister_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpR
         cw = ClubWork.objects.get(pk=pk)
         if request.method == "POST":
             part = ClubWorkParticipation.objects.get(clubwork=cw, user=request.user)
-            if not request.user.is_staff or request.user != part.user:
+            if (
+                not request.user.is_staff
+                or request.user.is_superuser
+                or request.user.is_ressort_user
+                or request.user != part.user
+            ):
                 messages.error(request, "Du kannst nur deine eigenen Anmeldungen löschen.")
                 return redirect("clubwork_index")
             if not part.is_approved:
@@ -399,7 +403,7 @@ class AllClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterVi
 
 
 @login_required
-@staff_member_required
+@is_ressort_user
 def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     cw = get_object_or_404(ClubWork, pk=pk)
     if request.method == "POST":
