@@ -139,7 +139,7 @@ jobs:
           poetry install --with dev --no-root
         if: steps.cache-venv.outputs.cache-hit != 'true'
 
-      - name: typecheck
+      - name: test
         run: |
           poetry run python3 manage.py migrate
           poetry run python3 manage.py test
