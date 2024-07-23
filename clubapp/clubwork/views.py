@@ -95,14 +95,17 @@ def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     return render(request, template_name="create_form.html", context=c)
 
 
-class IsStaffMixin(UserPassesTestMixin):
+class IsRessortOrAdminMixin(UserPassesTestMixin):
     request: HttpRequest
 
     def test_func(self) -> bool:
-        return self.request.user.is_staff
+        if not self.request.user.is_authenticated:
+            return False
+        user = self.request.user
+        return user.is_superuser or user.is_ressort_user
 
 
-class ClubWorkDelete(IsStaffMixin, DeleteView):  # type: ignore[type-arg, misc]
+class ClubWorkDelete(IsRessortOrAdminMixin, DeleteView):  # type: ignore[type-arg, misc]
     template_name = "delete_form.html"
     queryset = ClubWork.objects.all()
     success_url = reverse_lazy("clubwork_index")
@@ -272,7 +275,7 @@ class HistoryFilter(YearFilter):
         fields = [*YearFilter.Meta.fields, "ressort"]
 
 
-class ClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type: ignore[misc]
+class ClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView):  # type: ignore[misc]
     model = ClubWorkParticipation
     template_name = "clubwork_history.html"
     filterset_class = HistoryFilter
@@ -375,7 +378,7 @@ class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
         return c
 
 
-class AllClubworkHistoryView(LoginRequiredMixin, IsStaffMixin, FilterView):  # type: ignore[misc]
+class AllClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView):  # type: ignore[misc]
     model = ClubWork
     template_name = "clubwork_all.html"
     filterset_class = HistoryFilter
