@@ -15,11 +15,26 @@
                     <li>Übersicht über getätigte Reservierungen</li>
                 </ul>
                 <h2>Hilfe benötigt?</h2>
+                <h4>Ressortleitung</h4>
+                <ul>
+                    {% for ressort in ressorts %}
+                    <li>
+                        {{ ressort.name }}
+                        <ul>
+                            <li><a href="mailto:{% for user in ressort.head.all %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">Email an alle Ressortleitungen von ({{ ressort }})</a></li>
+                            {% for head in ressort.head.all %}
+                            <li><a href="mailto:{{ head.email }}">Email an {{ head }} ({{ head.email }})</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <h4>Administratoren</h4>
                 <p>Bei Fragen oder Problemen wenden dich bitte an eine:n Administrator:in.</p>
                 <ul>
                     <li><a href="mailto:{% for user in staff %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">Email an alle Administratoren</a></li>
                     {% for user in staff %}
-                    <li><a href="mailto:{{ user.email }}">Email an {{ user }}</a></li>
+                    <li><a href="mailto:{{ user.email }}">Email an {{ user }} ({{ head.email }})</a></li>
                     {% endfor %}
                 </ul>
 

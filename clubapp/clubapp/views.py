@@ -6,13 +6,13 @@ from django.core.mail import send_mail
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
-from clubapp.club.models import User
+from clubapp.club.models import Ressort, User
 
 
 def index(request: HttpRequest) -> HttpResponse:
     if settings.INDEX_IS_LOGIN and request.user.is_anonymous:
         return render(request, "registration/login.html")
-    return render(request, "index.html")
+    return render(request, "index.html", {"ressorts": Ressort.objects.all()})
 
 
 @login_required

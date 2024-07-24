@@ -9,7 +9,7 @@ from django.utils.http import urlencode
 from josepy.b64 import b64decode
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
-from clubapp.club.models import Membership, User
+from clubapp.club.models import Membership, Ressort, User
 from clubapp.reservationflow.models import ReservationGroup
 
 if TYPE_CHECKING:
@@ -85,6 +85,20 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
                 pm.users.remove(user)
                 pm.save()
 
+    def grant_ressort_permissions(self, claims: dict[Any, Any], user: User) -> None:
+        uc = self.member_permissions(claims)
+
+        # add ressorts to user
+        for ressort in list(Ressort.objects.filter(internal_name__in=uc)):
+            ressort.head.add(user)
+            ressort.save()
+
+        # remove ressorts from user
+        for ressort in user.ressort_head.all():
+            if ressort.internal_name not in uc:
+                ressort.head.remove(user)
+                ressort.save()
+
     @transaction.atomic
     def create_user(self, claims: dict[Any, Any]) -> User:
         logger.info("Creating User: %s", claims["email"])
@@ -104,6 +118,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         user.set_unusable_password()
         user.save()
         self.grant_reservation_permissions(claims, user)
+        self.grant_ressort_permissions(claims, user)
         return user
 
     @transaction.atomic
@@ -122,6 +137,7 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         user.member_id = claims.get("member_id", "")
         user.save()
         self.grant_reservation_permissions(claims, user)
+        self.grant_ressort_permissions(claims, user)
 
         if m := self.get_membership(claims):
             user.update_membership_year(m)

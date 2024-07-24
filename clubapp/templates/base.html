@@ -117,11 +117,13 @@
                                             <li>
                                                 <a class="dropdown-item" href="{% url 'oidc_logout' %}">SSO Logout</a>
                                             </li>
-                                        {% elif enable_django_login %}
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
-                                        </li>
                                         {% endif %}
+                                        <li>
+                                            <form method="post" action="{% url 'logout' %}">
+                                                {% csrf_token %}
+                                                <button class="dropdown-item" type="submit">Logout</button>
+                                            </form>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
