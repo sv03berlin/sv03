@@ -10,8 +10,9 @@
             <p class="card-text">Von: {{ reservation.start }}</p>
             <p class="card-text">Bis: {{ reservation.end }}</p>
             <p class="card-text">Wer: {{ reservation.user }}</p>
+            <p><a class="card-text" href="mailto:{{ reservation.user.email }}">Schreibe {{ reservation.user }} eine Email (reservation.user.email)</a></p>
             {% if edit_allowed %}
-            <div class="d-flex">
+            <div class="d-flex mt-3">
                 <a class="btn btn-primary mx-1 me-1" href="{% url 'reservation_update' reservation.id %}">Bearbeiten</a>
                 <a class="btn btn-danger mx-1 me-2" href="{% url 'reservation_delete' reservation.id %}">Löschen</a>
             </div>

@@ -7,19 +7,41 @@
                 <h2>ClubApp Funktionen</h2>
                 <ul>
                     <li>Anmeldung über einen Single Sign On Dienst</li>
-                    <li>Beantragen von Erstattungen von Rechnungen</li>
-                    <li>Übersicht über getätigte Erstattungen</li>
+                    <!-- <li>Beantragen von Erstattungen von Rechnungen</li>
+                    <li>Übersicht über getätigte Erstattungen</li> -->
                     <li>Eintragen und Ausschreibungen von Arbeitsdienst</li>
                     <li>Übersicht über getätigte Arbeitsdienste</li>
                     <li>Reservieren von Clubresourcen</li>
                     <li>Übersicht über getätigte Reservierungen</li>
                 </ul>
                 <h2>Hilfe benötigt?</h2>
-                <p>Bei Fragen oder Problemen wenden dich bitte an eine:n Administrato:in.</p>
+                <h4>Ressortleitung</h4>
                 <ul>
-                    {% for user in staff %}
-                    <li><a href="mailto:{{ user.email }}">Email an {{ user }}</a></li>
+                    {% for ressort in ressorts %}
+                    <li>
+                        {{ ressort.name }}
+                        <ul>
+                            <li><a href="mailto:{% for user in ressort.head.all %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">Email an alle Ressortleitungen von ({{ ressort }})</a></li>
+                            {% for head in ressort.head.all %}
+                            <li><a href="mailto:{{ head.email }}">Email an {{ head }} ({{ head.email }})</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
                     {% endfor %}
+                </ul>
+                <h4>Administratoren</h4>
+                <p>Bei Fragen oder Problemen wenden dich bitte an eine:n Administrator:in.</p>
+                <ul>
+                    <li><a href="mailto:{% for user in staff %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">Email an alle Administratoren</a></li>
+                    {% for user in staff %}
+                    <li><a href="mailto:{{ user.email }}">Email an {{ user }} ({{ head.email }})</a></li>
+                    {% endfor %}
+                </ul>
+
+                <h2>Version</h2>
+                <ul>
+                    <li>Git Branch: {{git_branch}}</li>
+                    <li>Git Commit Sha: {{git_sha}}</li>
                 </ul>
             </div>
         </div>

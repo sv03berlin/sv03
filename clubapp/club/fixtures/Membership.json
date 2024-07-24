@@ -1,0 +1,26 @@
+[
+{
+    "model": "club.membership",
+    "pk": 1,
+    "fields": {
+        "name": "Juniorenmitglied",
+        "internal_name": "Juniorenmitglied",
+        "work_hours": 10,
+        "work_hours_boat_owner": 10,
+        "work_hours_club_boat_user": 10,
+        "work_compensation": "10.00"
+    }
+},
+{
+    "model": "club.membership",
+    "pk": 2,
+    "fields": {
+        "name": "Ordentliches Mitglied",
+        "internal_name": "Ordentliches Mitglied",
+        "work_hours": 10,
+        "work_hours_boat_owner": 10,
+        "work_hours_club_boat_user": 10,
+        "work_compensation": "10.00"
+    }
+}
+]

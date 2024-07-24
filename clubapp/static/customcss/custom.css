@@ -32,3 +32,13 @@ body {
 .input-group-vert > .form-floating:focus-within {
   z-index: 5;
 }
+
+.bg-special {
+  background: repeating-linear-gradient(
+      125deg,
+      #ff0000, /* Light red */
+      #ff0000 2.5em,
+      #474747 2.5em, /* Grey */
+      #474747 5em
+  );
+}

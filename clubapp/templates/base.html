@@ -18,7 +18,7 @@
 
     <body>
         <header>
-            <nav class="navbar navbar-fixed-top navbar-expand-lg {%if not staging%}navbar-dark bg-dark{% endif %}" aria-label="navbar" {%if staging%}style="background-color: #ee00aa;"{% endif %}>
+            <nav class="navbar navbar-fixed-top navbar-expand-lg {% if staging %} bg-special {% else %} bg-dark {% endif %} navbar-dark" aria-label="navbar">
                 <div class="container">
                     <a class="navbar-brand" href="{% url 'index' %}">
                         <img src="/static/logo.png" alt="Flowers" style="width:auto;height:50px;">
@@ -28,9 +28,8 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     {% if user.is_authenticated %}
-                        <div class="navbar-collapse" id="navbarsExample">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                <div class="navbar-collapse" id="navbarsExample">
+                        <div class="navbar-collapse">
+                            <ul class="navbar-nav me-auto me-auto mb-4 mb-lg-0">
                                     <!-- <div class="navbar-nav nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Erstattungen</a>
                                         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
@@ -50,57 +49,67 @@
                                         </ul>
                                     </div> -->
 
-                                    <div class="navbar-collapse" id="navbarsExample">
-                                        <div class="navbar-nav nav-item dropdown">
-                                            <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Arbeitsdienst</a>
-                                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                                                <li><a class="dropdown-item" href="{% url 'clubwork_index' %}">Meine Übersicht</a></li>
-                                                <li><a class="dropdown-item" href="{% url 'clubwork_user_history' %}">Meine vergangenen Arbeitsdienste</a></li>
-                                                {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
-                                                <li><a class="dropdown-item" href="{% url 'approve_clubwork_overview' %}">Arbeitsdienste genehmigen</a></li>
-                                                <li><a class="dropdown-item" href="{% url 'clubwork_history' %}">Arbeitsdienst Historie</a></li>
-                                                {% endif %}
-                                            </ul>
-                                        </div>
-                                    </div>
+                                <div class="navbar-nav nav-item dropdown">
+                                    <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Arbeitsdienst
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                        <li><a class="dropdown-item" href="{% url 'clubwork_index' %}">Meine Übersicht</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'clubwork_user_history' %}">Meine vergangenen Arbeitsdienste</a></li>
+                                        {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <h6 class="dropdown-header">Ressortleitung</h6>
+                                        <li><a class="dropdown-item" href="{% url 'approve_clubwork_overview' %}">Arbeitsdienste genehmigen</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'clubwork_history' %}">Alle Arbeitsdienstteilnahmen</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'clubwork_all' %}">Alle ausgeschriebenen Arbeitsdienst</a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
 
-                                    <div class="navbar-collapse" id="navbarsExample">
-                                        <div class="navbar-nav nav-item dropdown">
-                                            <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Reservierungen</a>
-                                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                                                <li><a class="dropdown-item" href="{% url 'calendar_month' %}">Reservierungsübersicht</a></li>
-                                                <li><a class="dropdown-item" href="{% url 'reservation_list' %}">Meine Reservierungen</a></li>
-                                                {% if user.is_resort_user or user.is_superuser or user.is_staff %}
-                                                <li><a class="dropdown-item" href="{% url 'staff_reservation_list' %}">Alle Reservierungen</a></li>
-                                                {% endif %}
-                                            </ul>
-                                        </div>
-                                    </div>
+                                <div class="navbar-nav nav-item dropdown">
+                                    <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Reservierungen
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                        <li><a class="dropdown-item" href="{% url 'calendar_month' %}">Reservierungsübersicht</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'reservation_list' %}">Meine Reservierungen</a></li>
+                                        {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+                                        <li><a class="dropdown-item" href="{% url 'staff_reservation_list' %}">Alle Reservierungen</a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
 
-                                    <div class="navbar-collapse" id="navbarsExample">
-                                        <div class="navbar-nav nav-item dropdown">
-                                            <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Hilfe</a>
-                                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                                                {% for user in staff %}
-                                                <li><a class="dropdown-item" href="mailto:{{ user.email }}">Email an {{ user }}</a></li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    </div>
+                                <div class="navbar-nav nav-item dropdown">
+                                    <a class="nav-link active dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Hilfe</a>
+                                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                        <li>
+                                            <a class="dropdown-item" href="mailto:{% for user in staff %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                                                Email an alle Administratoren
+                                            </a>
+                                        </li>
+                                        {% for user in staff %}
+                                        <li><a class="dropdown-item" href="mailto:{{ user.email }}">Email an {{ user }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
 
                             </ul>
 
                             <div class="navbar-nav px-2"></ul>
                                 <div class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">{{ user }}</a>
+                                    <a class="nav-link active dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">{{ user }}</a>
                                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
                                         <!-- <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
                                         <li><hr class="dropdown-divider"></li> -->
                                         {% if user.is_superuser %}
                                             <h6 class="dropdown-header">Admin</h6>
                                             <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a></li>
+                                            <li><a class="dropdown-item" href="{% url 'testmail' %}">Sende Test Email an diesen User</a></li>
                                             <li><hr class="dropdown-divider"></li>
                                         {% endif %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'profile_overview' %}">Meine Daten</a>
+                                        </li>
                                         {% if enable_oidc_login %}
                                             <li>
                                                 <a class="dropdown-item" href="{% url 'oidc_account' %}">SSO Account Settings</a>
@@ -108,11 +117,13 @@
                                             <li>
                                                 <a class="dropdown-item" href="{% url 'oidc_logout' %}">SSO Logout</a>
                                             </li>
-                                        {% elif enable_django_login %}
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
-                                        </li>
                                         {% endif %}
+                                        <li>
+                                            <form method="post" action="{% url 'logout' %}">
+                                                {% csrf_token %}
+                                                <button class="dropdown-item" type="submit">Logout</button>
+                                            </form>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>

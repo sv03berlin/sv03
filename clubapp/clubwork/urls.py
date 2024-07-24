@@ -4,6 +4,7 @@ from clubapp.clubwork import views
 
 urlpatterns = [
     path("", views.clubwork_index, name="clubwork_index"),
+    path("all/", views.AllClubworkHistoryView.as_view(), name="clubwork_all"),
     path("add/", views.add_clubwork, name="add_clubwork"),
     path("mod/<int:pk>/", views.mod_clubwork, name="mod_clubwork"),
     path("add_own/", views.OwnClubWorkCreate.as_view(), name="add_own_clubwork"),

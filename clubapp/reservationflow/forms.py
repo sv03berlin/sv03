@@ -1,12 +1,12 @@
-from django.utils import timezone
 from typing import Any
 
 from django.forms import ModelForm
+from django.utils import timezone
 
 from clubapp.club.models import User
 from clubapp.clubapp.utils import DateTimeInput
 
-from .models import ReservabelThing, Reservation
+from .models import ReservableThing, Reservation
 
 
 class ReservationForm(ModelForm):  # type: ignore[type-arg]
@@ -35,11 +35,11 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
         return super().save(commit)  # type: ignore[no-any-return]
 
     def allowed_to_borrow(self) -> list[tuple[int, str]]:
-        if self.user.is_staff:
-            qs = ReservabelThing.objects.all()
+        if self.user.is_superuser or self.user.is_ressort_user:
+            qs = ReservableThing.objects.all()
         else:
-            qs = ReservabelThing.objects.filter(reservation_group__memberships__user=self.user)
-            qs |= ReservabelThing.objects.filter(all_can_reserve=True)
+            qs = ReservableThing.objects.filter(reservation_group__users__in=[self.user])
+            qs |= ReservableThing.objects.filter(all_can_reserve=True)
             qs = qs.distinct()
         return [(thing.id, thing.name) for thing in qs]
 
@@ -61,19 +61,19 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
 
         thing = self.cleaned_data["thing"]
 
-        qs = Reservation.objects.all().exclude(thing=thing)
+        qs = Reservation.objects.filter(thing=thing)
 
         # Check for any overlapping reservations
-        overlapping_reservations = qs.filter(thing=thing, start__lt=end_time, end__gt=start_time)
+        overlapping_reservations = qs.filter(start__lt=end_time, end__gt=start_time)
 
         # Check if new reservation falls within the duration of an existing reservation
-        containing_reservations = qs.filter(thing=thing, start__lte=start_time, end__gte=end_time)
+        containing_reservations = qs.filter(start__lte=start_time, end__gte=end_time)
 
         # Check if the start time of the new reservation is within the duration of an existing reservation
-        containing_start_time_reservations = qs.filter(thing=thing, start__lt=start_time, end__gt=start_time)
+        containing_start_time_reservations = qs.filter(start__lt=start_time, end__gt=start_time)
 
         # Check if the end time of the new reservation is within the duration of an existing reservation
-        containing_end_time_reservations = qs.filter(thing=thing, start__lt=end_time, end__gt=end_time)
+        containing_end_time_reservations = qs.filter(start__lt=end_time, end__gt=end_time)
 
         if (
             overlapping_reservations.exists()

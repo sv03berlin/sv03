@@ -1,0 +1,12 @@
+[
+{
+    "model": "reservationflow.reservablething",
+    "pk": 1,
+    "fields": {
+        "name": "Svima",
+        "description": "boot",
+        "reservation_group": 1,
+        "all_can_reserve": false
+    }
+}
+]

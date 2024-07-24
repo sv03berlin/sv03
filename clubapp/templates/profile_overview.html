@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Meine Daten</h2>
+                Falls bei deinen Daten ein Fehler vorliegt, kontaktiere bitte den Vorstand und bitte um eine Änderung in der Vereinskartei.
+                <ul>
+                    <li>Vorname: {{ user.first_name }}</li>
+                    <li>Nachname: {{ user.last_name }}</li>
+                    <li>Username: {{ user.username }}</li>
+                    <li>email: {{ user.email }}</li>
+                    <li>Geburtstag: {{ user.birthday }}</li>
+                    <li>OpenID Sub: {{ user.openid_sub }}</li>
+                    <li>Mitgliedschaft: {{ user.membership }}</li>
+                    <li>Clubbootnutzung: {{ user.is_boat_owner }}</li>
+                    <li>Bootseigner: {{ user.is_clubboat_user }}</li>
+                    <li>Bereits erlegigte Arbeitsstunden: {{ user.hours_done }} von {{ user.hours_to_do }}</li>
+                    <li>Reservierungsgruppen:
+                        <ul>
+                            {% for group in user.reservation_groups.all %}
+                                <li>{{ group.name }}</li>
+                            {% empty %}
+                                <li>Du bist in keiner Reservierungsgruppe Mitglied</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

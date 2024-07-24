@@ -15,12 +15,22 @@ from os import environ
 from pathlib import Path
 
 import django_stubs_ext
+import sentry_sdk
 from django.contrib.messages import constants as messages
+from dotenv import load_dotenv
 
 django_stubs_ext.monkeypatch()
 
+sentry_sdk.init(
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENV_FILE = BASE_DIR.parent / ".env"
+load_dotenv(ENV_FILE)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -39,7 +49,8 @@ ENABLE_OIDC_LOGIN = os.environ.get("ENABLE_OIDC_LOGIN", "False").lower() == "tru
 ENABLE_DJANGO_LOGIN = os.environ.get("ENABLE_DJANGO_LOGIN", "True").lower() == "true"
 
 if not ENABLE_OIDC_LOGIN and not ENABLE_DJANGO_LOGIN:
-    raise ValueError("ENABLE_OIDC_LOGIN and ENABLE_DJANGO_LOGIN cannot be both False")
+    msg = "ENABLE_OIDC_LOGIN and ENABLE_DJANGO_LOGIN cannot be both False"
+    raise ValueError(msg)
 VIRTUAL_HOST = os.environ.get("VIRTUAL_HOST", "localhost:8000").removesuffix("/")
 
 
@@ -60,6 +71,7 @@ INSTALLED_APPS = [
     "clubapp.club",
     "clubapp.clubwork",
     "clubapp.reservationflow",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -80,13 +92,14 @@ if ENABLE_DJANGO_LOGIN:
     AUTHENTICATION_BACKENDS.append("django.contrib.auth.backends.ModelBackend")
 
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 60 * 60 * 24  # 24 hours
 
 ROOT_URLCONF = "clubapp.clubapp.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -106,11 +119,11 @@ WSGI_APPLICATION = "clubapp.clubapp.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-MEDIA_ROOT = "/clubapp_data/"
+MEDIA_ROOT = Path("./clubapp_data/")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(MEDIA_ROOT, "db.sqlite3"),
+        "NAME": MEDIA_ROOT / "db.sqlite3",
     }
 }
 
@@ -147,11 +160,11 @@ TIME_ZONE = "CET"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
 # Additional locations of static files
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    BASE_DIR / "static",
 ]
 
 # Default primary key field type
@@ -171,13 +184,14 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "")
+EMAIL_USE_SSL = True
 
 CLUB_NAME = os.environ.get("CLUB_NAME", "Club")
 CLUB_NAME_SHORT = os.environ.get("CLUB_NAME_SHORT", "CN")
 CLUB_IMPRINT = os.environ.get("CLUB_IMPRINT", "#")
 THIS_APP_NAME = os.environ.get("THIS_APP_NAME", "Clubapp")
 
-STAGING = os.environ.get("STAGING", "False").lower() == "true"
+STAGING = (os.environ.get("STAGING", "False").lower() == "true") or DEBUG
 
 INDEX_IS_LOGIN = os.environ.get("INDEX_IS_LOGIN", "True").lower() == "true"
 
@@ -198,7 +212,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # OIDC
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 60 * 60 * 24  # 24 hours
 OIDC_RP_SIGN_ALGO = "RS256"
-# OIDC_USERNAME_ALGO = ""
+# OIDC_USERNAME_ALGO ""
 OIDC_RP_SCOPES = "openid email profile roles"
 
 OIDC_RP_CLIENT_ID = environ.get("OIDC_RP_CLIENT_ID", "")

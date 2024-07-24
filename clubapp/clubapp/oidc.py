@@ -1,16 +1,25 @@
+import datetime
 from json import loads
-from clubapp.reservationflow.models import ReservationGroup
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
-from django.db.models.query import QuerySet
+from django.db import transaction
 from django.http import HttpRequest, HttpResponseRedirect
 from django.utils.http import urlencode
 from josepy.b64 import b64decode
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
-from django.db import transaction
 
-from clubapp.club.models import User, Membership
+from clubapp.club.models import Membership, Ressort, User
+from clubapp.reservationflow.models import ReservationGroup
+
+if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
+
+from logging import getLogger
+
+logger = getLogger(__name__)
+
+USERNAME_DESCRIPTOR = "preferred_username"
 
 
 class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[misc]
@@ -22,24 +31,29 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return response
 
     def filter_users_by_claims(self, claims: dict[Any, Any]) -> "QuerySet[User]":
-        if claims.get("username"):
-            return User.objects.filter(username=claims["username"])
-        if claims.get("email_verified"):
-            return User.objects.filter(email=claims["email"])
-        else:
-            return User.objects.none()
+        if claims.get("sub") and (qs := User.objects.filter(openid_sub=claims["sub"])).exists():
+            return qs
+        if (
+            claims.get(USERNAME_DESCRIPTOR)
+            and (qs := User.objects.filter(username=claims[USERNAME_DESCRIPTOR])).exists()
+        ):
+            return qs
+        if claims.get("email") and (qs := User.objects.filter(email=claims["email"])).exists():
+            return qs
+        return User.objects.none()
 
     def verify_claims(self, claims: dict[Any, Any]) -> bool:
+        logger.debug("Claims: %s", claims)
         scopes = self.get_settings("OIDC_RP_SCOPES", "openid email")
-        if "email" in scopes.split() and "username" in scopes.split():
+        if "email" in scopes.split() and USERNAME_DESCRIPTOR in scopes.split():
             return "email" in claims
         return True
 
     def get_username(self, claims: dict[Any, Any]) -> str:
-        return claims.get("username", claims.get("email"))  # type: ignore[no-any-return]
+        return claims.get(USERNAME_DESCRIPTOR, claims.get("email"))  # type: ignore[no-any-return]
 
     def get_membership(self, claims: dict[Any, Any]) -> Membership | None:
-        return Membership.objects.filter(name=claims.get("membership")).first()
+        return Membership.objects.filter(internal_name=claims.get("mitgliedschaft", "").strip()).first()
 
     def get_staff(self, claims: dict[Any, Any]) -> bool:
         return "staff" in claims.get("group", []) or self.get_superuser(claims)
@@ -48,7 +62,14 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
         return "admin" in claims.get("group", [])
 
     def member_permissions(self, claims: dict[Any, Any]) -> list[str]:
-        return list(claims.get("member_permissions", "").strip().split(","))
+        return list(claims.get("group", ""))
+
+    def get_birthdate(self, claims: dict[Any, Any]) -> datetime.date | None:
+        return (
+            datetime.datetime.strptime(claims.get("birth_date", ""), "%Y-%m-%d").date()  # noqa: DTZ007
+            if claims.get("birth_date")
+            else None
+        )
 
     def grant_reservation_permissions(self, claims: dict[Any, Any], user: User) -> None:
         uc = self.member_permissions(claims)
@@ -64,38 +85,67 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
                 pm.users.remove(user)
                 pm.save()
 
+    def grant_ressort_permissions(self, claims: dict[Any, Any], user: User) -> None:
+        uc = self.member_permissions(claims)
+
+        # add ressorts to user
+        for ressort in list(Ressort.objects.filter(internal_name__in=uc)):
+            ressort.head.add(user)
+            ressort.save()
+
+        # remove ressorts from user
+        for ressort in user.ressort_head.all():
+            if ressort.internal_name not in uc:
+                ressort.head.remove(user)
+                ressort.save()
+
     @transaction.atomic
     def create_user(self, claims: dict[Any, Any]) -> User:
+        logger.info("Creating User: %s", claims["email"])
         user = User.objects.create_user(
             username=self.get_username(claims),
             email=claims["email"],
-            first_name=claims.get("firstName", ""),
-            last_name=claims.get("lastName", ""),
+            first_name=claims.get("given_name", ""),
+            last_name=claims.get("family_name", ""),
             is_staff=self.get_staff(claims),
-            is_clubboat_user=claims.get("clubboat", False),
-            is_boat_owner=claims.get("boat", False),
+            is_clubboat_user=claims.get("clubboat", "false") == "true",
+            is_boat_owner=claims.get("boat", "false") == "true",
             is_superuser=self.get_superuser(claims),
-            membership_type=self.get_membership(claims),
+            openid_sub=claims.get("sub"),
+            birthday=self.get_birthdate(claims),
+            member_id=claims.get("member_id", ""),
         )
         user.set_unusable_password()
         user.save()
         self.grant_reservation_permissions(claims, user)
+        self.grant_ressort_permissions(claims, user)
         return user
 
+    @transaction.atomic
     def update_user(self, user: User, claims: dict[Any, Any]) -> User:
-        user.email = self.get_username(claims)
-        user.first_name = claims.get("firstName", "")
-        user.last_name = claims.get("lastName", "")
+        logger.info("Updating User: %s", user.get_username())
+        user.username = self.get_username(claims)
+        user.email = claims["email"]
+        user.first_name = claims.get("given_name", "")
+        user.last_name = claims.get("family_name", "")
         user.is_staff = self.get_staff(claims)
-        user.is_clubboat_user = claims.get("clubboat", False)
-        user.is_boat_owner = claims.get("boat", False)
+        user.is_clubboat_user = claims.get("clubboat", "false") == "true"
+        user.is_boat_owner = claims.get("boat", "false") == "true"
         user.is_superuser = self.get_superuser(claims)
-        user.membership_type = self.get_membership(claims)
+        user.openid_sub = claims.get("sub")
+        user.birthday = self.get_birthdate(claims)
+        user.member_id = claims.get("member_id", "")
         user.save()
         self.grant_reservation_permissions(claims, user)
+        self.grant_ressort_permissions(claims, user)
+
+        if m := self.get_membership(claims):
+            user.update_membership_year(m)
 
         if not user.is_active:
-            raise User.DoesNotExist("User is inactive: {}".format(user.get_username()))
+            msg = f"Inactive User tried to log in: {user.get_username()}"
+            logger.error(msg)
+            raise User.DoesNotExist(msg)
 
         return user
 

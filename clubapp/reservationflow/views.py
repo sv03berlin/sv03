@@ -90,11 +90,13 @@ class DetailReservationView(LoginRequiredMixin, DetailView[Reservation]):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
         c["user"] = self.request.user
-        c["edit_allowed"] = self.request.user.is_staff or self.request.user.is_superuser or self.request.user == self.get_object().user
+        c["edit_allowed"] = (
+            self.request.user.is_staff or self.request.user.is_superuser or self.request.user == self.get_object().user
+        )
         return c
 
 
-class ReservationGroupFilter(FilterSet):  # type: ignore
+class ReservationGroupFilter(FilterSet):  # type: ignore[misc]
     group = NumberFilter(
         field_name="thing__reservation_group",
         widget=forms.Select(choices=[]),
@@ -126,7 +128,7 @@ class CalendarDetailView(LoginRequiredMixin, FilterView):  # type: ignore[misc]
                 [
                     {
                         "id": event.id,
-                        "title": event.__str__(),
+                        "title": f"{event.thing} reserviert von {event.user}",
                         "start": event.start.isoformat(),
                         "end": event.end.isoformat(),
                         "url": reverse("reservation_group_detail", kwargs={"pk": event.id}),

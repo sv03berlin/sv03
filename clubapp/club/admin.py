@@ -2,13 +2,18 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 
-from clubapp.club.models import Membership, Ressort, User
+from clubapp.club.models import Membership, MembershipYear, Ressort, User
 
 
 class CustomUserAdmin(UserAdmin):
+    readonly_fields = ("membership_type",)
+
+    def get_membership_type(self, obj: User) -> MembershipYear | None:
+        return obj.membership_type
+
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "email", "license")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "email", "license", "member_id")}),
         (
             "Permissions",
             {
@@ -19,14 +24,12 @@ class CustomUserAdmin(UserAdmin):
                     "is_boat_owner",
                     "is_clubboat_user",
                     "can_create_invoices",
-                    "groups",
                 )
             },
         ),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
         ("Membership", {"fields": ("membership_type",)}),
     )
-    autocomplete_fields = ["membership_type"]
 
 
 class MembershipAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
@@ -35,11 +38,12 @@ class MembershipAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
 
 
 class RessortAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
-    list_display = ("name", "head", "is_accounting_ressort")
-    autocomplete_fields = ["head"]
+    list_display = ("name",)
+    filter_horizontal = ["head"]
 
 
 admin.site.unregister(Group)
 admin.site.register(Ressort, RessortAdmin)
 admin.site.register(Membership, MembershipAdmin)
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(MembershipYear)

@@ -11,3 +11,8 @@ clubapp/static/gh.css
 **/ext/*
 bootstrap-*/*
 .ruff_cache/*
+.env
+.venv
+venv
+clubapp_data/*
+.mypy_cache/*

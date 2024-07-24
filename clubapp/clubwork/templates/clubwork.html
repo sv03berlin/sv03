@@ -7,7 +7,7 @@
 
     <p>Als {{user.membership_type}} habe ich von meinen {{user.club_work_hours}} Stunden für {{this_year}} schon {{user.hours_done_formatted}} erledigt. Also sind noch {{user.hours_to_do_formatted}} verbleibend. Jedoch sind {{user.unconfirmed_hours_formatted}} noch nicht bestätigt worden.</p>
 
-    {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+    {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
     <a class="btn btn-outline-secondary btn-sm mb-3" href="{% url 'add_clubwork' %}" data-bs-toggle="tooltip" title="Einen neuen Arbeitsdienst für alle Mitglieder ausschreiben">Neuen Arbeitsdienst ausschreiben</a>
     {% endif %}
 

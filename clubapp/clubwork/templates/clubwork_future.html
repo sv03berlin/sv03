@@ -16,7 +16,11 @@
                 <td>{{ clubwork.title }}</td>
                 <td>{{ clubwork.ressort }}</td>
                 <td>{{ clubwork.description }}</td>
-                <td>{{ clubwork.date_time }}</td>
+                <td>
+                    <p data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="{% if clubwork.async_date %} Ihr müsst euch selbständig um einem gemeinsamen Termin bemühren und sollt die Arbeit innerhalb der Frist (bis zum {{ clubwork.date_time }}) erledigen. {% else %} Seid bitte rechtzeitig ({{ clubwork.date_time }}) zum Arbeitsdienst anwesend. {% endif %}">
+                        {% if clubwork.async_date %} First {% endif %} {{ clubwork.date_time }}
+                    </p>
+                </td>
                 <td>{{ clubwork.max_duration }} Min</td>
                 <td>
                     <p data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="Teilnehmende: <ul>{% for participant in clubwork.registered_users %}<li>{{ participant }}</li>{% endfor %}</ul>">{{ clubwork.num_participants }}/{{ clubwork.max_participants }}</p>
@@ -34,7 +38,7 @@
                             <button type="submit" class="btn btn-sm btn-outline-danger m-1">Abmelden</button>
                         </form>
                         {% endif %}
-                        {% if user.is_resort_user or user.is_superuser or user.is_staff %}
+                        {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
                         <div class="dropdown">
                             <button type="button" class="btn btn-sm btn-secondary dropdown-toggle m-1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Administration
