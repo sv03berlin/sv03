@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
         
         for work in list(works):
-            work.did_send_reminder = True
+            work.did_send_approve_hint = True
             work.save()
 
 
