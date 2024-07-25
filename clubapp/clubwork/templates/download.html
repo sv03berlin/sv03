@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container">
+    <p class="h4 mb-3">Jahresabschluss {{ year }} Herunterladen</p>
+
+    <div class="d-flex">
+        <form action="" method="get" class="d-flex">
+            <button class="btn btn-sm btn-outline-secondary me-2 col-auto" name="xlsx" value="true" type="submit">Download XLSX</button>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
