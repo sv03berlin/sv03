@@ -14,7 +14,7 @@ uvicorn = {version = "0.29"}
 django-stubs-ext = "^4.2.7"
 mozilla-django-oidc = "4.0.0"
 django-filter = "23.5"
-openpyxl = "3.1.2"
+openpyxl = "3.1.5"
 django-extensions = "3.2.3"
 python-keycloak = "^3.3.0"
 python-dotenv = "^1.0.1"
