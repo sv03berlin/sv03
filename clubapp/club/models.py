@@ -211,7 +211,13 @@ class MembershipYear(models.Model):
 class Ressort(models.Model):
     name = models.CharField(max_length=63, unique=True, verbose_name=_("Ressortname"))
     internal_name = models.CharField(max_length=63, unique=True, verbose_name=_("Interner Ressortname"))
-    head = models.ManyToManyField(User, related_name="ressort_head", verbose_name=_("Leiter:in"))
+    head = models.ManyToManyField(
+        User,
+        related_name="ressort_head",
+        verbose_name=_("Leiter:in"),
+        blank=True,
+        default=None,
+    )
     is_accounting_ressort = models.BooleanField(default=False, verbose_name=_("Buchhaltungsressort"))
 
     def __str__(self) -> str:

@@ -7,8 +7,7 @@ from clubapp.club.models import User
 class ReservationGroup(models.Model):
     name = models.CharField(max_length=100)
     internal_name = models.CharField(max_length=64, default="")
-    description = models.TextField()
-
+    description = models.TextField(default="")
     users = models.ManyToManyField(
         User,
         related_name="reservation_groups",
@@ -27,7 +26,7 @@ class ReservationGroup(models.Model):
 
 class ReservableThing(models.Model):
     name = models.CharField(max_length=100, verbose_name=_("Name"))
-    description = models.TextField(verbose_name=_("Beschreibung"))
+    description = models.TextField(verbose_name=_("Beschreibung"), default="")
     reservation_group = models.ForeignKey(
         ReservationGroup, on_delete=models.CASCADE, verbose_name="Reservierungsgruppe"
     )
