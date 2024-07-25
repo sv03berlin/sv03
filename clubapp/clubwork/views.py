@@ -299,22 +299,20 @@ class ClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView)
                 messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
                 return super().get(request, *args, **kwargs)
             if year:
-                reverse("download", year)
+                return redirect(reverse("download", args=[year]))
             messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
         return super().get(request, *args, **kwargs)
 
 @login_required
 @is_ressort_user
 def download_xlsx_view(request: AuthenticatedHttpRequest, year: int) -> HttpResponse | FileResponse | Any:
+    if ClubWorkParticipation.objects.filter(date_time__year=int(year), is_approved=False).exists():
+        messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
+    else:
+        messages.info(request, f"Alle Arbeitsdienste für {year} wurden Genehmigt")
     if request.GET.get("xlsx", "false").lower() == "true":
-        year = request.GET.get("year")
         if not year:
             messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
-            return reverse()
-        if ClubWorkParticipation.objects.filter(date_time__year=int(year), is_approved=False).exists():
-            messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
-        else:
-            messages.info(request, f"Alle Arbeitsdienste für {year} wurden Genehmigt")
         if year:
             r = FileResponse(
                 get_xlsx(int(year)),
@@ -325,7 +323,7 @@ def download_xlsx_view(request: AuthenticatedHttpRequest, year: int) -> HttpResp
             r["Content-Disposition"] = f"attachment; filename=arbeitsdienst_{year}.xlsx"
             return r
         messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
-    return render("download.html",context={"year": year})
+    return render(request, "download.html",context={"year": year})
 
 def get_xlsx(year: int) -> BytesIO:
     users = User.objects.filter(is_active=True, membership_years__year=year)
