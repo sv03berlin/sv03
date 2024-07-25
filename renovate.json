@@ -13,7 +13,8 @@
       "groupName": "python dependencies",
       "groupSlug": "python",
       "matchDatasources": [
-        "pypi"
+        "pypi",
+        "docker"
       ],
       "matchCurrentValue": "!/^[0-9]/"
     },
@@ -23,29 +24,6 @@
       "matchDepTypes": [
         "action"
       ]
-    },
-    {
-      "groupName": "docker images major",
-      "groupSlug": "docker-major",
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor"
-      ],
-      "enabled": false
-    },
-    {
-      "groupName": "docker images minor",
-      "groupSlug": "docker-minor",
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchUpdateTypes": [
-        "patch"
-      ],
-      "automerge": true
     }
   ]
 }
