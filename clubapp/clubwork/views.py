@@ -15,7 +15,7 @@ from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseRed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView, DeleteView, UpdateView, DetailView
+from django.views.generic import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView
@@ -303,6 +303,7 @@ class ClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView)
             messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
         return super().get(request, *args, **kwargs)
 
+
 @login_required
 @is_ressort_user
 def download_xlsx_view(request: AuthenticatedHttpRequest, year: int) -> HttpResponse | FileResponse | Any:
@@ -323,7 +324,8 @@ def download_xlsx_view(request: AuthenticatedHttpRequest, year: int) -> HttpResp
             r["Content-Disposition"] = f"attachment; filename=arbeitsdienst_{year}.xlsx"
             return r
         messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
-    return render(request, "download.html",context={"year": year})
+    return render(request, "download.html", context={"year": year})
+
 
 def get_xlsx(year: int) -> BytesIO:
     users = User.objects.filter(is_active=True, membership_years__year=year)
@@ -377,6 +379,7 @@ def get_xlsx(year: int) -> BytesIO:
     wb.save(bio)
     bio.seek(0)
     return bio
+
 
 class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
     model = ClubWorkParticipation
