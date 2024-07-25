@@ -20,3 +20,12 @@ mv tom-select.min.css.map ./clubapp/static/ext/tom-select.min.css.map
 # calendar
 wget https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js
 mv index.global.min.js ./clubapp/static/ext/fullcalendar.min.js
+
+# flatpikr
+wget https://registry.npmjs.org/flatpickr/-/flatpickr-4.6.13.tgz
+mkdir -p temp_flatpickr
+tar -xzf flatpickr-4.6.13.tgz -C temp_flatpickr
+mkdir -p staticfiles
+cp -r temp_flatpickr/package/dist clubapp/static/flatpickr
+rm -rf temp_flatpickr
+rm flatpickr-4.6.13.tgz

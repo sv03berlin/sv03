@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "clubapp.clubwork",
     "clubapp.reservationflow",
     "django_extensions",
+    "django_flatpickr"
 ]
 
 MIDDLEWARE = [
@@ -227,3 +228,14 @@ OIDC_OP_LOGOUT_URL_METHOD = "clubapp.clubapp.oidc.provider_logout"
 ALLOW_LOGOUT_GET_METHOD = True
 
 KEYCLOAK_ACCOUNT_URL = environ.get("KEYCLOAK_ACCOUNT_URL", "")
+
+DJANGO_FLATPICKR = {
+    "theme_name": "dark",
+    "options": {
+        "locale": "de",
+        "altFormat": "d.m.y H:i",
+        "time_24hr": "true",
+    },
+    "flatpickr_cdn_url": "flatpickr/",
+    "app_static_url": "django_flatpickr/",
+}

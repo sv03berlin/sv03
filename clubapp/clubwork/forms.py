@@ -4,6 +4,7 @@ from django import forms
 
 from clubapp.club.models import User
 from clubapp.clubapp.utils import DateTimeInput
+from django_flatpickr.widgets  import DateTimePickerInput
 
 from . import models
 
@@ -21,7 +22,7 @@ class ClubWorkForm(forms.ModelForm[models.ClubWork]):
             "description",
         ]
         widgets = {
-            "date_time": DateTimeInput(),
+            "date_time": DateTimePickerInput(),
         }
 
 
@@ -36,7 +37,7 @@ class ClubWorkParticipationForm(forms.ModelForm[models.ClubWorkParticipation]):
             "description",
         ]
         widgets = {
-            "date_time": DateTimeInput(),
+            "date_time": DateTimePickerInput(),
         }
 
     def __init__(self, user: User, *args: Any, **kwargs: Any) -> None:
