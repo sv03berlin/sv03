@@ -51,7 +51,7 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
         start_time = self.cleaned_data["start"]
         end_time = self.cleaned_data["end"]
 
-        if start_time < timezone.now():
+        if start_time < timezone.now() and self.instance.pk is None:
             self.add_error("start", "Startzeit muss in der Zukunft liegen.")
             return False
 
