@@ -1,6 +1,51 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    ":dependencyDashboard",
+    "config:base",
+    "schedule:earlyMondays",
+    ":automergeDisabled"
+  ],
+  "separateMajorMinor": false,
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "groupName": "python dependencies",
+      "groupSlug": "python",
+      "matchDatasources": [
+        "pypi"
+      ],
+      "matchCurrentValue": "!/^[0-9]/"
+    },
+    {
+      "groupName": "ci actions",
+      "groupSlug": "github-actions",
+      "matchDepTypes": [
+        "action"
+      ]
+    },
+    {
+      "groupName": "docker images major",
+      "groupSlug": "docker-major",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "enabled": false
+    },
+    {
+      "groupName": "docker images minor",
+      "groupSlug": "docker-minor",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "automerge": true
+    }
   ]
 }
