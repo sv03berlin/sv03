@@ -1,10 +1,10 @@
 from typing import Any
 
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from django.forms import ModelForm
 from django.utils import timezone
 
 from clubapp.club.models import User
-from clubapp.clubapp.utils import DateTimeInput
 
 from .models import ReservableThing, Reservation
 
@@ -15,8 +15,8 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
         fields = ["thing", "start", "end"]
 
         widgets = {
-            "start": DateTimeInput(),
-            "end": DateTimeInput(),
+            "start": DateTimePickerInput(),
+            "end": DateTimePickerInput(range_from="start"),
         }
 
     def __init__(self, user: User, *args: Any, **kwargs: Any) -> None:
@@ -61,7 +61,7 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
 
         thing = self.cleaned_data["thing"]
 
-        qs = Reservation.objects.filter(thing=thing)
+        qs = Reservation.objects.filter(thing=thing).exclude(id=self.instance.id)
 
         # Check for any overlapping reservations
         overlapping_reservations = qs.filter(start__lt=end_time, end__gt=start_time)

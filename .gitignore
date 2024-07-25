@@ -6,7 +6,6 @@ conf.d/*
 vhost.d/*
 invoices/*
 data/*
-clubapp/static/gh.css
 **/bootstrap/*
 **/ext/*
 bootstrap-*/*

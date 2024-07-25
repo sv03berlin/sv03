@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "clubapp.clubwork",
     "clubapp.reservationflow",
     "django_extensions",
+    "bootstrap_datepicker_plus",
 ]
 
 MIDDLEWARE = [
@@ -227,3 +228,32 @@ OIDC_OP_LOGOUT_URL_METHOD = "clubapp.clubapp.oidc.provider_logout"
 ALLOW_LOGOUT_GET_METHOD = True
 
 KEYCLOAK_ACCOUNT_URL = environ.get("KEYCLOAK_ACCOUNT_URL", "")
+
+BOOTSTRAP_DATEPICKER_PLUS = {
+    # Options for all input widgets
+    # More options: https://getdatepicker.com/4/Options/
+    "options": {
+        "locale": "de",
+        "showClose": True,
+        "showClear": True,
+        "showTodayButton": True,
+        "allowInputToggle": True,
+        "sideBySide": True,
+    },
+    "variant_options": {
+        "date": {
+            "format": "DD.MM.YYYY",
+        },
+        "datetime": {
+            "format": "DD.MM.YYYY HH:mm",
+        },
+        "month": {
+            "format": "MMMM, YYYY",
+        },
+    },
+    "datetimepicker_js_url": "ext/bootstrap-datetimepicker.min.js",
+    "datetimepicker_css_url": "ext/bootstrap-datetimepicker.min.css",
+    "momentjs_url": "ext/moment-with-locales.min.js",
+    "bootstrap_icon_css_url": "ext/bootstrap-icons.css",
+    "app_static_url": "bootstrap_datepicker_plus/",
+}
