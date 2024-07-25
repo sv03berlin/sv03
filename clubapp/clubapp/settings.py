@@ -72,7 +72,7 @@ INSTALLED_APPS = [
     "clubapp.clubwork",
     "clubapp.reservationflow",
     "django_extensions",
-    "django_flatpickr"
+    "bootstrap_datepicker_plus",
 ]
 
 MIDDLEWARE = [
@@ -229,13 +229,31 @@ ALLOW_LOGOUT_GET_METHOD = True
 
 KEYCLOAK_ACCOUNT_URL = environ.get("KEYCLOAK_ACCOUNT_URL", "")
 
-DJANGO_FLATPICKR = {
-    "theme_name": "dark",
+BOOTSTRAP_DATEPICKER_PLUS = {
+    # Options for all input widgets
+    # More options: https://getdatepicker.com/4/Options/
     "options": {
         "locale": "de",
-        "altFormat": "d.m.y H:i",
-        "time_24hr": "true",
+        "showClose": True,
+        "showClear": True,
+        "showTodayButton": True,
+        "allowInputToggle": True,
+        "sideBySide": True,
     },
-    "flatpickr_cdn_url": "flatpickr/",
-    "app_static_url": "django_flatpickr/",
+    "variant_options": {
+        "date": {
+            "format": "DD.MM.YYYY",
+        },
+        "datetime": {
+            "format": "DD.MM.YYYY HH:mm",
+        },
+        "month": {
+            "format": "MMMM, YYYY",
+        },
+    },
+    "datetimepicker_js_url": "ext/bootstrap-datetimepicker.min.js",
+    "datetimepicker_css_url": "ext/bootstrap-datetimepicker.min.css",
+    "momentjs_url": "ext/moment-with-locales.min.js",
+    "bootstrap_icon_css_url": "ext/bootstrap-icons.css",
+    "app_static_url": "bootstrap_datepicker_plus/",
 }

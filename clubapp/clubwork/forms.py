@@ -1,10 +1,9 @@
 from typing import Any
 
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from django import forms
 
 from clubapp.club.models import User
-from clubapp.clubapp.utils import DateTimeInput
-from django_flatpickr.widgets  import DateTimePickerInput
 
 from . import models
 

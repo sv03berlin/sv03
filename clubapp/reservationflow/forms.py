@@ -1,13 +1,12 @@
 from typing import Any
 
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from django.forms import ModelForm
 from django.utils import timezone
 
 from clubapp.club.models import User
-from clubapp.clubapp.utils import DateTimeInput
 
 from .models import ReservableThing, Reservation
-from django_flatpickr.widgets  import DateTimePickerInput
 
 
 class ReservationForm(ModelForm):  # type: ignore[type-arg]
