@@ -6,7 +6,7 @@ authors = []
 readme = "readme.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12.4"
 django = "^5.0.6"
 # xhtml2pdf = "0.2.11"
 crispy-bootstrap5 = "^2024.2"
