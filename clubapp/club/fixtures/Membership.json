@@ -1,26 +1,170 @@
 [
-{
-    "model": "club.membership",
-    "pk": 1,
-    "fields": {
-        "name": "Juniorenmitglied",
-        "internal_name": "Juniorenmitglied",
-        "work_hours": 10,
-        "work_hours_boat_owner": 10,
-        "work_hours_club_boat_user": 10,
-        "work_compensation": "10.00"
+    {
+        "model": "club.membership",
+        "pk": 1,
+        "fields": {
+            "name": "Juniorenmitglied",
+            "internal_name": "Juniorenmitglied",
+            "work_hours": 0,
+            "work_hours_boat_owner": 15,
+            "work_hours_club_boat_user": 5,
+            "work_compensation": "30.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 2,
+        "fields": {
+            "name": "Ordentliches Mitglied",
+            "internal_name": "Ordentliches Mitglied",
+            "work_hours": 0,
+            "work_hours_boat_owner": 15,
+            "work_hours_club_boat_user": 5,
+            "work_compensation": "30.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 3,
+        "fields": {
+            "name": "Außerord. Mitglied, auswärtig",
+            "internal_name": "Außerord. Mitglied, auswärtig",
+            "work_hours": 0,
+            "work_hours_boat_owner": 0,
+            "work_hours_club_boat_user": 0,
+            "work_compensation": "0.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 4,
+        "fields": {
+            "name": "Außerord. Mitglied, vorläufig",
+            "internal_name": "Außerord. Mitglied, vorläufig",
+            "work_hours": 0,
+            "work_hours_boat_owner": 0,
+            "work_hours_club_boat_user": 5,
+            "work_compensation": "30.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 5,
+        "fields": {
+            "name": "Außerordentliches Mitglied",
+            "internal_name": "Außerordentliches Mitglied",
+            "work_hours": 0,
+            "work_hours_boat_owner": 0,
+            "work_hours_club_boat_user": 5,
+            "work_compensation": "30.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 6,
+        "fields": {
+            "name": "Ehrenmitglied",
+            "internal_name": "Ehrenmitglied",
+            "work_hours": 0,
+            "work_hours_boat_owner": 0,
+            "work_hours_club_boat_user": 0,
+            "work_compensation": "0.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 7,
+        "fields": {
+            "name": "Familienmitglied mit Stimme",
+            "internal_name": "Familienmitglied mit Stimme",
+            "work_hours": 0,
+            "work_hours_boat_owner": 0,
+            "work_hours_club_boat_user": 0,
+            "work_compensation": "0.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 8,
+        "fields": {
+            "name": "Familienmitglied ohne Stimme",
+            "internal_name": "Familienmitglied ohne Stimme",
+            "work_hours": 0,
+            "work_hours_boat_owner": 0,
+            "work_hours_club_boat_user": 0,
+            "work_compensation": "0.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 9,
+        "fields": {
+            "name": "Gastmitglied",
+            "internal_name": "Gastmitglied",
+            "work_hours": 0,
+            "work_hours_boat_owner": 15,
+            "work_hours_club_boat_user": 5,
+            "work_compensation": "30.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 10,
+        "fields": {
+            "name": "Juniorenmitglied, vorläufig",
+            "internal_name": "Juniorenmitglied, vorläufig",
+            "work_hours": 0,
+            "work_hours_boat_owner": 15,
+            "work_hours_club_boat_user": 5,
+            "work_compensation": "30.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 11,
+        "fields": {
+            "name": "Ordentliches Mitglied, vorläuf",
+            "internal_name": "Ordentliches Mitglied, vorläuf",
+            "work_hours": 0,
+            "work_hours_boat_owner": 15,
+            "work_hours_club_boat_user": 5,
+            "work_compensation": "30.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 12,
+        "fields": {
+            "name": "Ruhendes Mitglied",
+            "internal_name": "Ruhendes Mitglied",
+            "work_hours": 0,
+            "work_hours_boat_owner": 0,
+            "work_hours_club_boat_user": 0,
+            "work_compensation": "0.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 13,
+        "fields": {
+            "name": "Juniorenmitglied, erweitert",
+            "internal_name": "Juniorenmitglied, erweitert",
+            "work_hours": 0,
+            "work_hours_boat_owner": 0,
+            "work_hours_club_boat_user": 0,
+            "work_compensation": "0.00"
+        }
+    },
+    {
+        "model": "club.membership",
+        "pk": 14,
+        "fields": {
+            "name": "Jugendmitglied",
+            "internal_name": "Jugendmitglied",
+            "work_hours": 0,
+            "work_hours_boat_owner": 5,
+            "work_hours_club_boat_user": 5,
+            "work_compensation": "30.00"
+        }
     }
-},
-{
-    "model": "club.membership",
-    "pk": 2,
-    "fields": {
-        "name": "Ordentliches Mitglied",
-        "internal_name": "Ordentliches Mitglied",
-        "work_hours": 10,
-        "work_hours_boat_owner": 10,
-        "work_hours_club_boat_user": 10,
-        "work_compensation": "10.00"
-    }
-}
 ]

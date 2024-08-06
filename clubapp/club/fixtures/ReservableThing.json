@@ -1,12 +1,192 @@
 [
-{
-    "model": "reservationflow.reservablething",
-    "pk": 1,
-    "fields": {
-        "name": "Svima",
-        "description": "boot",
-        "reservation_group": 1,
-        "all_can_reserve": false
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 1,
+        "fields": {
+            "name": "Svima",
+            "description": "boot",
+            "reservation_group": 1,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 2,
+        "fields": {
+            "name": "Jugend III",
+            "description": "Schlauchboot Jugend III (rot)",
+            "reservation_group": 2,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 3,
+        "fields": {
+            "name": "Coach One",
+            "description": "123",
+            "reservation_group": 2,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 4,
+        "fields": {
+            "name": "Reparaturplatz 1",
+            "description": "Direkt am Kran",
+            "reservation_group": 5,
+            "all_can_reserve": true
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 5,
+        "fields": {
+            "name": "Reparaturplatz 2",
+            "description": "Reparaturplatz am Zaun zum Angelverein",
+            "reservation_group": 5,
+            "all_can_reserve": true
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 6,
+        "fields": {
+            "name": "Black Jack",
+            "description": "Schlauchboot Black jack",
+            "reservation_group": 2,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 7,
+        "fields": {
+            "name": "Black Swan",
+            "description": "Schlauchboot Black Swan",
+            "reservation_group": 2,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 8,
+        "fields": {
+            "name": "Grey Arrow",
+            "description": "Schlauchboot Grey Arrow",
+            "reservation_group": 2,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 9,
+        "fields": {
+            "name": "Svana",
+            "description": "Mariner 19 Jolle",
+            "reservation_group": 1,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 10,
+        "fields": {
+            "name": "Svälja",
+            "description": "Mariner 19 Jolle",
+            "reservation_group": 1,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 11,
+        "fields": {
+            "name": "Dir. Otto",
+            "description": "Motorboot Dir. Otto",
+            "reservation_group": 4,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 12,
+        "fields": {
+            "name": "Startschiff",
+            "description": "Motorboot Startschiff",
+            "reservation_group": 4,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 13,
+        "fields": {
+            "name": "Harry",
+            "description": "Laser Bahia Jolle",
+            "reservation_group": 7,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 14,
+        "fields": {
+            "name": "Marlene",
+            "description": "Laser Bahia Jolle",
+            "reservation_group": 7,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 15,
+        "fields": {
+            "name": "Slipbahn",
+            "description": "Slipbahn",
+            "reservation_group": 3,
+            "all_can_reserve": true
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 16,
+        "fields": {
+            "name": "Kutter",
+            "description": "Jugendkutter",
+            "reservation_group": 8,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 17,
+        "fields": {
+            "name": "Großer Salon",
+            "description": "Clubraum Großer Salon",
+            "reservation_group": 9,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 18,
+        "fields": {
+            "name": "Blauer Salon",
+            "description": "Clubraum Blauer Salon",
+            "reservation_group": 9,
+            "all_can_reserve": false
+        }
+    },
+    {
+        "model": "reservationflow.reservablething",
+        "pk": 19,
+        "fields": {
+            "name": "Schulungsraum",
+            "description": "Schulungsraum in der ersten Etage",
+            "reservation_group": 10,
+            "all_can_reserve": false
+        }
     }
-}
 ]

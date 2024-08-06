@@ -1,11 +1,56 @@
 [
-{
-    "model": "club.ressort",
-    "pk": 1,
-    "fields": {
-        "name": "Haus",
-        "internal_name": "Haus",
-        "is_accounting_ressort": false
+    {
+        "model": "club.ressort",
+        "pk": 1,
+        "fields": {
+            "name": "Haus",
+            "internal_name": "Haus",
+            "is_accounting_ressort": false
+        }
+    },
+    {
+        "model": "club.ressort",
+        "pk": 2,
+        "fields": {
+            "name": "Hafen",
+            "internal_name": "ressort_hafen",
+            "is_accounting_ressort": false
+        }
+    },
+    {
+        "model": "club.ressort",
+        "pk": 3,
+        "fields": {
+            "name": "Sport",
+            "internal_name": "ressort_sport",
+            "is_accounting_ressort": false
+        }
+    },
+    {
+        "model": "club.ressort",
+        "pk": 4,
+        "fields": {
+            "name": "Jugend",
+            "internal_name": "ressort_jugend",
+            "is_accounting_ressort": false
+        }
+    },
+    {
+        "model": "club.ressort",
+        "pk": 5,
+        "fields": {
+            "name": "Vorstand",
+            "internal_name": "ressort_vorstand",
+            "is_accounting_ressort": false
+        }
+    },
+    {
+        "model": "club.ressort",
+        "pk": 6,
+        "fields": {
+            "name": "Garten",
+            "internal_name": "Garten",
+            "is_accounting_ressort": false
+        }
     }
-}
 ]
