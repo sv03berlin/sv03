@@ -18,4 +18,5 @@ urlpatterns = [
     path("clubwork_history/", views.ClubworkHistoryView.as_view(), name="clubwork_history"),
     path("clubwork_user_history/", views.UserHistroyView.as_view(), name="clubwork_user_history"),
     path("select_user_mail/<int:pk>/", views.select_users_to_email_about, name="select_user_mail"),
+    path("download/<int:year>/", views.download_xlsx_view, name="download"),
 ]

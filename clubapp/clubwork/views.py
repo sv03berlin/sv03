@@ -293,80 +293,92 @@ class ClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView)
         return c  # type: ignore[no-any-return]
 
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse | FileResponse | Any:
-        if not request.user.is_ressort_user:
-            return redirect("clubwork_index")
-
         if request.GET.get("xlsx", "false").lower() == "true":
             year = request.GET.get("year")
             if not year:
                 messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
                 return super().get(request, *args, **kwargs)
-            if ClubWorkParticipation.objects.filter(date_time__year=int(year), is_approved=False).exists():
-                messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
             if year:
-                r = FileResponse(
-                    self.get_xlsx(int(year)),
-                    status=200,
-                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    as_attachment=True,
-                )
-                r["Content-Disposition"] = f"attachment; filename=arbeitsdienst_{year}.xlsx"
-                return r
+                return redirect(reverse("download", args=[year]))
             messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
         return super().get(request, *args, **kwargs)
 
-    def get_xlsx(self, year: int) -> BytesIO:
-        users = User.objects.filter(is_active=True, membership_years__year=year)
-        wb = Workbook()
-        ws = wb.active
+
+@login_required
+@is_ressort_user
+def download_xlsx_view(request: AuthenticatedHttpRequest, year: int) -> HttpResponse | FileResponse | Any:
+    if ClubWorkParticipation.objects.filter(date_time__year=int(year), is_approved=False).exists():
+        messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
+    else:
+        messages.info(request, f"Alle Arbeitsdienste für {year} wurden Genehmigt")
+    if request.GET.get("xlsx", "false").lower() == "true":
+        if not year:
+            messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
+        if year:
+            r = FileResponse(
+                get_xlsx(int(year)),
+                status=200,
+                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                as_attachment=True,
+            )
+            r["Content-Disposition"] = f"attachment; filename=arbeitsdienst_{year}.xlsx"
+            return r
+        messages.error(request, "Du musst ein Jahr auswählen um eine Excel Datei zu erstellen.")
+    return render(request, "download.html", context={"year": year})
+
+
+def get_xlsx(year: int) -> BytesIO:
+    users = User.objects.filter(is_active=True, membership_years__year=year)
+    wb = Workbook()
+    ws = wb.active
+    ws.append(
+        [
+            "Name",
+            "Vorname",
+            "Email",
+            "Mitgliedsnummer",
+            "Altersbefreiung",
+            "Mitgliedschaftstyp",
+            "Stunden durch Mitgliedschaft",
+            "Stunden Clubbootnutzer",
+            "Stunden Bootseigner",
+            "Stunden gleistet",
+            "Stunden versäumt",
+            "Stunden Gesamt",
+            "Verrechnungssatz pro Stunde in Euro",
+            "Ausbezahlt am Jahresanfang",
+            "Kompensation in Euro",
+        ]
+    )
+    for user in users:
+        m = user.membership_type
+        if not m:
+            continue
+        be = m.work_hours_boat_owner if user.is_boat_owner else 0
+        cb = m.work_hours_club_boat_user if user.is_clubboat_user else 0
         ws.append(
             [
-                "Name",
-                "Vorname",
-                "Email",
-                "Mitgliedsnummer",
-                "Altersbefreiung",
-                "Mitgliedschaftstyp",
-                "Stunden durch Mitgliedschaft",
-                "Stunden Clubbootnutzer",
-                "Stunden Bootseigner",
-                "Stunden gleistet",
-                "Stunden versäumt",
-                "Stunden Gesamt",
-                "Verrechnungssatz pro Stunde in Euro",
-                "Ausbezahlt am Jahresanfang",
-                "Kompensation in Euro",
+                user.last_name,
+                user.first_name,
+                user.email,
+                user.member_id,
+                user.member_is_freed_from_work_by_age(year),
+                m.name,
+                m.work_hours,
+                cb,
+                be,
+                user.hours_done_year(year),
+                user.missing_hours(year),
+                user.club_work_hours,
+                m.work_compensation,
+                m.full_work_compensation,
+                user.club_work_compensation(year),
             ]
         )
-        for user in users:
-            m = user.membership_type
-            if not m:
-                continue
-            be = m.work_hours_boat_owner if user.is_boat_owner else 0
-            cb = m.work_hours_club_boat_user if user.is_clubboat_user else 0
-            ws.append(
-                [
-                    user.last_name,
-                    user.first_name,
-                    user.email,
-                    user.member_id,
-                    user.member_is_freed_from_work_by_age(year),
-                    m.name,
-                    m.work_hours,
-                    cb,
-                    be,
-                    user.hours_done_year(year),
-                    user.missing_hours(year),
-                    user.club_work_hours,
-                    m.work_compensation,
-                    m.full_work_compensation,
-                    user.club_work_compensation(year),
-                ]
-            )
-        bio = BytesIO()
-        wb.save(bio)
-        bio.seek(0)
-        return bio
+    bio = BytesIO()
+    wb.save(bio)
+    bio.seek(0)
+    return bio
 
 
 class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
