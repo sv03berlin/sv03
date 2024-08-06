@@ -22,7 +22,9 @@
                 </td>
                 <td>{{ clubwork.duration }} Min</td>
                 <td>
-                    <a href="{% url 'mod_own_clubwork' clubwork.id %}" class="btn btn-sm btn-primary mx-1">Bearbeiten</a>
+                    {% if not clubwork.clubwork %}
+                        <a href="{% url 'mod_own_clubwork' clubwork.id %}" class="btn btn-sm btn-primary mx-1">Bearbeiten</a>
+                    {% endif %}
                     <a href="{% url 'delete_own_clubwork' clubwork.id %}" class="btn-sm btn-outline-danger me-1 btn">Abmelden</a>
                 </td>
             </tr>
