@@ -1,11 +1,92 @@
 [
-{
-    "model": "reservationflow.reservationgroup",
-    "pk": 1,
-    "fields": {
-        "name": "Clubboote",
-        "internal_name": "clubboat",
-        "description": "boote"
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 1,
+        "fields": {
+            "name": "Clubboote",
+            "internal_name": "clubboat",
+            "description": "boote"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 2,
+        "fields": {
+            "name": "Schlauchboote",
+            "internal_name": "schlauchboote",
+            "description": "yay boote"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 3,
+        "fields": {
+            "name": "Allgemein",
+            "internal_name": "allgemein",
+            "description": "Objekte, die von allen Mitgliedern reserviert werden können"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 4,
+        "fields": {
+            "name": "Motorboote",
+            "internal_name": "motorboote",
+            "description": "Motorboote: Startschiff, Dir. Otto"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 5,
+        "fields": {
+            "name": "Reparaturplätze",
+            "internal_name": "reparaturplätze",
+            "description": "Reparaturplätze am Kran"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 6,
+        "fields": {
+            "name": "Kielboote",
+            "internal_name": "kielboote",
+            "description": "Kielboote: J/70 und Skippi 650"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 7,
+        "fields": {
+            "name": "Laser Bahia",
+            "internal_name": "laser-bahia",
+            "description": "Laser Bahia"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 8,
+        "fields": {
+            "name": "Kutter",
+            "internal_name": "kutter",
+            "description": "Jugendkutter"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 9,
+        "fields": {
+            "name": "Clubräume",
+            "internal_name": "clubräume",
+            "description": "Clubräume Großer und Blauer Salon"
+        }
+    },
+    {
+        "model": "reservationflow.reservationgroup",
+        "pk": 10,
+        "fields": {
+            "name": "Schulungsraum",
+            "internal_name": "schulungsraum",
+            "description": "Schulungsraum in der ersten Etage"
+        }
     }
-}
 ]
