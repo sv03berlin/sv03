@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from clubapp.club.models import Membership, MembershipYear, Ressort, User
 
 
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin[User]):
     readonly_fields = ("membership_type",)
 
     def get_membership_type(self, obj: User) -> MembershipYear | None:

@@ -1,6 +1,6 @@
 from io import BytesIO
 from logging import getLogger
-from typing import Any, no_type_check
+from typing import Any, cast, no_type_check
 
 from django import forms
 from django.conf import settings
@@ -247,7 +247,7 @@ def history(request: AuthenticatedHttpRequest) -> HttpResponse:
 
     year_qs = ClubWorkParticipation.objects.filter(~Q(is_approved=False))
     if c["selected_year"] != "all":
-        year_qs = year_qs.filter(date__year=c["selected_year"])
+        year_qs = year_qs.filter(date_time__year=c["selected_year"])
     c["clubworks"] = year_qs
     return render(request, template_name="clubwork_history.html", context=c)
 
@@ -386,7 +386,8 @@ class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
     template_name = "clubwork_user_history.html"
 
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
-        return super().get_queryset().filter(user=self.request.user, date_time__lte=timezone.now())  # type: ignore[no-any-return,attr-defined]
+        user = cast(User, self.request.user)
+        return super().get_queryset().filter(user=user, date_time__lte=timezone.now())
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
