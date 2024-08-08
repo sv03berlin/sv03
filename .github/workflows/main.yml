@@ -77,10 +77,8 @@ jobs:
       - uses: actions/cache@v4
         id: cache-venv
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
       
       - run: |
           poetry install --with dev --no-root
@@ -107,10 +105,8 @@ jobs:
       - uses: actions/cache@v4
         id: cache-venv
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
       
       - run: |
           poetry install --with dev --no-root
@@ -136,10 +132,8 @@ jobs:
       - uses: actions/cache@v4
         id: cache-venv
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
       
       - run: |
           poetry install --with dev --no-root
