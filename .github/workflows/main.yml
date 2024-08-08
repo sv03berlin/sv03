@@ -69,17 +69,17 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+      
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
 
       - uses: actions/cache@v4
         id: cache-venv
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
       
-      - run: pip install poetry
       - run: |
           poetry install --with dev --no-root
         if: steps.cache-venv.outputs.cache-hit != 'true'
@@ -97,17 +97,17 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
 
       - uses: actions/cache@v4
         id: cache-venv
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
       
-      - run: pip install poetry
       - run: |
           poetry install --with dev --no-root
         if: steps.cache-venv.outputs.cache-hit != 'true'
@@ -124,17 +124,17 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
 
       - uses: actions/cache@v4
         id: cache-venv
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
       
-      - run: pip install poetry
       - run: |
           poetry install --with dev --no-root
         if: steps.cache-venv.outputs.cache-hit != 'true'

@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "clubapp"
-version = "0.1.0"
+version = "0.0.1"
 description = ""
 authors = []
 readme = "readme.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-django = "^5.0.8"
+python = "^3.12"
+django = "^5.1"
 # xhtml2pdf = "0.2.11"
 crispy-bootstrap5 = "^2024.2"
 uvicorn = {version = "0.29"}
@@ -33,7 +33,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 line-length = 120
 exclude = [
     "**/migrations/*",
