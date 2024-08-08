@@ -75,9 +75,7 @@ class User(AbstractUser):
     def member_is_freed_from_work_by_age(self, year: int | None) -> bool:
         if year is None:
             year = timezone.now().year
-        if self.birthday and year - self.birthday.year > ARBEITDIENST_FREI_AB_ALTER:
-            return True
-        return False
+        return self.birthday is not None and year - self.birthday.year > ARBEITDIENST_FREI_AB_ALTER
 
     def get_clubwork_year(self, year: int) -> int:
         work_hours = 0
