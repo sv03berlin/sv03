@@ -6,8 +6,8 @@ authors = []
 readme = "readme.md"
 
 [tool.poetry.dependencies]
-python = "^3.12.5"
-django = "^5.0.8"
+python = "^3.12"
+django = "^5.1"
 # xhtml2pdf = "0.2.11"
 crispy-bootstrap5 = "^2024.2"
 uvicorn = {version = "0.29"}
