@@ -78,7 +78,7 @@ jobs:
         id: cache-venv
         with:
           path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       
@@ -106,7 +106,7 @@ jobs:
         id: cache-venv
         with:
           path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       
@@ -133,7 +133,7 @@ jobs:
         id: cache-venv
         with:
           path: ./.venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       
