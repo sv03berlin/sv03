@@ -26,6 +26,8 @@ class ClubWorkForm(forms.ModelForm[models.ClubWork]):
 
 
 class ClubWorkParticipationForm(forms.ModelForm[models.ClubWorkParticipation]):
+    is_creating: bool
+
     class Meta:
         model = models.ClubWorkParticipation
         fields = [
@@ -42,14 +44,17 @@ class ClubWorkParticipationForm(forms.ModelForm[models.ClubWorkParticipation]):
     def __init__(self, user: User, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.user = user
+        self.is_creating = self.instance.pk is None
 
     def form_valid(self, form: forms.ModelForm[models.ClubWorkParticipation]) -> bool:
-        form.instance.user = self.user
+        if self.is_creating:
+            form.instance.user = self.user
         return super().form_valid(form)  # type: ignore[no-any-return, misc]
 
     def save(self, commit: bool = True) -> models.ClubWorkParticipation:
         reservation = super().save(commit=False)
-        reservation.user = self.user
+        if self.is_creating:
+            reservation.user = self.user
         if commit:
             reservation.save()
         return super().save(commit)

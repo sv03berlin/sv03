@@ -50,10 +50,16 @@ def clubwork_index(request: AuthenticatedHttpRequest) -> HttpResponse:
     c = {
         "this_year": timezone.now().year,
         "user": request.user,
-        "upcoming_clubwork_user": request.user.clubwork_participations.filter(
-            date_time__gte=timezone.now(), is_approved=False
-        ).order_by("date_time"),
-        "clubworks": ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("date_time"),
+        "upcoming_clubwork_user": [
+            cw
+            for cw in request.user.clubwork_participations.filter(
+                date_time__gte=timezone.now(), is_approved=False
+            ).order_by("date_time")
+            if cw.clubwork is not None
+        ],
+        "clubworks": [
+            cw for cw in ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("date_time") if not cw.is_full
+        ],
     }
     return render(request, template_name="clubwork.html", context=c)
 
@@ -195,7 +201,7 @@ def approve_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
 def register_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         cw = ClubWork.objects.get(pk=pk)
-        if cw.num_participants >= cw.max_participants:
+        if cw.is_full:
             messages.error(request, "Dieser Arbeitsdienst ist bereits voll.")
             return render(request, "clubwork_index")
 
@@ -222,11 +228,11 @@ def unregister_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpR
         cw = ClubWork.objects.get(pk=pk)
         if request.method == "POST":
             part = ClubWorkParticipation.objects.get(clubwork=cw, user=request.user)
-            if (
-                not request.user.is_staff
+            if not (
+                request.user.is_staff
                 or request.user.is_superuser
                 or request.user.is_ressort_user
-                or request.user != part.user
+                or request.user == part.user
             ):
                 messages.error(request, "Du kannst nur deine eigenen Anmeldungen löschen.")
                 return redirect("clubwork_index")

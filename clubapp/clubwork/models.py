@@ -34,6 +34,10 @@ class ClubWork(models.Model):
     def mailto(self) -> str:
         return "mailto:" + ",".join([u.email for u in self.registered_users])
 
+    @cached_property
+    def is_full(self) -> bool:
+        return self.max_duration == self.num_participants
+
 
 class ClubWorkParticipation(models.Model):
     title = models.CharField(max_length=127, verbose_name=_("Titel"))
