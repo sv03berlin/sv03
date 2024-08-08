@@ -137,7 +137,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-venv-
       
-      - run: python3.12 pip install poetry
+      - run: python3.12 -m pip install poetry
       - run: |
           poetry install --with dev --no-root
         if: steps.cache-venv.outputs.cache-hit != 'true'
