@@ -23,7 +23,17 @@
                 </td>
                 <td>{{ clubwork.max_duration }} Min</td>
                 <td>
-                    <p data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="Teilnehmende: <ul>{% for participant in clubwork.registered_users %}<li>{{ participant }}</li>{% endfor %}</ul>">{{ clubwork.num_participants }}/{{ clubwork.max_participants }}</p>
+                    <li>{{ clubwork.num_participants }}/{{ clubwork.max_participants }}</li>
+                    {% for participant in clubwork.registered_users %}
+                        {% if user.is_superuser or user.is_ressort_user %}
+                        <li>
+                            <form action="{% url 'unregister_user_for_clubwork' clubwork.id participant.id %}" method="post">
+                                {% csrf_token %}
+                                {{ participant }}<button type="submit" class="btn btn-outline-secondary mb-4">Abmelden</button>
+                            </form>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
                 </td>
                 <td>
                     <div class = "d-flex">
@@ -44,6 +54,7 @@
                                 Administration
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a href="{% url 'register_member' clubwork.id %}" class="dropdown-item">Mitglied für Clubdienst Anmelden</a>
                                 <a href="{% url 'mod_clubwork' clubwork.id %}" class="dropdown-item">Bearbeiten</a>
                                 <a href="{% url 'delete_clubwork' clubwork.id %}" class="dropdown-item">Löschen</a>
                                 <a href="{% url 'select_user_mail' clubwork.id %}" class="dropdown-item">Mitglieder zur Benachichtigung auswählen</a>

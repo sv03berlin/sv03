@@ -478,5 +478,62 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
                 messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
         return redirect("clubwork_index")
 
-    c = {"users": User.objects.all(), "clubwork": cw}
+    c = {"users": User.objects.all(), "clubwork": cw, "heading": f"Mitglieder über Clubdienst {cw} informieren", "action_text": "Email senden", "all": True}
     return render(request, template_name="email_specific_user.html", context=c)
+
+
+@login_required
+@is_ressort_user
+def register_user(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    cw = get_object_or_404(ClubWork, pk=pk)
+    if request.method == "POST":
+        users = request.POST.get("users")
+        if users is None:
+            messages.error(request, "Es wurden keine Nutzer:innen ausgewählt.")
+            return redirect("clubwork_index")
+        qs = User.objects.all()
+        if "all" not in users:
+            qs = qs.filter(pk__in=users.split(","))
+        for user in qs:
+            try:
+                ClubWorkParticipation.objects.get_or_create(
+                    title=cw.title,
+                    user=user,
+                    ressort=cw.ressort,
+                    clubwork=cw,
+                    date_time=cw.date_time,
+                    duration=cw.max_duration,
+                    description=cw.description,
+                )
+                send_mail(
+                    subject=f"Arbeitsdienst {cw.title}",
+                    message=f"Hallo {user.first_name},\n\n"
+                    f"du wurdest für {cw.title} am {cw.date_time} eingetragen\n"
+                    f"Beschreibung: {cw.description}\n\n"
+                    f"Du kannst dich hier abmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
+                    f"Viele Grüße,\n"
+                    f"{request.user.first_name} {request.user.last_name}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+            except Exception:
+                logger.exception("Error while sending email to user %s", user)
+                messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht oder wurde bereits ausgewählt.")
+        return redirect("clubwork_index")
+
+    c = {"users": User.objects.all(), "clubwork": cw, "heading": f"Mitglieder für Clubdienst {cw} anmelden", "action_text": "Anmelden"}
+    return render(request, template_name="email_specific_user.html", context=c)
+
+@login_required
+@is_ressort_user
+def unregister_user_for_clubwork(request: AuthenticatedHttpRequest, clubwork_id: int, user_id: int) -> HttpResponse:
+    with transaction.atomic():
+        cw = ClubWork.objects.get(pk=user_id)
+        if request.method == "POST":
+            part = ClubWorkParticipation.objects.get(clubwork=cw, user_id=clubwork_id)
+            if not part.is_approved:
+                part.delete()
+            else:
+                messages.error(request, "Du kannst nur nicht noch nicht genehmigte Anmeldungen löschen.")
+        return redirect("clubwork_index")

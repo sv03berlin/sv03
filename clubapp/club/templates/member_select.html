@@ -2,7 +2,7 @@
     <form action="{{action_target}}" method="post">
         {% csrf_token %}
         <div class="row">
-            <select id="{{tomselect_id}}" multiple data-placeholder="Mitglieder auswählen" name="users" class="col-12 col-sm-6 col-md-8">
+            <select id="{{tomselect_id}}" multiple data-placeholder="" name="users" class="col-12 col-sm-6 col-md-8">
                 {% for user in users %}
                 <option value="{{user.id}}">{{user}}</option>
                 {% endfor %}

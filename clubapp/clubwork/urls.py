@@ -7,6 +7,7 @@ urlpatterns = [
     path("all/", views.AllClubworkHistoryView.as_view(), name="clubwork_all"),
     path("add/", views.add_clubwork, name="add_clubwork"),
     path("mod/<int:pk>/", views.mod_clubwork, name="mod_clubwork"),
+    path("register_member/<int:pk>/", views.register_user, name="register_member"),
     path("add_own/", views.OwnClubWorkCreate.as_view(), name="add_own_clubwork"),
     path("mod_own/<int:pk>/", views.OwnClubWorkUpdate.as_view(), name="mod_own_clubwork"),
     path("delete/<int:pk>/", views.ClubWorkDelete.as_view(), name="delete_clubwork"),
@@ -20,4 +21,5 @@ urlpatterns = [
     path("select_user_mail/<int:pk>/", views.select_users_to_email_about, name="select_user_mail"),
     path("download/<int:year>/", views.download_xlsx_view, name="download"),
     path("updateHours/<int:pk>", views.HourUpdateView.as_view(), name="update_hours"),
+    path("unregister_user/<int:clubwork_id>/<int:user_id>", views.unregister_user_for_clubwork, name="unregister_user_for_clubwork")
 ]
