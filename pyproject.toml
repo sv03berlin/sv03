@@ -64,7 +64,7 @@ exclude = [
 ]
 
 [[tool.mypy.overrides]]
-module = ["xhtml2pdf", "uvicorn", "django_filters.*", "openpyxl.*", "mozilla_django_oidc.*", "keycloak.*"]
+module = ["xhtml2pdf", "uvicorn", "django_filters.*", "openpyxl.*", "mozilla_django_oidc.*", "keycloak.*", "dal.*"]
 ignore_missing_imports = true
 disallow_any_generics = false
 

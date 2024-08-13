@@ -479,7 +479,13 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
                 messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
         return redirect("clubwork_index")
 
-    c = {"users": User.objects.all(), "clubwork": cw, "heading": f"Mitglieder über Clubdienst {cw} informieren", "action_text": "Email senden", "all": True}
+    c = {
+        "users": User.objects.all(),
+        "clubwork": cw,
+        "heading": f"Mitglieder über Clubdienst {cw} informieren",
+        "action_text": "Email senden",
+        "all": True,
+    }
     return render(request, template_name="email_specific_user.html", context=c)
 
 
@@ -523,8 +529,14 @@ def register_user(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht oder wurde bereits ausgewählt.")
         return redirect("clubwork_index")
 
-    c = {"users": User.objects.all(), "clubwork": cw, "heading": f"Mitglieder für Clubdienst {cw} anmelden", "action_text": "Anmelden"}
+    c = {
+        "users": User.objects.all(),
+        "clubwork": cw,
+        "heading": f"Mitglieder für Clubdienst {cw} anmelden",
+        "action_text": "Anmelden",
+    }
     return render(request, template_name="email_specific_user.html", context=c)
+
 
 @login_required
 @is_ressort_user
@@ -538,6 +550,7 @@ def unregister_user_for_clubwork(request: AuthenticatedHttpRequest, clubwork_id:
             else:
                 messages.error(request, "Du kannst nur nicht noch nicht genehmigte Anmeldungen löschen.")
         return redirect("clubwork_index")
+
 
 class OtherUserClubWorkCreationForm(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # type: ignore[type-arg, misc]
     template_name = "create_form.html"
