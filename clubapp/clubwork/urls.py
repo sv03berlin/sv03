@@ -21,5 +21,6 @@ urlpatterns = [
     path("select_user_mail/<int:pk>/", views.select_users_to_email_about, name="select_user_mail"),
     path("download/<int:year>/", views.download_xlsx_view, name="download"),
     path("updateHours/<int:pk>", views.HourUpdateView.as_view(), name="update_hours"),
-    path("unregister_user/<int:clubwork_id>/<int:user_id>", views.unregister_user_for_clubwork, name="unregister_user_for_clubwork")
+    path("unregister_user/<int:clubwork_id>/<int:user_id>", views.unregister_user_for_clubwork, name="unregister_user_for_clubwork"),
+    path("ressort_register_own_clubwork/", views.OtherUserClubWorkCreationForm.as_view(), name="ressort_register_own_clubwork")
 ]

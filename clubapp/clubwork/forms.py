@@ -4,7 +4,7 @@ from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from django import forms
 
 from clubapp.club.models import User
-
+from dal.autocomplete import dal
 from . import models
 
 
@@ -66,3 +66,19 @@ class HourEditForm(forms.ModelForm[models.ClubWorkParticipation]):
         fields = [
             "duration",
         ]
+    
+class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWorkParticipation]):
+    class Meta:
+        model = models.ClubWorkParticipation
+        fields = [
+            "title",
+            "user",
+            "ressort",
+            "date_time",
+            "duration",
+            "description",
+        ]
+        widgets = {
+            "date_time": DateTimePickerInput(),
+            "user": autocomplete.ModelSelect2()
+        }

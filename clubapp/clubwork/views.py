@@ -26,6 +26,7 @@ from clubapp.clubapp.decorators import is_ressort_user
 from clubapp.clubapp.utils import AuthenticatedHttpRequest
 
 from .forms import ClubWorkForm, ClubWorkParticipationForm, HourEditForm
+from .forms import ClubWorkForm, ClubWorkParticipationForm, ClubWorkPartitipationRessortUserCreatingForm
 from .models import ClubWork, ClubWorkParticipation
 
 logger = getLogger(__name__)
@@ -537,3 +538,7 @@ def unregister_user_for_clubwork(request: AuthenticatedHttpRequest, clubwork_id:
             else:
                 messages.error(request, "Du kannst nur nicht noch nicht genehmigte Anmeldungen löschen.")
         return redirect("clubwork_index")
+
+class OtherUserClubWorkCreationForm(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # type: ignore[type-arg, misc]
+    template_name = "create_form.html"
+    form_class = ClubWorkPartitipationRessortUserCreatingForm
