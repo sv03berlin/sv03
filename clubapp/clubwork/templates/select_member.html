@@ -1,0 +1,27 @@
+<table class="table align-middle mb-3">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Vorname</th>
+            <th>Mitgliedsnummer</th>
+            <th>Email</th>
+            <th>Aktionen</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr id="clubwork-user-{{ clubwork.id }}">
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.member_id }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if not clubwork.clubwork %}
+                        <a href="{% url 'mod_own_clubwork' clubwork.id %}" class="btn btn-sm btn-primary mx-1">Bearbeiten</a>
+                    {% endif %}
+                    <a href="{% url 'delete_own_clubwork' clubwork.id %}" class="btn-sm btn-outline-danger me-1 btn">Abmelden</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
