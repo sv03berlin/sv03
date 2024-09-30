@@ -10,7 +10,7 @@ on:
 jobs:
   build_and_push:
     name: build_and_push
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
       - lint_format
       - typecheck
@@ -62,7 +62,7 @@ jobs:
             GIT_BRANCH=${{ steps.extract_branch.outputs.branch }}
 
   lint_format:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -90,7 +90,7 @@ jobs:
           poetry run ruff format . --check
 
   typecheck:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -117,7 +117,7 @@ jobs:
           poetry run mypy .
 
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
