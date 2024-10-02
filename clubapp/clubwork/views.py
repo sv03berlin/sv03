@@ -166,7 +166,7 @@ class OwnClubWorkUpdate(LoginRequiredMixin, OwnClubworkMixin, UpdateView):  # ty
         return kwargs
 
 
-class HourUpdateView(LoginRequiredMixin, UpdateView[ClubWorkParticipation, HourEditForm]):
+class HourUpdateView(UpdateView[ClubWorkParticipation, HourEditForm]):
     model = ClubWorkParticipation
     form_class = HourEditForm
     template_name = "create_form.html"
@@ -315,7 +315,7 @@ class ClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView)
     filterset_class = HistoryFilter
 
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
-        return super().get_queryset().filter(date_time__lte=timezone.now())  # type: ignore[no-any-return]
+        return super().get_queryset().filter()  # type: ignore[no-any-return]
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
