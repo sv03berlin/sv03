@@ -5,7 +5,6 @@ from dal import autocomplete
 from django import forms
 
 from clubapp.club.models import User
-from dal.autocomplete import dal
 
 from . import models
 
@@ -62,14 +61,13 @@ class ClubWorkParticipationForm(forms.ModelForm[models.ClubWorkParticipation]):
         return super().save(commit)
 
 
-
 class HourEditForm(forms.ModelForm[models.ClubWorkParticipation]):
     class Meta:
         model = models.ClubWorkParticipation
         fields = [
             "duration",
         ]
-    
+
 
 class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWorkParticipation]):
     class Meta:

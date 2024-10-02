@@ -25,8 +25,7 @@ from clubapp.club.models import User
 from clubapp.clubapp.decorators import is_ressort_user
 from clubapp.clubapp.utils import AuthenticatedHttpRequest
 
-from .forms import ClubWorkForm, ClubWorkParticipationForm, HourEditForm
-from .forms import ClubWorkForm, ClubWorkParticipationForm, ClubWorkPartitipationRessortUserCreatingForm
+from .forms import ClubWorkForm, ClubWorkParticipationForm, ClubWorkPartitipationRessortUserCreatingForm, HourEditForm
 from .models import ClubWork, ClubWorkParticipation
 
 logger = getLogger(__name__)
