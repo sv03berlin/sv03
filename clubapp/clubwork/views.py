@@ -272,6 +272,9 @@ class YearFilter(FilterSet):  # type: ignore[misc]
         super().__init__(*args, **kwargs)
         self.filters["year"].field.widget.choices = self.get_year_choices()
 
+        if self.data.get("year") == "":
+            self.filters.pop("year")
+
     def get_year_choices(self) -> list[tuple[str, str]]:
         return [("", "all")] + [(str(x.year), str(x.year)) for x in self.choices]
 
@@ -295,7 +298,8 @@ class ClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
-        c.update({"clubworks": self.get_queryset()})
+        if "object_list" in kwargs:
+            c.update({"clubworks": kwargs["object_list"]})
         return c  # type: ignore[no-any-return]
 
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse | FileResponse | Any:
@@ -397,7 +401,8 @@ class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
-        c.update({"clubworks": self.get_queryset()})
+        if "object_list" in kwargs:
+            c.update({"clubworks": kwargs["object_list"]})
         return c
 
 
@@ -411,7 +416,8 @@ class AllClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterVi
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
-        c.update({"clubworks": self.get_queryset()})
+        if "object_list" in kwargs:
+            c.update({"clubworks": kwargs["object_list"]})
         return c  # type: ignore[no-any-return]
 
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse | FileResponse | Any:
