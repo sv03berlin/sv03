@@ -478,5 +478,41 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
                 messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
         return redirect("clubwork_index")
 
-    c = {"users": User.objects.all(), "clubwork": cw}
-    return render(request, template_name="email_specific_user.html", context=c)
+    c = {
+        "users": User.objects.all(),
+        "clubwork": cw,
+        "heading": f"Benachrichtigungen über Arbeitsdienst {cw.title} an Mitglieder senden",
+    }
+    return render(request, template_name="select_specific_user.html", context=c)
+
+
+@login_required
+@is_ressort_user
+def register_users_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    cw = get_object_or_404(ClubWork, pk=pk)
+    if request.method == "POST":
+        users = request.POST.get("users")
+        if users is None:
+            messages.error(request, "Es wurden keine Nutzer:innen ausgewählt.")
+            return redirect("clubwork_index")
+        qs = User.objects.all()
+        if "all" not in users:
+            qs = qs.filter(pk__in=users.split(","))
+        for user in qs:
+            try:
+                ClubWorkParticipation.objects.create(
+                    title=cw.title,
+                    user=user,
+                    ressort=cw.ressort,
+                    clubwork=cw,
+                    date_time=cw.date_time,
+                    duration=cw.max_duration,
+                    description=cw.description,
+                )
+            except Exception:
+                logger.exception("Error while registering user %s", user)
+                messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
+        return redirect("clubwork_index")
+
+    c = {"users": User.objects.all(), "clubwork": cw, "heading": f"Nutzer für Arbeitsdienst '{cw.title}' anmelden"}
+    return render(request, template_name="select_specific_user.html", context=c)
