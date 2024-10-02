@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <div class="container">
-    <p class="h4 mb-3">Arbeitsdienst Historie</p>
+    <p class="h4 mb-3">Arbeitsdienst Übersicht</p>
 
     <div class="d-flex">
         <p class="me-2 mb-2">Filtern nach:</p>
@@ -13,6 +13,11 @@
         </form>
         <a class="btn btn-sm btn-outline-secondary me-2 col-auto" href="?">Reset</a>
     </div>
+
+    {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+    <a class="btn btn-outline-secondary btn-sm mb-3" href="{% url 'add_clubwork' %}" data-bs-toggle="tooltip" title="Einen neuen Arbeitsdienst für alle Mitglieder ausschreiben">Neuen Arbeitsdienst ausschreiben</a>
+    <a class="btn btn-outline-secondary btn-sm mb-3" href="{% url 'ressort_register_own_clubwork' %}" data-bs-toggle="tooltip" title="Einen eigenen Arbeitsdienst für ein Mitglieder eintragen">Eigenen Arbeitsdienst für Mitglied eintragen</a>
+    {% endif %}
 
     <table class="table align-middle" style="font-size: 16px;">
         <thead>
@@ -38,9 +43,15 @@
                 <td>{{t.date_time}}</td>
                 <td>{{t.description}}</td>
                 <td>{{t.duration}}min</td>
-                <td>{{t.is_approved}}</td>
-                <td>{{t.approved_by}}</td>
-                <td>{{t.approve_date}}</td>
+                {% if not t.is_approved %}
+                    <td>{{t.is_approved}}</td>
+                    <td>{{t.approved_by}}</td>
+                    <td>{{t.approve_date}}</td>
+                {% else %}
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                {% endif %}
                 <td>
                     <div class="d-flex">
                         <a href="{% url 'mod_own_clubwork' t.id %}" class="btn-sm btn-outline-primary me-1 btn">Bearbeiten</a>

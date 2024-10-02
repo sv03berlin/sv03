@@ -73,6 +73,8 @@ INSTALLED_APPS = [
     "clubapp.reservationflow",
     "django_extensions",
     "bootstrap_datepicker_plus",
+    "dal",
+    "dal_select2",
 ]
 
 MIDDLEWARE = [

@@ -22,6 +22,7 @@ sentry-sdk = { version = "^2.15.0", extras = ["django"] }
 schedule = "^1.2.2"
 pyyaml = "^6.0.2"
 django-bootstrap-datepicker-plus = "^5.0.5"
+django-autocomplete-light = "^3.11.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.11.2"
@@ -63,7 +64,7 @@ exclude = [
 ]
 
 [[tool.mypy.overrides]]
-module = ["xhtml2pdf", "uvicorn", "django_filters.*", "openpyxl.*", "mozilla_django_oidc.*", "keycloak.*"]
+module = ["xhtml2pdf", "uvicorn", "django_filters.*", "openpyxl.*", "mozilla_django_oidc.*", "keycloak.*", "dal.*"]
 ignore_missing_imports = true
 disallow_any_generics = false
 
