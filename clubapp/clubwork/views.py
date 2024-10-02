@@ -25,7 +25,7 @@ from clubapp.club.models import User
 from clubapp.clubapp.decorators import is_ressort_user
 from clubapp.clubapp.utils import AuthenticatedHttpRequest
 
-from .forms import ClubWorkForm, ClubWorkParticipationForm
+from .forms import ClubWorkForm, ClubWorkParticipationForm, HourEditForm
 from .models import ClubWork, ClubWorkParticipation
 
 logger = getLogger(__name__)
@@ -164,6 +164,27 @@ class OwnClubWorkUpdate(LoginRequiredMixin, OwnClubworkMixin, UpdateView):  # ty
         kwargs["user"] = self.request.user
         kwargs["instance"] = self.get_object()
         return kwargs
+
+
+class HourUpdateView(LoginRequiredMixin, UpdateView[ClubWorkParticipation, HourEditForm]):
+    model = ClubWorkParticipation
+    form_class = HourEditForm
+    template_name = "create_form.html"
+
+    @no_type_check
+    def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
+        if self.request.user.is_staff:
+            return super().get_queryset()
+        return super().get_queryset().filter(user=self.request.user, is_approved=False)
+
+    def get_success_url(self) -> str:
+        return reverse("clubwork_user_history")
+
+    @no_type_check
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c["heading"] = "Arbeitsstunden Arbeitsdienst Eintragen"
+        return c
 
 
 class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # type: ignore[type-arg, misc]
@@ -401,8 +422,7 @@ class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
-        if "object_list" in kwargs:
-            c.update({"clubworks": kwargs["object_list"]})
+        c.update({"clubworks": self.get_queryset()})
         return c
 
 

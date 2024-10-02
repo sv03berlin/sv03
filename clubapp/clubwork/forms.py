@@ -58,3 +58,11 @@ class ClubWorkParticipationForm(forms.ModelForm[models.ClubWorkParticipation]):
         if commit:
             reservation.save()
         return super().save(commit)
+
+
+class HourEditForm(forms.ModelForm[models.ClubWorkParticipation]):
+    class Meta:
+        model = models.ClubWorkParticipation
+        fields = [
+            "duration",
+        ]
