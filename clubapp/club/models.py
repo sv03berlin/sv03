@@ -109,7 +109,8 @@ class User(AbstractUser):
         return self.get_time_formatted(self.missing_hours(timezone.now().year))
 
     def get_time_formatted(self, time: float) -> str:
-        return "{:02.0f}:{:02.0f}".format(*divmod(time * 60, 60))
+        hours, minutes = divmod(int(time), 60)
+        return f"{hours:02d}:{minutes:02d}"
 
     def hours_done_year(self, year: int) -> float:
         return (
