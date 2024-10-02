@@ -25,6 +25,9 @@
                     {% if not clubwork.clubwork %}
                         <a href="{% url 'mod_own_clubwork' clubwork.id %}" class="btn btn-sm btn-primary mx-1">Bearbeiten</a>
                     {% endif %}
+                    {% if not t.is_approved %}
+                    <a href="{% url 'update_hours' clubwork.id %}" class="btn-sm btn-outline-primary me-1 btn">Stunden Eintragen</a>
+                    {% endif %}
                     <a href="{% url 'delete_own_clubwork' clubwork.id %}" class="btn-sm btn-outline-danger me-1 btn">Abmelden</a>
                 </td>
             </tr>

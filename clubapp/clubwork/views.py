@@ -47,19 +47,26 @@ def is_post_action(request: AuthenticatedHttpRequest) -> bool:
 
 @login_required
 def clubwork_index(request: AuthenticatedHttpRequest) -> HttpResponse:
+    upcoming = [
+        cw
+        for cw in request.user.clubwork_participations.filter(
+            date_time__gte=timezone.now(), is_approved=False
+        ).order_by("date_time")
+        if (cw.clubwork is not None)
+    ]
+    clubworks = [
+        cw for cw in ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("date_time") if not cw.is_full
+    ]
+
+    for cw in upcoming:
+        if cw.clubwork is not None and cw.clubwork in clubworks:
+            clubworks.remove(cw.clubwork)
+
     c = {
         "this_year": timezone.now().year,
         "user": request.user,
-        "upcoming_clubwork_user": [
-            cw
-            for cw in request.user.clubwork_participations.filter(
-                date_time__gte=timezone.now(), is_approved=False
-            ).order_by("date_time")
-            if cw.clubwork is not None
-        ],
-        "clubworks": [
-            cw for cw in ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("date_time") if not cw.is_full
-        ],
+        "upcoming_clubwork_user": upcoming,
+        "clubworks": clubworks,
     }
     return render(request, template_name="clubwork.html", context=c)
 
@@ -541,9 +548,9 @@ def register_user(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 @is_ressort_user
 def unregister_user_for_clubwork(request: AuthenticatedHttpRequest, clubwork_id: int, user_id: int) -> HttpResponse:
     with transaction.atomic():
-        cw = ClubWork.objects.get(pk=user_id)
+        cw = ClubWork.objects.get(pk=clubwork_id)
         if request.method == "POST":
-            part = ClubWorkParticipation.objects.get(clubwork=cw, user_id=clubwork_id)
+            part = ClubWorkParticipation.objects.get(clubwork=cw, user_id=user_id)
             if not part.is_approved:
                 part.delete()
             else:
