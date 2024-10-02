@@ -7,26 +7,26 @@ readme = "readme.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-django = "^5.1"
+django = "^5.1.1"
 # xhtml2pdf = "0.2.11"
 crispy-bootstrap5 = "^2024.2"
 uvicorn = {version = "0.29"}
-django-stubs-ext = "^5.0.4"
+django-stubs-ext = "^5.1.0"
 mozilla-django-oidc = "4.0.1"
 django-filter = "24.3"
 openpyxl = "3.1.5"
 django-extensions = "3.2.3"
-python-keycloak = "^4.3.0"
+python-keycloak = "^4.5.0"
 python-dotenv = "^1.0.1"
-sentry-sdk = { version = "^2.12.0", extras = ["django"] }
+sentry-sdk = { version = "^2.15.0", extras = ["django"] }
 schedule = "^1.2.2"
 pyyaml = "^6.0.2"
 django-bootstrap-datepicker-plus = "^5.0.5"
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.11.1"
-ruff = "^0.5.6"
-django-stubs = "^5.0.4"
+mypy = "^1.11.2"
+ruff = "^0.6.8"
+django-stubs = "^5.1.0"
 
 [build-system]
 requires = ["poetry-core"]
