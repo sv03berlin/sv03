@@ -12,8 +12,8 @@ from django_filters.views import FilterView
 
 from clubapp.club.models import User
 
-from .forms import ReservationForm
-from .models import Reservation, ReservationGroup
+from .forms import ReservationForm, SerialReservationForm
+from .models import ReservableThing, Reservation, ReservationGroup
 
 
 class ReservationMixin:
@@ -38,6 +38,25 @@ class ReservationMixin:
 class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  # type: ignore[type-arg, misc]
     template_name = "create_form.html"
     form_class = ReservationForm
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+
+class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: ignore[type-arg]
+    template_name = "create_form.html"
+    form_class = SerialReservationForm
+
+    @no_type_check
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c["heading"] = "Serienreservierung erstellen"
+        return c
+
+    def get_success_url(self) -> str:
+        return reverse("reservation_list")
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
@@ -103,16 +122,26 @@ class ReservationGroupFilter(FilterSet):  # type: ignore[misc]
         label="Gruppe",
     )
 
+    robject = NumberFilter(
+        field_name="thing",
+        widget=forms.Select(choices=[]),
+        label="Objekt",
+    )
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.filters["group"].field.widget.choices = self.get_group_choices()
+        self.filters["robject"].field.widget.choices = self.get_object_choices()
 
     def get_group_choices(self) -> list[tuple[str, str]]:
         return [("", "all")] + [(str(x.id), str(x.name)) for x in ReservationGroup.objects.all()]
 
+    def get_object_choices(self) -> list[tuple[str, str]]:
+        return [("", "all")] + [(str(x.id), str(x.name)) for x in ReservableThing.objects.all()]
+
     class Meta:
         model = Reservation
-        fields = ["group"]
+        fields = ["group", "robject"]
 
 
 class CalendarDetailView(LoginRequiredMixin, FilterView):  # type: ignore[misc]

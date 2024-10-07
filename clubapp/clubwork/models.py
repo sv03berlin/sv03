@@ -36,7 +36,7 @@ class ClubWork(models.Model):
 
     @cached_property
     def is_full(self) -> bool:
-        return self.max_duration == self.num_participants
+        return self.max_participants == self.num_participants
 
 
 class ClubWorkParticipation(models.Model):
