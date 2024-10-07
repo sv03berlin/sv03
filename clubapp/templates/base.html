@@ -75,6 +75,7 @@
                                         <li><a class="dropdown-item" href="{% url 'calendar_month' %}">Reservierungsübersicht</a></li>
                                         <li><a class="dropdown-item" href="{% url 'reservation_list' %}">Meine Reservierungen</a></li>
                                         {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+                                        <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="{% url 'staff_reservation_list' %}">Alle Reservierungen</a></li>
                                         {% endif %}
                                     </ul>

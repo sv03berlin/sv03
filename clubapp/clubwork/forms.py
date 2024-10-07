@@ -66,6 +66,7 @@ class HourEditForm(forms.ModelForm[models.ClubWorkParticipation]):
         model = models.ClubWorkParticipation
         fields = [
             "duration",
+            "description",
         ]
 
 

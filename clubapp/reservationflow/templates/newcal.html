@@ -40,6 +40,14 @@
                         window.location.href = "{% url 'reservation_create' %}";
                     }
                 },
+                {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+                serial_event: {
+                    text: 'Neue Serienreservierung',
+                    click: function () {
+                        window.location.href = "{% url 'serial_reservation_create' %}";
+                    }
+                },
+                {% endif %}
                 see_my: {
                     text: 'Meine Reservierungen',
                     click: function () {
@@ -48,7 +56,7 @@
                 }
             },
             headerToolbar: {
-                left: 'prev,next today see_my,add_event',
+                left: 'prev,next today see_my,add_event{% if user.is_ressort_user or user.is_superuser or user.is_staff %},serial_event{% endif %}',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },

@@ -84,7 +84,7 @@ def add_clubwork(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, template_name="create_form.html", context=c)
 
 
-@login_required
+@is_ressort_user
 def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     if is_post_action(request):
         form = ClubWorkForm(request.POST, instance=ClubWork.objects.get(pk=pk))
@@ -98,7 +98,7 @@ def mod_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                     application.duration = form.instance.max_duration
                     application.ressort = form.instance.ressort
                     application.save()
-            return redirect("clubwork_index")
+            return redirect("clubwork_history")
         messages.error(request, str(form.errors))
     elif is_delete_action(request):
         ClubWork.objects.get(pk=pk).delete()
@@ -138,9 +138,9 @@ class OwnClubworkMixin:
 
     @no_type_check
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
-        if self.request.user.is_staff:
+        if self.request.user.is_ressort_user or self.request.user.is_staff or self.request.user.is_staff:
             return super().get_queryset()
-        return super().get_queryset().filter(user=self.request.user)
+        return super().get_queryset().filter(user=self.request.user, is_approved=False)
 
     def get_success_url(self) -> str:
         return reverse("clubwork_index")
@@ -231,7 +231,7 @@ def register_for_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
         cw = ClubWork.objects.get(pk=pk)
         if cw.is_full:
             messages.error(request, "Dieser Arbeitsdienst ist bereits voll.")
-            return render(request, "clubwork_index")
+            return redirect("clubwork_index")
 
         if request.method == "POST":
             if cw.participations.filter(user=request.user).exists():
@@ -425,7 +425,7 @@ class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
 
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
         user = cast(User, self.request.user)
-        return super().get_queryset().filter(user=user, date_time__lte=timezone.now())
+        return super().get_queryset().filter(user=user)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
