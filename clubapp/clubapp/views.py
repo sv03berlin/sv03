@@ -3,7 +3,7 @@ from typing import cast
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from clubapp.club.models import Ressort, User
@@ -36,3 +36,7 @@ def send_test_mail(request: HttpRequest) -> HttpResponse:
         fail_silently=False,
     )
     return HttpResponse(status=204)
+
+
+def health() -> HttpResponse:
+    return JsonResponse({"status": "ok"}, status=200)
