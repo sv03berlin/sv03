@@ -95,3 +95,9 @@ For all groups managed, all attributes and membership types have a look at the i
 ## Invitation Link Duration
 Per default an invitation link is 12h valid.
 `Realm Settings -> Token -> Override Action Tokens`
+
+## Configure Sync
+
+The configuration of a service account for user sync is required to use keycloak client.
+A `serviceaccount` needs to be created and a password is required.
+This account needs the role `view-realm`.
