@@ -38,5 +38,5 @@ def send_test_mail(request: HttpRequest) -> HttpResponse:
     return HttpResponse(status=204)
 
 
-def health() -> HttpResponse:
+def health(_: HttpRequest) -> HttpResponse:
     return JsonResponse({"status": "ok"}, status=200)
