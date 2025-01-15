@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db import models, transaction
 from django.db.models import Q
+from django.db.models.functions import ExtractYear
 from django.db.models.query import QuerySet
 from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -294,7 +295,15 @@ class YearFilter(FilterSet):  # type: ignore[misc]
         widget=forms.Select(choices=[]),
     )
 
-    choices = ClubWorkParticipation.objects.dates("date_time", "year")
+    @property
+    def choices(self) -> list[int]:
+        return [
+            item["year"]
+            for item in ClubWorkParticipation.objects.annotate(year=ExtractYear("date_time"))
+            .values("year")
+            .distinct()
+            .order_by("-year")
+        ]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -304,7 +313,7 @@ class YearFilter(FilterSet):  # type: ignore[misc]
             self.filters.pop("year")
 
     def get_year_choices(self) -> list[tuple[str, str]]:
-        return [("", "all")] + [(str(x.year), str(x.year)) for x in self.choices]
+        return [("", "all")] + [(str(x), str(x)) for x in self.choices]
 
     class Meta:
         model = ClubWorkParticipation
