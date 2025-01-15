@@ -46,9 +46,10 @@ class User(AbstractUser):
 
     @cached_property
     def membership_type(self) -> "MembershipYear|None":
-        if (m := self.membership_years.filter(year=timezone.now().year).first()) is not None:
-            return m
-        return None
+        return self.membership_type_year(timezone.now().year)
+
+    def membership_type_year(self, year: int) -> "MembershipYear|None":
+        return self.membership_years.filter(year=year).first()
 
     @cached_property
     def membership(self) -> "str":
