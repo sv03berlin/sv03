@@ -366,7 +366,7 @@ def download_xlsx_view(request: AuthenticatedHttpRequest, year: int) -> HttpResp
 
 
 def get_xlsx(year: int) -> BytesIO:
-    users = User.objects.filter(is_active=True, membership_years__year=year)
+    users = User.objects.filter(is_active=True)
     wb = Workbook()
     ws = wb.active
     ws.append(
@@ -389,7 +389,7 @@ def get_xlsx(year: int) -> BytesIO:
         ]
     )
     for user in users:
-        m = user.membership_type
+        m = user.membership_type_year(year)
         if not m:
             continue
         be = m.work_hours_boat_owner if user.is_boat_owner else 0
