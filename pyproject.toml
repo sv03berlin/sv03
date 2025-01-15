@@ -7,11 +7,11 @@ readme = "readme.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-django = "^5.1.4"
+django = "^5.1.5"
 # xhtml2pdf = "0.2.11"
 crispy-bootstrap5 = "^2024.2"
 uvicorn = {version = "0.29"}
-django-stubs-ext = "^5.1.1"
+django-stubs-ext = "^5.1.2"
 mozilla-django-oidc = "4.0.1"
 django-filter = "24.3"
 openpyxl = "3.1.5"
@@ -27,7 +27,7 @@ django-autocomplete-light = "^3.11.0"
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.13.0"
 ruff = "^0.8.2"
-django-stubs = "^5.1.1"
+django-stubs = "*"
 
 [build-system]
 requires = ["poetry-core"]
