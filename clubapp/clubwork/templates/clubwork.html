@@ -5,7 +5,32 @@
 <div class="container">
     <p class="h2 mb-3">Meine Arbeitsdienste</p>
 
-    <p>Als {{user.membership_type}} habe ich von meinen {{user.club_work_hours}} Stunden für {{this_year}} schon {{user.hours_done_formatted}} erledigt. Also sind noch {{user.hours_to_do_formatted}} verbleibend. Jedoch sind {{user.unconfirmed_hours_formatted}} noch nicht bestätigt worden.</p>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td>Mitgliedschaft</td>
+                    <td>{{user.membership_type.name}}</td>
+                </tr>
+                <tr>
+                    <td>Pflichtarbeitsstunden {{this_year}}</td>
+                    <td>{{user.club_work_hours}}</td>
+                </tr>
+                <tr>
+                    <td>Bereits geleistet</td>
+                    <td>{{user.hours_done_formatted}}</td>
+                </tr>
+                <tr>
+                    <td>Noch zu leisten</td>
+                    <td>{{user.hours_to_do_formatted}}</td>
+                </tr>
+                <tr>
+                    <td>Noch nicht bestätigt</td>
+                    <td>{{user.unconfirmed_hours_formatted}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
     <a class="btn btn-outline-secondary btn-sm mb-3" href="{% url 'add_clubwork' %}" data-bs-toggle="tooltip" title="Einen neuen Arbeitsdienst für alle Mitglieder ausschreiben">Neuen Arbeitsdienst ausschreiben</a>
