@@ -107,11 +107,11 @@ class User(AbstractUser):
 
     @cached_property
     def hours_to_do_formatted(self) -> str:
-        return self.get_time_formatted(self.missing_hours(timezone.now().year))
+        return self.get_time_formatted(self.missing_hours(timezone.now().year) * 60)
 
-    def get_time_formatted(self, time: float) -> str:
-        hours, minutes = divmod(int(time), 60)
-        return f"{hours:02d}:{minutes:02d}"
+    def get_time_formatted(self, minutes: float) -> str:
+        hours, minutes = divmod(int(minutes), 60)
+        return f"{hours:2d} Stunden und {minutes:2d} Minuten"
 
     def hours_done_year(self, year: int) -> float:
         return (
@@ -128,10 +128,10 @@ class User(AbstractUser):
         return 0
 
     def missing_hours(self, year: int) -> float:
-        left = self.club_work_hours - self.hours_done_year(year)
-        if left < 0:
+        time_left = self.club_work_hours - self.hours_done_year(year)
+        if time_left < 0:
             return 0
-        return left
+        return time_left
 
     @cached_property
     def unconfirmed_hours(self) -> float:
