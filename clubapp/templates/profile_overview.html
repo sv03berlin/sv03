@@ -14,8 +14,8 @@
                     <li>Geburtstag: {{ user.birthday }}</li>
                     <li>OpenID Sub: {{ user.openid_sub }}</li>
                     <li>Mitgliedschaft: {{ user.membership }}</li>
-                    <li>Clubbootnutzung: {{ user.is_boat_owner }}</li>
-                    <li>Bootseigner: {{ user.is_clubboat_user }}</li>
+                    <li>Clubbootnutzung: {{ user.is_clubboat_user|yesno:"Ja,Nein" }}</li>
+                    <li>Bootseigner: {{ user.is_boat_owner|yesno:"Ja,Nein" }}</li>
                     <li>Bereits erlegigte Arbeitsstunden: {{ user.hours_done }} von {{ user.hours_to_do }}</li>
                     <li>Reservierungsgruppen:
                         <ul>
