@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 
 from clubapp.clubapp import views
 
@@ -15,6 +15,9 @@ urlpatterns = [
     path("reservations/", include("clubapp.reservationflow.urls")),
     path("profile_overview/", views.profile_overview, name="profile_overview"),
     path("testmail/", views.send_test_mail, name="testmail"),
+    re_path(r"^.well-known/security\.txt", views.security_txt),
+    re_path(r"^security\.txt", views.security_txt),
+    re_path(r"^robots\.txt", views.security_txt),
 ]
 
 if settings.ENABLE_OIDC_LOGIN:
