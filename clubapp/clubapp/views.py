@@ -40,3 +40,22 @@ def send_test_mail(request: HttpRequest) -> HttpResponse:
 
 def health(_: HttpRequest) -> HttpResponse:
     return JsonResponse({"status": "ok"}, status=200)
+
+
+SECURITY = """Contact: mailto:webmaster@sv03.de
+Expires: 2028-01-25T23:59:00.000Z
+Preferred-Languages: de, en
+"""
+
+
+def security_txt(_request: HttpRequest) -> HttpResponse:
+    return HttpResponse(SECURITY, content_type="text/plain")
+
+
+ROBOTS = """User-agent: *
+Disallow: /
+"""
+
+
+def robots_txt(_request: HttpRequest) -> HttpResponse:
+    return HttpResponse(ROBOTS, content_type="text/plain")
