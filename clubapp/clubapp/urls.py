@@ -17,7 +17,7 @@ urlpatterns = [
     path("testmail/", views.send_test_mail, name="testmail"),
     re_path(r"^.well-known/security\.txt", views.security_txt),
     re_path(r"^security\.txt", views.security_txt),
-    re_path(r"^robots\.txt", views.security_txt),
+    re_path(r"^robots\.txt", views.robots_txt),
 ]
 
 if settings.ENABLE_OIDC_LOGIN:
