@@ -103,7 +103,7 @@ class User(AbstractUser):
 
     @cached_property
     def hours_done_formatted(self) -> str:
-        return self.get_time_formatted(self.hours_done)
+        return self.get_time_formatted(self.hours_done * 60)
 
     @cached_property
     def hours_to_do_formatted(self) -> str:
