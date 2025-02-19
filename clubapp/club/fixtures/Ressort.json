@@ -49,7 +49,7 @@
         "pk": 6,
         "fields": {
             "name": "Garten",
-            "internal_name": "Garten",
+            "internal_name": "ressort_garten",
             "is_accounting_ressort": false
         }
     }
