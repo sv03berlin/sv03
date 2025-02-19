@@ -34,7 +34,7 @@
                 <ul>
                     <li><a href="mailto:{% for user in staff %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">Email an alle Administratoren</a></li>
                     {% for user in staff %}
-                    <li><a href="mailto:{{ user.email }}">Email an {{ user }} ({{ head.email }})</a></li>
+                    <li><a href="mailto:{{ user.email }}">Email an {{ user }} ({{ user.email }})</a></li>
                     {% endfor %}
                 </ul>
 
