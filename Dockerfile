@@ -1,6 +1,6 @@
 FROM python:3.12-slim-bookworm
 
-RUN apt-get update -y && apt-get install wget unzip git -y
+RUN apt-get update -y && apt-get install wget curl unzip git -y
 
 # install
 RUN mkdir /code
@@ -24,6 +24,10 @@ ENV GIT_SHA=$GIT_SHA
 ENV GIT_BRANCH=$GIT_BRANCH
 
 EXPOSE 8000
+
+
+HEALTHCHECK --interval=10s --timeout=5s --start-period=3s --retries=3 \
+    CMD curl --fail http://localhost:8000/health || exit 1
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "python3", "/code/clubapp_uvicorn.py" ]
