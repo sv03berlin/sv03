@@ -19,7 +19,7 @@ def allowed_to_borrow(user: User) -> list[tuple[int, str]]:
     else:
         qs = ReservableThing.objects.filter(reservation_group__users__in=[user])
         qs |= ReservableThing.objects.filter(all_can_reserve=True)
-        qs = qs.distinct()
+        qs = qs.distinct().order_by("reservation_group")
     return [(thing.id, thing.name) for thing in qs]
 
 
@@ -104,7 +104,7 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
 class SerialReservationForm(forms.Form):
     WEEKDAYS = [(str(i), calendar.day_name[i]) for i in range(7)]
 
-    thing = forms.ChoiceField(choices=[], required=True, label="Objekt")
+    things = forms.MultipleChoiceField(choices=[], required=True, widget=forms.CheckboxSelectMultiple, label="Objekt")
 
     multiselect_weekdays = forms.MultipleChoiceField(
         choices=WEEKDAYS, widget=forms.CheckboxSelectMultiple, label="Wochentage"
@@ -134,7 +134,7 @@ class SerialReservationForm(forms.Form):
         kwargs.pop("instance")
         super().__init__(*args, **kwargs)
         self.user = user
-        self.fields["thing"].choices = [("", "Bitte auswählen")] + allowed_to_borrow(user)  # type: ignore[attr-defined]
+        self.fields["things"].choices = allowed_to_borrow(user)  # type: ignore[attr-defined]
 
     def is_valid(self) -> bool:
         valid = super().is_valid()
@@ -159,19 +159,20 @@ class SerialReservationForm(forms.Form):
         starttime = self.cleaned_data["starttime"]
         endtime = self.cleaned_data["endtime"]
         user = self.user
-        thing = ReservableThing.objects.get(pk=int(self.cleaned_data["thing"]))
+        things = ReservableThing.objects.filter(pk__in=[int(o) for o in self.cleaned_data["things"]])
 
-        current_date = first_day
-        while current_date <= last_day:
-            if current_date.weekday() in weekdays:
-                start_datetime = datetime.datetime.combine(current_date, starttime)
-                end_datetime = datetime.datetime.combine(current_date, endtime)
-                reservation = Reservation(
-                    thing=thing,
-                    start=start_datetime,
-                    end=end_datetime,
-                    user=user,
-                )
-                reservations.append(reservation)
-            current_date += datetime.timedelta(days=1)
+        for thing in things:
+            current_date = first_day
+            while current_date <= last_day:
+                if current_date.weekday() in weekdays:
+                    start_datetime = datetime.datetime.combine(current_date, starttime)
+                    end_datetime = datetime.datetime.combine(current_date, endtime)
+                    reservation = Reservation(
+                        thing=thing,
+                        start=start_datetime,
+                        end=end_datetime,
+                        user=user,
+                    )
+                    reservations.append(reservation)
+                current_date += datetime.timedelta(days=1)
         return reservations

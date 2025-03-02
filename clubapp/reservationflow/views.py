@@ -35,7 +35,7 @@ class ReservationMixin:
         return reverse("reservation_list")
 
 
-class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  # type: ignore[type-arg, misc]
+class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  # type: ignore[type-arg]
     template_name = "create_form.html"
     form_class = ReservationForm
 
@@ -64,7 +64,7 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
         return kwargs
 
 
-class ReservationUpdateView(LoginRequiredMixin, ReservationMixin, UpdateView):  # type: ignore[type-arg, misc]
+class ReservationUpdateView(LoginRequiredMixin, ReservationMixin, UpdateView):  # type: ignore[type-arg]
     template_name = "create_form.html"
     form_class = ReservationForm
 
@@ -75,7 +75,7 @@ class ReservationUpdateView(LoginRequiredMixin, ReservationMixin, UpdateView):  
         return kwargs
 
 
-class ReservationDeleteView(LoginRequiredMixin, ReservationMixin, DeleteView):  # type: ignore[type-arg, misc]
+class ReservationDeleteView(LoginRequiredMixin, ReservationMixin, DeleteView):  # type: ignore[type-arg]
     template_name = "delete_form.html"
 
 

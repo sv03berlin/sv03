@@ -118,7 +118,7 @@ class IsRessortOrAdminMixin(UserPassesTestMixin):
         return user.is_superuser or user.is_ressort_user
 
 
-class ClubWorkDelete(IsRessortOrAdminMixin, DeleteView):  # type: ignore[type-arg, misc]
+class ClubWorkDelete(IsRessortOrAdminMixin, DeleteView):  # type: ignore[type-arg]
     template_name = "delete_form.html"
     queryset = ClubWork.objects.all()
     success_url = reverse_lazy("clubwork_index")
@@ -153,7 +153,7 @@ class OwnClubworkMixin:
         return c
 
 
-class OwnClubWorkCreate(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # type: ignore[type-arg, misc]
+class OwnClubWorkCreate(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # type: ignore[type-arg]
     template_name = "create_form.html"
     form_class = ClubWorkParticipationForm
 
@@ -163,7 +163,7 @@ class OwnClubWorkCreate(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # ty
         return kwargs
 
 
-class OwnClubWorkUpdate(LoginRequiredMixin, OwnClubworkMixin, UpdateView):  # type: ignore[type-arg, misc]
+class OwnClubWorkUpdate(LoginRequiredMixin, OwnClubworkMixin, UpdateView):  # type: ignore[type-arg]
     template_name = "create_form.html"
     form_class = ClubWorkParticipationForm
 
@@ -195,7 +195,7 @@ class HourUpdateView(UpdateView[ClubWorkParticipation, HourEditForm]):
         return c
 
 
-class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # type: ignore[type-arg, misc]
+class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # type: ignore[type-arg]
     template_name = "abmelden_delete_form.html"
 
 
@@ -567,6 +567,6 @@ def unregister_user_for_clubwork(request: AuthenticatedHttpRequest, clubwork_id:
         return redirect("clubwork_index")
 
 
-class OtherUserClubWorkCreationForm(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # type: ignore[type-arg, misc]
+class OtherUserClubWorkCreationForm(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # type: ignore[type-arg]
     template_name = "create_form.html"
     form_class = ClubWorkPartitipationRessortUserCreatingForm
