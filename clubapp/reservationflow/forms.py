@@ -115,10 +115,16 @@ class SerialReservationForm(forms.Form):
     last_day = forms.DateField(
         widget=DatePickerInput(), label="Letzter Tag", initial=datetime.datetime.now(tz=datetime.UTC)
     )
-    starttime = forms.TimeField(
-        widget=TimePickerInput(), label="Startzeit", initial=datetime.datetime.now(tz=datetime.UTC)
+    start = forms.TimeField(
+        widget=TimePickerInput(options={"format": "HH:mm"}),
+        label="Startzeit",
+        initial=datetime.datetime.now(tz=datetime.UTC),
     )
-    endtime = forms.TimeField(widget=TimePickerInput(), label="Endzeit", initial=datetime.datetime.now(tz=datetime.UTC))
+    end = forms.TimeField(
+        widget=TimePickerInput(options={"format": "HH:mm"}),
+        label="Endzeit",
+        initial=datetime.datetime.now(tz=datetime.UTC),
+    )
 
     class Meta:
         fields = ["multiselect_weekdays", "first_day", "last_day", "start_time", "end_time"]
@@ -140,6 +146,15 @@ class SerialReservationForm(forms.Form):
         valid = super().is_valid()
         if not valid:
             return False
+        for r in self.reservations:
+            if timezone.make_aware(r.start, timezone=datetime.UTC) < datetime.datetime.now(tz=datetime.UTC):
+                self.add_error("start", "Startzeit muss in der Zukunft liegen.")
+                return False
+
+            if r.start >= r.end:
+                self.add_error("start", "Startzeit muss vor Endzeit liegen.")
+                return False
+
         return all(
             is_valid(self, r.start, r.end, r.thing, Reservation.objects.filter(thing=r.thing))
             for r in self.reservations
@@ -156,8 +171,8 @@ class SerialReservationForm(forms.Form):
         weekdays = [int(day) for day in self.cleaned_data["multiselect_weekdays"]]
         first_day = self.cleaned_data["first_day"]
         last_day = self.cleaned_data["last_day"]
-        starttime = self.cleaned_data["starttime"]
-        endtime = self.cleaned_data["endtime"]
+        start = self.cleaned_data["start"]
+        end = self.cleaned_data["end"]
         user = self.user
         things = ReservableThing.objects.filter(pk__in=[int(o) for o in self.cleaned_data["things"]])
 
@@ -165,8 +180,8 @@ class SerialReservationForm(forms.Form):
             current_date = first_day
             while current_date <= last_day:
                 if current_date.weekday() in weekdays:
-                    start_datetime = datetime.datetime.combine(current_date, starttime)
-                    end_datetime = datetime.datetime.combine(current_date, endtime)
+                    start_datetime = datetime.datetime.combine(current_date, start)
+                    end_datetime = datetime.datetime.combine(current_date, end)
                     reservation = Reservation(
                         thing=thing,
                         start=start_datetime,
