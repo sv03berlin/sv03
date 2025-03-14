@@ -82,3 +82,9 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
             "description",
         ]
         widgets = {"date_time": DateTimePickerInput(), "user": autocomplete.ModelSelect2()}
+
+
+class EmailUsersForm(forms.Form):
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(), label="Mitglieder", required=True, widget=autocomplete.ModelSelect2Multiple()
+    )
