@@ -222,3 +222,6 @@ class Ressort(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def check_user_is_head(self, user: User) -> bool:
+        return self.head.filter(pk=user.pk).exists()

@@ -574,3 +574,6 @@ def unregister_user_for_clubwork(request: AuthenticatedHttpRequest, clubwork_id:
 class OtherUserClubWorkCreationForm(LoginRequiredMixin, OwnClubworkMixin, CreateView):  # type: ignore[type-arg]
     template_name = "create_form.html"
     form_class = ClubWorkPartitipationRessortUserCreatingForm
+
+    def get_form_kwargs(self) -> Any:
+        return {**super().get_form_kwargs(), "user": self.request.user}

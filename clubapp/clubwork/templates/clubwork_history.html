@@ -44,8 +44,8 @@
                 <td>{{t.date_time}}</td>
                 <td>{{t.description}}</td>
                 <td>{{t.duration}}min</td>
-                {% if not t.is_approved %}
-                    <td>{{t.is_approved}}</td>
+                {% if t.is_approved %}
+                    <td>{{t.is_approved|yesno:"Ja,Nein" }}</td>
                     <td>{{t.approved_by}}</td>
                     <td>{{t.approve_date}}</td>
                 {% else %}

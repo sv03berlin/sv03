@@ -1,11 +1,11 @@
-from typing import Any
+from typing import Any, cast
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from dal import autocomplete
 from django import forms
 from django.db.transaction import atomic
 
-from clubapp.club.models import User
+from clubapp.club.models import Ressort, User
 
 from . import models
 
@@ -87,6 +87,23 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
     users = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(), label="Mitglieder", required=True, widget=autocomplete.ModelSelect2Multiple()
     )
+    request_user: User
+
+    def __init__(self, user: User, *args: Any, **kwargs: Any) -> None:
+        self.request_user = user
+        super().__init__(*args, **kwargs)
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+        if cleaned_data is None:
+            raise ValueError
+        ressort = cast(Ressort, cleaned_data.get("ressort"))
+
+        if ressort and not (self.request_user.is_superuser or ressort.check_user_is_head(self.request_user)):
+            msg = "You do not have permission to create a club work participation for this ressort."
+            raise forms.ValidationError(msg)
+
+        return cleaned_data
 
     @atomic
     def save(self, commit: bool = True) -> models.ClubWorkParticipation:
@@ -100,6 +117,8 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
                     duration=instance.duration,
                     description=instance.description,
                     user=user,
+                    is_approved=True,
+                    approved_by=self.request_user,
                 )
                 participation.save()
         return instance
