@@ -3,6 +3,7 @@ from typing import Any
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from dal import autocomplete
 from django import forms
+from django.db.transaction import atomic
 
 from clubapp.club.models import User
 
@@ -75,13 +76,33 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
         model = models.ClubWorkParticipation
         fields = [
             "title",
-            "user",
+            "users",
             "ressort",
             "date_time",
             "duration",
             "description",
         ]
-        widgets = {"date_time": DateTimePickerInput(), "user": autocomplete.ModelSelect2()}
+        widgets = {"date_time": DateTimePickerInput()}
+
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(), label="Mitglieder", required=True, widget=autocomplete.ModelSelect2Multiple()
+    )
+
+    @atomic
+    def save(self, commit: bool = True) -> models.ClubWorkParticipation:
+        instance = super().save(commit=False)
+        if commit:
+            for user in self.cleaned_data["users"]:
+                participation = models.ClubWorkParticipation(
+                    title=instance.title,
+                    ressort=instance.ressort,
+                    date_time=instance.date_time,
+                    duration=instance.duration,
+                    description=instance.description,
+                    user=user,
+                )
+                participation.save()
+        return instance
 
 
 class EmailUsersForm(forms.Form):
