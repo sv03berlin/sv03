@@ -224,6 +224,7 @@ def approve_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
             part.is_approved = True
             part.approve_date = timezone.now()
             part.save()
+            part.notify_approval(request)
             return HttpResponse(status=204)
     if request.method == "DELETE":
         part = ClubWorkParticipation.objects.get(pk=pk)
@@ -513,48 +514,48 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
 def register_user(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     cw = get_object_or_404(ClubWork, pk=pk)
     if request.method == "POST":
-        users = request.POST.get("users")
-        if users is None:
-            messages.error(request, "Es wurden keine Nutzer:innen ausgewählt.")
+        form = EmailUsersForm(request.POST)
+        if form.is_valid():
+            users = form.cleaned_data["users"]
+            for user in users:
+                try:
+                    ClubWorkParticipation.objects.get_or_create(
+                        title=cw.title,
+                        user=user,
+                        ressort=cw.ressort,
+                        clubwork=cw,
+                        date_time=cw.date_time,
+                        duration=cw.max_duration,
+                        description=cw.description,
+                    )
+                    send_mail(
+                        subject=f"Arbeitsdienst {cw.title}",
+                        message=f"Hallo {user.first_name},\n\n"
+                        f"du wurdest für {cw.title} am {cw.date_time} eingetragen\n"
+                        f"Beschreibung: {cw.description}\n\n"
+                        f"Du kannst dich hier abmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
+                        f"Viele Grüße,\n"
+                        f"{request.user.first_name} {request.user.last_name}",
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                    )
+                except Exception:
+                    logger.exception("Error while sending email to user %s", user)
+                    messages.error(
+                        request, f"Der Nutzer mit der ID {user} existiert nicht oder wurde bereits ausgewählt."
+                    )
             return redirect("clubwork_index")
-        qs = User.objects.all()
-        if "all" not in users:
-            qs = qs.filter(pk__in=users.split(","))
-        for user in qs:
-            try:
-                ClubWorkParticipation.objects.get_or_create(
-                    title=cw.title,
-                    user=user,
-                    ressort=cw.ressort,
-                    clubwork=cw,
-                    date_time=cw.date_time,
-                    duration=cw.max_duration,
-                    description=cw.description,
-                )
-                send_mail(
-                    subject=f"Arbeitsdienst {cw.title}",
-                    message=f"Hallo {user.first_name},\n\n"
-                    f"du wurdest für {cw.title} am {cw.date_time} eingetragen\n"
-                    f"Beschreibung: {cw.description}\n\n"
-                    f"Du kannst dich hier abmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
-                    f"Viele Grüße,\n"
-                    f"{request.user.first_name} {request.user.last_name}",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=False,
-                )
-            except Exception:
-                logger.exception("Error while sending email to user %s", user)
-                messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht oder wurde bereits ausgewählt.")
-        return redirect("clubwork_index")
+    else:
+        form = EmailUsersForm()
 
     c = {
-        "users": User.objects.all(),
+        "form": form,
         "clubwork": cw,
         "heading": f"Mitglieder für Clubdienst {cw} anmelden",
         "action_text": "Anmelden",
     }
-    return render(request, template_name="email_specific_user.html", context=c)
+    return render(request, template_name="create_form.html", context=c)
 
 
 @login_required
@@ -576,4 +577,4 @@ class OtherUserClubWorkCreationForm(LoginRequiredMixin, OwnClubworkMixin, Create
     form_class = ClubWorkPartitipationRessortUserCreatingForm
 
     def get_form_kwargs(self) -> Any:
-        return {**super().get_form_kwargs(), "user": self.request.user}
+        return {**super().get_form_kwargs(), "request": self.request}

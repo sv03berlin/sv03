@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Any, cast
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
@@ -6,8 +7,11 @@ from django import forms
 from django.db.transaction import atomic
 
 from clubapp.club.models import Ressort, User
+from clubapp.clubapp.utils import AuthenticatedHttpRequest
 
 from . import models
+
+logger = getLogger()
 
 
 class ClubWorkForm(forms.ModelForm[models.ClubWork]):
@@ -87,10 +91,10 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
     users = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(), label="Mitglieder", required=True, widget=autocomplete.ModelSelect2Multiple()
     )
-    request_user: User
+    request: AuthenticatedHttpRequest
 
-    def __init__(self, user: User, *args: Any, **kwargs: Any) -> None:
-        self.request_user = user
+    def __init__(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> None:
+        self.request = request
         super().__init__(*args, **kwargs)
 
     def clean(self) -> dict[str, Any]:
@@ -99,7 +103,7 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
             raise ValueError
         ressort = cast(Ressort, cleaned_data.get("ressort"))
 
-        if ressort and not (self.request_user.is_superuser or ressort.check_user_is_head(self.request_user)):
+        if ressort and not (self.request.user.is_superuser or ressort.check_user_is_head(self.request.user)):
             msg = "You do not have permission to create a club work participation for this ressort."
             raise forms.ValidationError(msg)
 
@@ -108,8 +112,9 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
     @atomic
     def save(self, commit: bool = True) -> models.ClubWorkParticipation:
         instance = super().save(commit=False)
+        users = self.cleaned_data["users"]
         if commit:
-            for user in self.cleaned_data["users"]:
+            for user in users:
                 participation = models.ClubWorkParticipation(
                     title=instance.title,
                     ressort=instance.ressort,
@@ -118,9 +123,10 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
                     description=instance.description,
                     user=user,
                     is_approved=True,
-                    approved_by=self.request_user,
+                    approved_by=self.request.user,
                 )
                 participation.save()
+                participation.notify_approval(self.request)
         return instance
 
 

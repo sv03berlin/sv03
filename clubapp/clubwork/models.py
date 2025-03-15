@@ -1,8 +1,16 @@
+from logging import getLogger
+
+from django.conf import settings
+from django.contrib import messages
+from django.core.mail import send_mail
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from clubapp.club.models import Ressort, User
+from clubapp.clubapp.utils import AuthenticatedHttpRequest
+
+logger = getLogger(__name__)
 
 
 class ClubWork(models.Model):
@@ -82,3 +90,19 @@ class ClubWorkParticipation(models.Model):
         if self.clubwork:
             return self.clubwork.async_date
         return False
+
+    def notify_approval(self, request: AuthenticatedHttpRequest) -> None:
+        try:
+            send_mail(
+                subject=f"Arbeitsdienst '{self.title}' wurde genehmigt",
+                message=f"Hallo {self.user.first_name},\n\n"
+                f"Dein Arbeitsdienst '{self.title}' vom {self.date_time} wurde genehmigt.\n\n"
+                f"Viele Grüße,\n"
+                f"{request.user.first_name} {request.user.last_name}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.user.email],
+                fail_silently=False,
+            )
+        except Exception:  # noqa: BLE001
+            logger.warning("Email to %s not successful", self.user.email)
+            messages.error(request, f"Email an {self.user.email} fehlgeschlagen.")
