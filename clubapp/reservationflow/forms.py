@@ -48,7 +48,14 @@ def is_valid(
         or containing_start_time_reservations.exists()
         or containing_end_time_reservations.exists()
     ):
-        form.add_error("thing", f"{thing.name} ist in diesem Zeitraum bereits reserviert.")
+        overlapping = (
+            list(overlapping_reservations)
+            + list(containing_start_time_reservations)
+            + list(containing_end_time_reservations)
+            + list(containing_reservations)
+        )
+        msg = ", ".join(f"{ol.start_time}-{ol.end_time}" for ol in overlapping)
+        form.add_error(field=None, error=f"{thing.name} ist in diesem Zeitraum bereits reserviert ({msg}).")
         return False
 
     return True
@@ -97,7 +104,11 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
             return False
 
         return is_valid(
-            self, start_time, end_time, thing, Reservation.objects.filter(thing=thing).exclude(id=self.instance.id)
+            form=self,
+            start_time=start_time,
+            end_time=end_time,
+            thing=thing,
+            qs=Reservation.objects.filter(thing=thing).exclude(id=self.instance.id),
         )
 
 
@@ -156,7 +167,13 @@ class SerialReservationForm(forms.Form):
                 return False
 
         return all(
-            is_valid(self, r.start, r.end, r.thing, Reservation.objects.filter(thing=r.thing))
+            is_valid(
+                form=self,
+                start_time=r.start,
+                end_time=r.end,
+                thing=r.thing,
+                qs=Reservation.objects.filter(thing=r.thing),
+            )
             for r in self.reservations
         )
 
