@@ -11,9 +11,7 @@
                 <th scope="col">Was?</th>
                 <th scope="col">von</th>
                 <th scope="col">bis</th>
-                {% if user.is_staff %}
                 <th scope="col">Wer?</th>
-                {% endif %}
                 <th scope="col">Optionen</th>
             </tr>
         </thead>
@@ -24,9 +22,7 @@
                 <td>{{r.thing}}</td>
                 <td>{{r.start}}</td>
                 <td>{{r.end}}</td>
-                {% if user.is_staff %}
-                <td>{{user}}</td>
-                {% endif %}
+                <td>{{r.user}} <a href="{% url 'reservation_group_detail' r.pk %}">(Details)</a></td>
                 <td>
                     <div class="d-flex">
                         <a class="btn btn-primary btn-sm me-2" href="{% url 'reservation_update' r.id %}">Bearbeiten</a>
