@@ -5,6 +5,7 @@ from typing import Any
 from bootstrap_datepicker_plus.widgets import DatePickerInput, DateTimePickerInput, TimePickerInput
 from django import forms
 from django.db import transaction
+from django.db.models.query import QuerySet
 from django.forms import ModelForm
 from django.utils import timezone
 
@@ -28,7 +29,7 @@ def is_valid(
     start_time: datetime.datetime,
     end_time: datetime.datetime,
     thing: ReservableThing,
-    qs: Any,
+    qs: QuerySet[Reservation],
 ) -> bool:
     # Check for any overlapping reservations
     overlapping_reservations = qs.filter(start__lt=end_time, end__gt=start_time)
@@ -54,7 +55,7 @@ def is_valid(
             + list(containing_end_time_reservations)
             + list(containing_reservations)
         )
-        msg = ", ".join(f"{ol.start_time}-{ol.end_time}" for ol in overlapping)
+        msg = ", ".join(f"{ol.start}-{ol.end}" for ol in overlapping)
         form.add_error(field=None, error=f"{thing.name} ist in diesem Zeitraum bereits reserviert ({msg}).")
         return False
 
