@@ -382,7 +382,7 @@ def download_xlsx_view(request: AuthenticatedHttpRequest, year: int) -> HttpResp
 
 
 def get_xlsx(year: int) -> BytesIO:
-    users = User.objects.filter(is_active=True)
+    users = User.objects.filter(is_active=True).order_by("last_name")
     wb = Workbook()
     ws = wb.active
     ws.append(
