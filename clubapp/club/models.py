@@ -219,6 +219,7 @@ class Ressort(models.Model):
         default=None,
     )
     is_accounting_ressort = models.BooleanField(default=False, verbose_name=_("Buchhaltungsressort"))
+    email = models.CharField(max_length=2048, default="", verbose_name=_("Ressort Email"))
 
     def __str__(self) -> str:
         return self.name

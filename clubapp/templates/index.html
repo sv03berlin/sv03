@@ -21,10 +21,7 @@
                     <li>
                         {{ ressort.name }}
                         <ul>
-                            <li><a href="mailto:{% for user in ressort.head.all %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">Email an alle Ressortleitungen von ({{ ressort }})</a></li>
-                            {% for head in ressort.head.all %}
-                            <li><a href="mailto:{{ head.email }}">Email an {{ head }} ({{ head.email }})</a></li>
-                            {% endfor %}
+                            <li><a href="mailto:{{ ressort.email }}">Email an {{ ressort.email }}</a></li>
                         </ul>
                     </li>
                     {% endfor %}
