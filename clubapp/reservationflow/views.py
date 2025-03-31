@@ -11,8 +11,9 @@ from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView
 
 from clubapp.club.models import User
+from clubapp.clubwork.views import IsRessortOrAdminMixin
 
-from .forms import ReservationForm, SerialReservationForm
+from .forms import ReservationForm, ReservationForUserForm, SerialReservationForm
 from .models import ReservableThing, Reservation, ReservationGroup
 
 
@@ -43,6 +44,11 @@ class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
+
+
+class ReservationForUserCreateView(LoginRequiredMixin, ReservationMixin, CreateView, IsRessortOrAdminMixin):  # type: ignore[type-arg]
+    template_name = "create_form.html"
+    form_class = ReservationForUserForm
 
 
 class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: ignore[type-arg]

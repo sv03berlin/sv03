@@ -3,7 +3,8 @@
 
 {% block content %}
 <div class="container">
-    <form method="post">{% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
         <p>Bist du dir sicher, dass du "{{ object }}" löschen möchtest?</p>
         <input class="btn btn-danger" type="submit" value="Bestätigen">
     </form>

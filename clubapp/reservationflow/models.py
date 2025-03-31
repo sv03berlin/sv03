@@ -45,6 +45,7 @@ class Reservation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Benutzer:in"))
     start = models.DateTimeField(verbose_name=_("Beginn der Reservierung"))
     end = models.DateTimeField(verbose_name=_("Ende der Reservierung"))
+    note = models.TextField(verbose_name=_("Bemerkung"), default="")
 
     class Meta:
         verbose_name = _("Reservierung")

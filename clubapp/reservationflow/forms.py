@@ -3,6 +3,7 @@ import datetime
 from typing import Any
 
 from bootstrap_datepicker_plus.widgets import DatePickerInput, DateTimePickerInput, TimePickerInput
+from dal import autocomplete
 from django import forms
 from django.db import transaction
 from django.db.models.query import QuerySet
@@ -65,7 +66,7 @@ def is_valid(
 class ReservationForm(ModelForm):  # type: ignore[type-arg]
     class Meta:
         model = Reservation
-        fields = ["thing", "start", "end"]
+        fields = ["thing", "start", "end", "note"]
 
         widgets = {
             "start": DateTimePickerInput(),
@@ -113,6 +114,18 @@ class ReservationForm(ModelForm):  # type: ignore[type-arg]
         )
 
 
+class ReservationForUserForm(ModelForm):  # type: ignore[type-arg]
+    class Meta:
+        model = Reservation
+        fields = ["user", "thing", "start", "end", "note"]
+
+        widgets = {
+            "start": DateTimePickerInput(),
+            "end": DateTimePickerInput(range_from="start"),
+            "user": autocomplete.ModelSelect2(),
+        }
+
+
 class SerialReservationForm(forms.Form):
     WEEKDAYS = [(str(i), calendar.day_name[i]) for i in range(7)]
 
@@ -139,7 +152,7 @@ class SerialReservationForm(forms.Form):
     )
 
     class Meta:
-        fields = ["multiselect_weekdays", "first_day", "last_day", "start_time", "end_time"]
+        fields = ["multiselect_weekdays", "first_day", "last_day", "start_time", "end_time", "note"]
 
         widgets = {
             "first_day": DatePickerInput(),

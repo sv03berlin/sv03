@@ -10,6 +10,7 @@
             <p class="card-text">Von: {{ reservation.start }}</p>
             <p class="card-text">Bis: {{ reservation.end }}</p>
             <p class="card-text">Wer: {{ reservation.user }}</p>
+            <p class="card-text">Bemerkung: {{ reservation.note }}</p>
             <p><a class="card-text" href="mailto:{{ reservation.user.email }}">Schreibe {{ reservation.user }} eine Email ({{ reservation.user.email }})</a></p>
             {% if edit_allowed %}
             <div class="d-flex mt-3">
