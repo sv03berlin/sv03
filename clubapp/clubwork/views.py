@@ -12,7 +12,13 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.functions import ExtractYear
 from django.db.models.query import QuerySet
-from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import (
+    FileResponse,
+    HttpRequest,
+    HttpResponse,
+    HttpResponseNotAllowed,
+    HttpResponseRedirect,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -470,6 +476,27 @@ class AllClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterVi
         return super().get(request, *args, **kwargs)
 
 
+def notify_members_new_clubwork(users: list[User], request: AuthenticatedHttpRequest, clubwork: ClubWork) -> None:
+    emails = [user.email for user in users]
+    try:
+        send_mail(
+            subject=f"Arbeitsdienst {clubwork.title}",
+            message=f"Liebes Mitglied,\n\n"
+            f"es ist ein neuer Arbeitsdienst verfügbar: {clubwork.title} am {clubwork.date_time}.\n"
+            f"Beschreibung: {clubwork.description}\n\n"
+            f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
+            f"Viele Grüße,\n"
+            f"{request.user.first_name} {request.user.last_name}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=emails,
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception("Error while sending email clubwork %s", clubwork.pk)
+        messages.error(request, "Senden der email fehlgeschlagen")
+        raise
+
+
 @login_required
 @is_ressort_user
 def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
@@ -477,24 +504,8 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
     if request.method == "POST":
         form = EmailUsersForm(request.POST)
         if form.is_valid():
-            users = form.cleaned_data["users"]
-            for user in users:
-                try:
-                    send_mail(
-                        subject=f"Arbeitsdienst {cw.title}",
-                        message=f"Hallo {user.first_name},\n\n"
-                        f"es ist ein neuer Arbeitsdienst verfügbar: {cw.title} am {cw.date_time}.\n"
-                        f"Beschreibung: {cw.description}\n\n"
-                        f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
-                        f"Viele Grüße,\n"
-                        f"{request.user.first_name} {request.user.last_name}",
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[user.email],
-                        fail_silently=False,
-                    )
-                except Exception:
-                    logger.exception("Error while sending email to user %s", user)
-                    messages.error(request, f"Der Nutzer mit der ID {user} existiert nicht.")
+            users: list[User] = form.cleaned_data["users"]
+            notify_members_new_clubwork(users=users, clubwork=cw, request=request)
             return redirect("clubwork_index")
         messages.error(request, "Bitte wähle mindestens einen Nutzer aus.")
     else:
@@ -507,6 +518,17 @@ def select_users_to_email_about(request: AuthenticatedHttpRequest, pk: int) -> H
         "action_text": "Email senden",
     }
     return render(request, template_name="create_form.html", context=c)
+
+
+@login_required
+@is_ressort_user
+def email_all_users_clubwork(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    cw = get_object_or_404(ClubWork, pk=pk)
+    if request.method == "GET":
+        notify_members_new_clubwork(users=User.get_members(), clubwork=cw, request=request)
+        return redirect("clubwork_index")
+    msg = "GET"
+    return HttpResponseNotAllowed(msg)
 
 
 @login_required

@@ -1,4 +1,5 @@
 import logging
+from typing import Self
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -43,6 +44,10 @@ class User(AbstractUser):
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         return self.username
+
+    @classmethod
+    def get_members(cls) -> list[Self]:
+        return list(cls.objects.all().exclude(member_id=""))
 
     @cached_property
     def membership_type(self) -> "MembershipYear|None":
