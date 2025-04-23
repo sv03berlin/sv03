@@ -15,7 +15,7 @@
         "fields": {
             "name": "Jugend III",
             "description": "Schlauchboot Jugend III (rot)",
-            "reservation_group": 2,
+            "reservation_group": 4,
             "all_can_reserve": false
         }
     },
@@ -65,7 +65,7 @@
         "fields": {
             "name": "Black Swan",
             "description": "Schlauchboot Black Swan",
-            "reservation_group": 2,
+            "reservation_group": 4,
             "all_can_reserve": false
         }
     },

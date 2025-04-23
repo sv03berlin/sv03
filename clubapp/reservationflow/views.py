@@ -2,8 +2,10 @@ from json import dumps
 from typing import Any, cast, no_type_check
 
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query import QuerySet
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.safestring import SafeString
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
@@ -45,10 +47,26 @@ class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  
         kwargs["user"] = self.request.user
         return kwargs
 
+    def form_valid(self, form: ReservationForm) -> HttpResponse:
+        thing = form.cleaned_data["thing"]
+        user = self.request.user
+        if not thing.reservation_group.users.filter(id=user.id).exists() and not thing.all_can_reserve:
+            messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
+
 
 class ReservationForUserCreateView(LoginRequiredMixin, ReservationMixin, CreateView, IsRessortOrAdminMixin):  # type: ignore[type-arg]
     template_name = "create_form.html"
     form_class = ReservationForUserForm
+
+    def form_valid(self, form: ReservationForm) -> HttpResponse:
+        thing = form.cleaned_data["thing"]
+        user = form.cleaned_data["user"]
+        if not thing.reservation_group.users.filter(id=user.id).exists() and not thing.all_can_reserve:
+            messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
 
 class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: ignore[type-arg]
@@ -68,6 +86,14 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
+
+    def form_valid(self, form: ReservationForm) -> HttpResponse:
+        thing = form.cleaned_data["thing"]
+        user = self.request.user
+        if not thing.reservation_group.users.filter(id=user.id).exists() and not thing.all_can_reserve:
+            messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
 
 class ReservationUpdateView(LoginRequiredMixin, ReservationMixin, UpdateView):  # type: ignore[type-arg]
