@@ -50,7 +50,11 @@ class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  
     def form_valid(self, form: ReservationForm) -> HttpResponse:
         thing = form.cleaned_data["thing"]
         user = self.request.user
-        if not thing.reservation_group.users.filter(id=user.id).exists() and not thing.all_can_reserve:
+        if (
+            not thing.reservation_group.users.filter(id=user.id).exists()
+            and not thing.all_can_reserve
+            and not user.is_superuser
+        ):
             messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
             return self.form_invalid(form)
         return super().form_valid(form)
@@ -63,7 +67,11 @@ class ReservationForUserCreateView(LoginRequiredMixin, ReservationMixin, CreateV
     def form_valid(self, form: ReservationForm) -> HttpResponse:
         thing = form.cleaned_data["thing"]
         user = form.cleaned_data["user"]
-        if not thing.reservation_group.users.filter(id=user.id).exists() and not thing.all_can_reserve:
+        if (
+            not thing.reservation_group.users.filter(id=user.id).exists()
+            and not thing.all_can_reserve
+            and not user.is_superuser
+        ):
             messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
             return self.form_invalid(form)
         return super().form_valid(form)
@@ -90,7 +98,11 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
     def form_valid(self, form: ReservationForm) -> HttpResponse:
         thing = form.cleaned_data["thing"]
         user = self.request.user
-        if not thing.reservation_group.users.filter(id=user.id).exists() and not thing.all_can_reserve:
+        if (
+            not thing.reservation_group.users.filter(id=user.id).exists()
+            and not thing.all_can_reserve
+            and not user.is_superuser
+        ):
             messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
             return self.form_invalid(form)
         return super().form_valid(form)
