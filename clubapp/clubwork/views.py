@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage, send_mail
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.functions import ExtractYear
@@ -479,18 +479,20 @@ class AllClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterVi
 def notify_members_new_clubwork(users: list[User], request: AuthenticatedHttpRequest, clubwork: ClubWork) -> None:
     emails = [user.email for user in users]
     try:
-        send_mail(
+        email = EmailMessage(
             subject=f"Arbeitsdienst {clubwork.title}",
-            message=f"Liebes Mitglied,\n\n"
-            f"es ist ein neuer Arbeitsdienst verfügbar: {clubwork.title} am {clubwork.date_time}.\n"
-            f"Beschreibung: {clubwork.description}\n\n"
-            f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
-            f"Viele Grüße,\n"
-            f"{request.user.first_name} {request.user.last_name}",
+            body=(
+                f"Liebes Mitglied,\n\n"
+                f"es ist ein neuer Arbeitsdienst verfügbar: {clubwork.title} am {clubwork.date_time}.\n"
+                f"Beschreibung: {clubwork.description}\n\n"
+                f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
+                f"Viele Grüße,\n"
+                f"{request.user.first_name} {request.user.last_name}"
+            ),
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=emails,
-            fail_silently=False,
+            bcc=emails,
         )
+        email.send(fail_silently=False)
     except Exception:
         logger.exception("Error while sending email clubwork %s", clubwork.pk)
         messages.error(request, "Senden der email fehlgeschlagen")
