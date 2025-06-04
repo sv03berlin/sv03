@@ -65,7 +65,7 @@
         "fields": {
             "name": "Black Swan",
             "description": "Schlauchboot Black Swan",
-            "reservation_group": 4,
+            "reservation_group": 2,
             "all_can_reserve": false
         }
     },
