@@ -16,7 +16,7 @@ from .models import ReservableThing, Reservation
 
 
 def allowed_to_borrow(user: User) -> list[tuple[int, str]]:
-    if user.is_superuser or user.is_ressort_user:
+    if user.is_superuser:
         qs = ReservableThing.objects.all()
     else:
         qs = ReservableThing.objects.filter(reservation_group__users__in=[user])
