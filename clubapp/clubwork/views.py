@@ -64,11 +64,11 @@ def clubwork_index(request: AuthenticatedHttpRequest) -> HttpResponse:
         cw
         for cw in request.user.clubwork_participations.filter(
             date_time__gte=timezone.now(), is_approved=False
-        ).order_by("date_time")
+        ).order_by("-date_time")
         if (cw.clubwork is not None)
     ]
     clubworks = [
-        cw for cw in ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("date_time") if not cw.is_full
+        cw for cw in ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("-date_time") if not cw.is_full
     ]
 
     for cw in upcoming:
@@ -216,7 +216,7 @@ class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # ty
 def approve_clubwork_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
     cw = ClubWorkParticipation.objects.filter(
         is_approved=False, ressort__head__in=[request.user.pk], date_time__lte=timezone.now()
-    ).order_by("date_time")
+    ).order_by("-date_time")
     return render(request, template_name="approve_clubwork.html", context={"clubworks": cw})
 
 

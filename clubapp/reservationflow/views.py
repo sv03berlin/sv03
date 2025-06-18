@@ -140,7 +140,7 @@ class ReservationsListView(LoginRequiredMixin, ListView[Reservation]):
 
 class StaffReservationsListView(ReservationsListView):
     def get_queryset(self) -> Any:
-        return Reservation.objects.all().order_by("start")
+        return Reservation.objects.all().order_by("-start")
 
 
 class DetailReservationView(LoginRequiredMixin, DetailView[Reservation]):
