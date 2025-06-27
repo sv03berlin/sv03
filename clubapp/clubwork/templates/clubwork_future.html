@@ -29,7 +29,7 @@
                         <li>
                             <form action="{% url 'unregister_user_for_clubwork' clubwork.id participant.id %}" method="post">
                                 {% csrf_token %}
-                                {{ participant }}<button type="submit" class="btn btn-outline-secondary mb-4">Abmelden</button>
+                                {{ participant }}<button type="submit" class="btn btn-sm btn-danger m-1" style="font-size: 0.75rem;">Abmelden</button>
                             </form>
                         </li>
                         {% endif %}

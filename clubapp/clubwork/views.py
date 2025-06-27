@@ -483,7 +483,7 @@ def notify_members_new_clubwork(users: list[User], request: AuthenticatedHttpReq
             subject=f"Arbeitsdienst {clubwork.title}",
             body=(
                 f"Liebes Mitglied,\n\n"
-                f"es ist ein neuer Arbeitsdienst verfügbar: {clubwork.title} am {clubwork.date_time}.\n"
+                f"es ist ein neuer Arbeitsdienst verfügbar: {clubwork.title} am {timezone.localtime(clubwork.date_time).strftime('%d.%m.%Y')} um {timezone.localtime(clubwork.date_time).strftime('%H:%M')} Uhr.\n"
                 f"Beschreibung: {clubwork.description}\n\n"
                 f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
                 f"Viele Grüße,\n"
@@ -555,7 +555,7 @@ def register_user(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                     send_mail(
                         subject=f"Arbeitsdienst {cw.title}",
                         message=f"Hallo {user.first_name},\n\n"
-                        f"du wurdest für {cw.title} am {cw.date_time} eingetragen\n"
+                        f"du wurdest für {cw.title} am {timezone.localtime(cw.date_time).strftime('%d.%m.%Y')} um {timezone.localtime(cw.date_time).strftime('%H:%M')} Uhr eingetragen\n"
                         f"Beschreibung: {cw.description}\n\n"
                         f"Du kannst dich hier abmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
                         f"Viele Grüße,\n"
