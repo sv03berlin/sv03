@@ -9,7 +9,7 @@ from clubapp.refundflow.models import User
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def is_super_user(view_func: F) -> F:
+def is_super_user[F: Callable[..., Any]](view_func: F) -> F:
     """Decorator for views that checks that the user is admin."""
 
     def check_user(user: User | AbstractBaseUser | AnonymousUser) -> bool:
@@ -19,7 +19,7 @@ def is_super_user(view_func: F) -> F:
     return user_passes_test(check_user)(view_func)
 
 
-def is_invoice_user(view_func: F) -> F:
+def is_invoice_user[F: Callable[..., Any]](view_func: F) -> F:
     """Decorator for views that checks that the user is allowed to write invoices."""
 
     def check_user(user: User | AbstractBaseUser | AnonymousUser) -> bool:
@@ -29,7 +29,7 @@ def is_invoice_user(view_func: F) -> F:
     return user_passes_test(check_user)(view_func)
 
 
-def is_ressort_user(view_func: F) -> F:
+def is_ressort_user[F: Callable[..., Any]](view_func: F) -> F:
     """Decorator for views that checks that the user is ressort head or admin."""
 
     def check_user(user: User | AbstractBaseUser | AnonymousUser) -> bool:
@@ -39,7 +39,7 @@ def is_ressort_user(view_func: F) -> F:
     return user_passes_test(check_user)(view_func)
 
 
-def is_accountant_user(view_func: F) -> F:
+def is_accountant_user[F: Callable[..., Any]](view_func: F) -> F:
     """Decorator for views that checks that the user is accountant."""
 
     def check_user(user: User | AbstractBaseUser | AnonymousUser) -> bool:

@@ -27,7 +27,7 @@ def profile_overview(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def send_test_mail(request: HttpRequest) -> HttpResponse:
-    user = cast(User, request.user)
+    user = cast("User", request.user)
     send_mail(
         subject="Sv03 Clubapp Test Email",
         message="This is a Test to check if email credentials are working.",

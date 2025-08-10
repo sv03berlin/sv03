@@ -446,7 +446,7 @@ class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
     template_name = "clubwork_user_history.html"
 
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
-        user = cast(User, self.request.user)
+        user = cast("User", self.request.user)
         return super().get_queryset().filter(user=user)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:

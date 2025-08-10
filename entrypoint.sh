@@ -1,7 +1,6 @@
 #!/bin/sh
 
 set -e
-set -m
 
 echo "collectstatic is in progress"
 python3 /code/manage.py collectstatic --no-input

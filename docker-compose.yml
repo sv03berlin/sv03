@@ -1,8 +1,7 @@
-version: '3.3'
 services:
   clubapp-dev:
     container_name: clubapp-dev
-    command: python3 /code/clubapp/manage.py runserver 0.0.0.0:8000
+    # command: python3 /code/manage.py runserver 0.0.0.0:8000
     build: .
     ports:
       - "8000:8000"
@@ -33,9 +32,12 @@ services:
       - KC_CLIENT_SECRET=
       - KC_USERNAME=
       - KC_PASSWORD=
+
+      - DJANGO_MIGRATE=true
+      - DJANGO_FIXTURES=true
     volumes:
       - /code/.venv
-      - ./:/code
+      # - ./:/code
       - ./data:/code/clubapp_data
 volumes:
   data:
