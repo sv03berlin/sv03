@@ -24,8 +24,8 @@ model.py changes
 ## Accounts
 superuser : superuser
 
-``docker exec -it clubapp python3 /code/clubapp/manage.py migrate``
-``docker exec -it clubapp python3 /code/clubapp/manage.py createsuperuser``
+``docker exec -it clubapp python3 /code/manage.py migrate``
+``docker exec -it clubapp python3 /code/manage.py createsuperuser``
 
 ## test data and fixtures
 

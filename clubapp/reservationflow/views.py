@@ -1,5 +1,5 @@
 from json import dumps
-from typing import Any, cast, no_type_check
+from typing import TYPE_CHECKING, Any, cast, no_type_check
 
 from django import forms
 from django.contrib import messages
@@ -12,11 +12,13 @@ from django.views.generic import CreateView, DeleteView, DetailView, ListView, U
 from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView
 
-from clubapp.club.models import User
 from clubapp.clubwork.views import IsRessortOrAdminMixin
 
 from .forms import ReservationForm, ReservationForUserForm, SerialReservationForm
 from .models import ReservableThing, Reservation, ReservationGroup
+
+if TYPE_CHECKING:
+    from clubapp.club.models import User
 
 
 class ReservationMixin:
@@ -128,7 +130,7 @@ class ReservationsListView(LoginRequiredMixin, ListView[Reservation]):
     template_name = "reservation_list.html"
 
     def get_queryset(self) -> Any:
-        user = cast(User, self.request.user)
+        user = cast("User", self.request.user)
         return Reservation.objects.filter(user=user).order_by("-start")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:

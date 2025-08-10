@@ -101,7 +101,7 @@ class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWo
         cleaned_data = super().clean()
         if cleaned_data is None:
             raise ValueError
-        ressort = cast(Ressort, cleaned_data.get("ressort"))
+        ressort = cast("Ressort", cleaned_data.get("ressort"))
 
         if ressort and not (self.request.user.is_superuser or ressort.check_user_is_head(self.request.user)):
             msg = "You do not have permission to create a club work participation for this ressort."

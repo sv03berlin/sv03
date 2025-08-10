@@ -12,11 +12,9 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./vhost.d:/etc/nginx/vhost.d
       - nginx_html:/usr/share/nginx/html
       - nginx_certs:/etc/nginx/certs:ro
       - clubapp-static:/clubapp-static
-      - ./conf.d:/etc/nginx/conf.d
       - clubapp-asgi-sock:/tmp
     restart: always
 
@@ -29,7 +27,6 @@ services:
       - NGINX_PROXY_CONTAINER=nginx-proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./vhost.d:/etc/nginx/vhost.d
       - nginx_html:/usr/share/nginx/html
       - nginx_certs:/etc/nginx/certs:rw
       - acme:/etc/acme.sh
@@ -40,10 +37,7 @@ services:
     restart: always
     image: fidoriel/clubapp:latest
     volumes:
-      - clubapp-static:/clubapp_static
-      - ./vhost.d:/etc/nginx/vhost.d
       - clubapp-asgi-sock:/tmp
-      - ./conf.d:/etc/nginx/conf.d
       - ./clubapp-data:/clubapp_data
       - ./clubaapp-db:/code/clubapp/data
     environment:
