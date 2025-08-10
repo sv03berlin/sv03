@@ -15,7 +15,7 @@ django-stubs-ext = "^5.1.2"
 mozilla-django-oidc = "4.0.1"
 django-filter = "24.3"
 openpyxl = "3.1.5"
-django-extensions = "3.2.3"
+django-extensions = "4.1"
 python-keycloak = "^5.1.1"
 python-dotenv = "^1.0.1"
 sentry-sdk = { version = "^2.20.0", extras = ["django"] }
