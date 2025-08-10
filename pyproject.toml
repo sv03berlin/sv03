@@ -13,7 +13,7 @@ crispy-bootstrap5 = "^2024.2"
 uvicorn = {version = "0.29"}
 django-stubs-ext = "^5.1.2"
 mozilla-django-oidc = "4.0.1"
-django-filter = "24.3"
+django-filter = "25.1"
 openpyxl = "3.1.5"
 django-extensions = "3.2.3"
 python-keycloak = "^5.1.1"
