@@ -15,7 +15,6 @@ services:
       - nginx_html:/usr/share/nginx/html
       - nginx_certs:/etc/nginx/certs:ro
       - clubapp-static:/clubapp-static
-      - clubapp-asgi-sock:/tmp
     restart: always
 
 
@@ -37,7 +36,6 @@ services:
     restart: always
     image: fidoriel/clubapp:latest
     volumes:
-      - clubapp-asgi-sock:/tmp
       - ./clubapp-data:/clubapp_data
       - ./clubaapp-db:/code/clubapp/data
     environment:

@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 
@@ -20,8 +19,6 @@ urlpatterns = [
     re_path(r"^security\.txt", views.security_txt),
     re_path(r"^robots\.txt", views.robots_txt),
 ]
-
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.ENABLE_OIDC_LOGIN:
     from clubapp.clubapp.oidc import provider_account_settings
