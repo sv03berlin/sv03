@@ -64,11 +64,11 @@ def clubwork_index(request: AuthenticatedHttpRequest) -> HttpResponse:
         cw
         for cw in request.user.clubwork_participations.filter(
             date_time__gte=timezone.now(), is_approved=False
-        ).order_by("-date_time")
+        ).order_by("date_time")
         if (cw.clubwork is not None)
     ]
     clubworks = [
-        cw for cw in ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("-date_time") if not cw.is_full
+        cw for cw in ClubWork.objects.filter(date_time__gte=timezone.now()).order_by("date_time") if not cw.is_full
     ]
 
     for cw in upcoming:
@@ -152,8 +152,8 @@ class OwnClubworkMixin:
     @no_type_check
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
         if self.request.user.is_ressort_user or self.request.user.is_staff or self.request.user.is_staff:
-            return super().get_queryset()
-        return super().get_queryset().filter(user=self.request.user, is_approved=False)
+            return super().get_queryset().order_by("-date_time")
+        return super().get_queryset().filter(user=self.request.user, is_approved=False).order_by("-date_time")
 
     def get_success_url(self) -> str:
         return reverse("clubwork_index")
@@ -341,7 +341,7 @@ class ClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView)
     filterset_class = HistoryFilter
 
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
-        return super().get_queryset().filter()  # type: ignore[no-any-return]
+        return super().get_queryset().filter().order_by("-date_time")  # type: ignore[no-any-return]
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
@@ -444,7 +444,7 @@ class UserHistroyView(LoginRequiredMixin, ListView[ClubWorkParticipation]):
 
     def get_queryset(self) -> QuerySet[ClubWorkParticipation]:
         user = cast("User", self.request.user)
-        return super().get_queryset().filter(user=user)
+        return super().get_queryset().filter(user=user).order_by("-date_time")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
@@ -458,7 +458,7 @@ class AllClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterVi
     filterset_class = HistoryFilter
 
     def get_queryset(self) -> QuerySet[ClubWork]:
-        return super().get_queryset()  # type: ignore[no-any-return]
+        return super().get_queryset().order_by("-date_time")  # type: ignore[no-any-return]
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         c = super().get_context_data(**kwargs)
