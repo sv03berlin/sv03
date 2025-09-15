@@ -322,9 +322,6 @@ class YearFilter(FilterSet):  # type: ignore[misc]
         super().__init__(*args, **kwargs)
         self.filters["year"].field.widget.choices = self.get_year_choices()
 
-        if self.data.get("year") == "":
-            self.filters.pop("year")
-
     def get_year_choices(self) -> list[tuple[str, str]]:
         return [("", "all")] + [(str(x), str(x)) for x in self.choices]
 
