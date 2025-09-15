@@ -365,7 +365,7 @@ class ClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterView)
 @is_ressort_user
 def download_xlsx_view(request: AuthenticatedHttpRequest, year: int) -> HttpResponse | FileResponse | Any:
     if ClubWorkParticipation.objects.filter(date_time__year=int(year), is_approved=False).exists():
-        messages.error(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
+        messages.warning(request, f"Es existirern noch Arbeitsdienste mit ausstehenden Genehmigungen für {year}")
     else:
         messages.info(request, f"Alle Arbeitsdienste für {year} wurden Genehmigt")
     if request.GET.get("xlsx", "false").lower() == "true":
