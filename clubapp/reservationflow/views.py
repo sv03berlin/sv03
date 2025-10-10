@@ -98,15 +98,23 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
         return kwargs
 
     def form_valid(self, form: ReservationForm) -> HttpResponse:
-        thing = form.cleaned_data["thing"]
-        user = self.request.user
-        if (
-            not thing.reservation_group.users.filter(id=user.id).exists()
-            and not thing.all_can_reserve
-            and not user.is_superuser
-        ):
-            messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
-            return self.form_invalid(form)
+        things = form.cleaned_data["things"]
+        for thing_id in things:
+            thing = ReservableThing.objects.get(pk=int(thing_id))
+            if thing is None:
+                messages.error(self.request, "Objekt nicht gefunden.")
+                break
+            user = self.request.user
+            if user.id is None:
+                messages.error(self.request, "User nicht gefunden.")
+                break
+            if (
+                not thing.reservation_group.users.filter(id=user.id).exists()
+                and not thing.all_can_reserve
+                and not user.is_superuser
+            ):
+                messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
+                return self.form_invalid(form)
         return super().form_valid(form)
 
 
