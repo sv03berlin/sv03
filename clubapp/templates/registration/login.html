@@ -12,7 +12,7 @@
     <div class="center-page">
     {% if not user.is_authenticated %}
         <main class="form-signin" id="signinform">
-            <h1 class="h3 mb-3 fw-normal">Please sign in to {{club_name_short}}'s {{app_name}} </h1>
+            <h1 class="h3 mb-3 fw-normal">Please Log In to {{club_name_short}}'s {{app_name}} </h1>
             {% if enable_django_login %}
                 <form method="post" action="{% url 'login' %}">
                     {% csrf_token %}
@@ -37,7 +37,7 @@
                         </label>
                     </div>
 
-                    <input class="button w-100 btn btn-primary" type="submit" value="Sign in" />
+                    <input class="button w-100 btn btn-primary" type="submit" value="Log In" />
                 </form>
 
                 {# Assumes you setup the password_reset view in your URLconf #}
@@ -50,7 +50,7 @@
             {% endif %}
 
             {% if enable_oidc_login %}
-                <a href="{% url 'oidc_authentication_init' %}" class="button w-100 btn-lg btn btn-primary" role="button">Sign in with SSO</a>
+                <a href="{% url 'oidc_authentication_init' %}" class="button w-100 btn-lg btn btn-primary" role="button">Mit SSO Anmelden</a>
             {% endif %}
         </main>
         {% endif %}

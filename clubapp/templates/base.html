@@ -136,14 +136,16 @@
                             </li>
                         </ul>
 
-                        <div class="text-end">
-                            {% if enable_oidc_login %}
-                                <a href="{% url 'login' %}" class="btn btn-outline-light me-2" role="button" aria-pressed="true">Sign in</a>
-                            {% endif %}
-                            {% if enable_django_login %}
-                                <a href="{% url 'oidc_authentication_init' %}" class="btn btn-outline-light me-2" role="button" aria-pressed="true">Sign in with SSO</a>
-                            {% endif %}
-                        </div>
+                         <div class="text-end">
+                             {% if request.resolver_match.url_name != 'login' %}
+                             {% if enable_oidc_login %}
+                                 <a href="{% url 'login' %}" class="btn btn-outline-light me-2" role="button" aria-pressed="true">Log In</a>
+                             {% endif %}
+                             {% if enable_django_login %}
+                                 <a href="{% url 'oidc_authentication_init' %}" class="btn btn-outline-light me-2" role="button" aria-pressed="true">Log In with SSO</a>
+                             {% endif %}
+                             {% endif %}
+                         </div>
 
                         {% endif %}
                     </div>
