@@ -16,3 +16,10 @@ class DateTimeInput(forms.DateTimeInput):
     def __init__(self, attrs: dict[str, Any] | None = None, format: str = "%Y-%m-%dT%H:%M") -> None:  # noqa: A002
         super().__init__(attrs)
         self.format = format or None
+
+
+class StrippedIntegerField(forms.IntegerField):
+    def to_python(self, value: Any) -> Any:
+        if isinstance(value, str):
+            value = value.strip()
+        return super().to_python(value)

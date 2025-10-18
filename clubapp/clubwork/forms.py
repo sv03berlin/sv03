@@ -7,7 +7,7 @@ from django import forms
 from django.db.transaction import atomic
 
 from clubapp.club.models import Ressort, User
-from clubapp.clubapp.utils import AuthenticatedHttpRequest
+from clubapp.clubapp.utils import AuthenticatedHttpRequest, StrippedIntegerField
 
 from . import models
 
@@ -15,6 +15,9 @@ logger = getLogger()
 
 
 class ClubWorkForm(forms.ModelForm[models.ClubWork]):
+    max_duration = StrippedIntegerField()
+    max_participants = StrippedIntegerField()
+
     class Meta:
         model = models.ClubWork
         fields = [
@@ -32,6 +35,7 @@ class ClubWorkForm(forms.ModelForm[models.ClubWork]):
 
 
 class ClubWorkParticipationForm(forms.ModelForm[models.ClubWorkParticipation]):
+    duration = StrippedIntegerField()
     is_creating: bool
 
     class Meta:
@@ -67,6 +71,8 @@ class ClubWorkParticipationForm(forms.ModelForm[models.ClubWorkParticipation]):
 
 
 class HourEditForm(forms.ModelForm[models.ClubWorkParticipation]):
+    duration = StrippedIntegerField()
+
     class Meta:
         model = models.ClubWorkParticipation
         fields = [
@@ -76,6 +82,8 @@ class HourEditForm(forms.ModelForm[models.ClubWorkParticipation]):
 
 
 class ClubWorkPartitipationRessortUserCreatingForm(forms.ModelForm[models.ClubWorkParticipation]):
+    duration = StrippedIntegerField()
+
     class Meta:
         model = models.ClubWorkParticipation
         fields = [

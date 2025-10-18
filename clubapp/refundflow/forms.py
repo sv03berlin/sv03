@@ -1,5 +1,7 @@
 from django import forms
 
+from clubapp.clubapp.utils import StrippedIntegerField
+
 from . import models
 
 
@@ -14,7 +16,7 @@ class SubmitRefund(forms.Form):
 class AddTracking(forms.ModelForm[models.Tracking]):
     is_hour = forms.BooleanField(required=False)
     annotation = forms.CharField(required=False, max_length=1023)
-    hour_count = forms.IntegerField(required=False)
+    hour_count = StrippedIntegerField(required=False)
 
     class Meta:
         model = models.Tracking
