@@ -214,9 +214,14 @@ class OwnClubWorkDelete(LoginRequiredMixin, OwnClubworkMixin, DeleteView):  # ty
 @login_required
 @is_ressort_user
 def approve_clubwork_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
-    cw = ClubWorkParticipation.objects.filter(
-        is_approved=False, ressort__head__in=[request.user.pk], date_time__lte=timezone.now()
-    ).order_by("-date_time")
+    if request.user.is_superuser or request.user.is_staff:
+        cw = ClubWorkParticipation.objects.filter(is_approved=False, date_time__lte=timezone.now()).order_by(
+            "-date_time"
+        )
+    else:
+        cw = ClubWorkParticipation.objects.filter(
+            is_approved=False, ressort__head__in=[request.user.pk], date_time__lte=timezone.now()
+        ).order_by("-date_time")
     return render(request, template_name="approve_clubwork.html", context={"clubworks": cw})
 
 
