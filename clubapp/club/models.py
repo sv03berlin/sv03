@@ -78,7 +78,11 @@ class User(AbstractUser):
     def club_work_hours(self) -> int:
         return self.get_clubwork_year(timezone.now().year)
 
-    def member_is_freed_from_work_by_age(self, year: int | None) -> bool:
+    @cached_property
+    def member_is_freed_from_work_by_age_this_year(self) -> bool:
+        return self.member_is_freed_from_work_by_age()
+
+    def member_is_freed_from_work_by_age(self, year: int | None = None) -> bool:
         if year is None:
             year = timezone.now().year
         return self.birthday is not None and year - self.birthday.year > ARBEITDIENST_FREI_AB_ALTER
