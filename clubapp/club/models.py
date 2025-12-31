@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 ARBEITDIENST_FREI_AB_ALTER = 67
+MAX_ARBEITSSTUNDEN = 15
 
 
 class Membership(models.Model):
@@ -98,7 +99,8 @@ class User(AbstractUser):
                 work_hours += membership_year.work_hours_boat_owner
             if self.is_clubboat_user:
                 work_hours += membership_year.work_hours_club_boat_user
-        return work_hours
+
+        return min(work_hours, MAX_ARBEITSSTUNDEN)
 
     @cached_property
     def hours_to_do(self) -> int:
@@ -161,9 +163,8 @@ class User(AbstractUser):
         membership_year = self.membership_years.filter(year=this_year).first()
 
         work_hours = membership_type.work_hours
-        work_hours_boat_owner = membership_type.work_hours_boat_owner if self.is_boat_owner else 0
-        work_hours_club_boat_user = membership_type.work_hours_club_boat_user if self.is_clubboat_user else 0
-
+        work_hours_boat_owner = membership_type.work_hours_boat_owner
+        work_hours_club_boat_user = membership_type.work_hours_club_boat_user
         if membership_year:
             membership_year.membership_type = membership_type
             membership_year.work_hours = work_hours
