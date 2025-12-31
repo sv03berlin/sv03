@@ -89,18 +89,12 @@ class User(AbstractUser):
         return self.birthday is not None and year - self.birthday.year > ARBEITDIENST_FREI_AB_ALTER
 
     def get_clubwork_year(self, year: int) -> int:
-        work_hours = 0
         if self.member_is_freed_from_work_by_age(year):
             return 0
         membership_year = self.membership_years.filter(year=year).first()
         if membership_year:
-            work_hours += membership_year.work_hours
-            if self.is_boat_owner:
-                work_hours += membership_year.work_hours_boat_owner
-            if self.is_clubboat_user:
-                work_hours += membership_year.work_hours_club_boat_user
-
-        return min(work_hours, MAX_ARBEITSSTUNDEN)
+            return membership_year.get_clubwork
+        return 0
 
     @cached_property
     def hours_to_do(self) -> int:
@@ -170,6 +164,8 @@ class User(AbstractUser):
             membership_year.work_hours = work_hours
             membership_year.work_hours_boat_owner = work_hours_boat_owner
             membership_year.work_hours_club_boat_user = work_hours_club_boat_user
+            membership_year.is_clubboat_user = self.is_clubboat_user
+            membership_year.is_boat_owner = self.is_boat_owner
             membership_year.save()
         else:
             logger.info("Creating new membership year for %s in %s", self, this_year)
@@ -181,6 +177,8 @@ class User(AbstractUser):
                 work_hours_boat_owner=work_hours_boat_owner,
                 work_hours_club_boat_user=work_hours_club_boat_user,
                 work_compensation=membership_type.work_compensation,
+                is_clubboat_user=self.is_clubboat_user,
+                is_boat_owner=self.is_boat_owner,
             )
 
 
@@ -203,6 +201,9 @@ class MembershipYear(models.Model):
         default=0,
     )
 
+    is_boat_owner = models.BooleanField(default=False, verbose_name=_("Nutzer ist Bootseigner im Jahr"))
+    is_clubboat_user = models.BooleanField(default=False, verbose_name=_("Nutzer ist Clubbootnutzer im Jahr"))
+
     full_work_compensation = models.BooleanField(default=False, verbose_name=_("Vollständige Entschädigung erfolgt"))
 
     class Meta:
@@ -216,6 +217,20 @@ class MembershipYear(models.Model):
     @cached_property
     def name(self) -> str:
         return self.membership_type.name
+
+    @cached_property
+    def get_clubwork(self) -> int:
+        work_hours = 0
+        if self.user.member_is_freed_from_work_by_age(self.year):
+            return 0
+
+        work_hours += self.work_hours
+        if self.is_boat_owner:
+            work_hours += self.work_hours_boat_owner
+        if self.is_clubboat_user:
+            work_hours += self.work_hours_club_boat_user
+
+        return min(work_hours, MAX_ARBEITSSTUNDEN)
 
 
 class Ressort(models.Model):

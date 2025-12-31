@@ -12,6 +12,8 @@ class CustomUserAdmin(UserAdmin[User]):
         "membership_type",
         "member_is_freed_from_work_by_age_this_year",
         "link_to_membership_years",
+        "hours_to_do_formatted",
+        "hours_done_formatted",
     )
 
     def get_membership_type(self, obj: User) -> MembershipYear | None:
@@ -58,6 +60,8 @@ class CustomUserAdmin(UserAdmin[User]):
                     "membership_type",
                     "member_is_freed_from_work_by_age_this_year",
                     "link_to_membership_years",
+                    "hours_to_do_formatted",
+                    "hours_done_formatted",
                 )
             },
         ),
