@@ -40,22 +40,22 @@ django_settings_module = "clubapp.clubapp.settings"
 authors = []
 requires-python = "<4.0,>=3.13"
 dependencies = [
-    "django<6.0,>=5.1",
-    "crispy-bootstrap5<2025.0,>=2024.2",
-    "uvicorn==0.29",
-    "django-stubs-ext<6.0.0,>=5.1.2",
-    "mozilla-django-oidc==4.0.1",
-    "django-filter==24.3",
+    "django<6.1,>=6.0.1",
+    "crispy-bootstrap5<2025.7,>=2025.6",
+    "uvicorn==0.40.0",
+    "django-stubs-ext<6.0.0,>=5.2.8",
+    "mozilla-django-oidc==5.0.2",
+    "django-filter==25.2",
     "openpyxl==3.1.5",
-    "django-extensions==3.2.3",
-    "python-keycloak<6.0.0,>=5.1.1",
-    "python-dotenv<2.0.0,>=1.0.1",
-    "sentry-sdk[django]<3.0.0,>=2.20.0",
+    "django-extensions==4.1",
+    "python-keycloak<7.0.3,>=7.0.2",
+    "python-dotenv<2.0.0,>=1.2.1",
+    "sentry-sdk[django]<3.0.0,>=2.49.0",
     "schedule<2.0.0,>=1.2.2",
-    "pyyaml<7.0.0,>=6.0.2",
-    "django-bootstrap-datepicker-plus<6.0.0,>=5.0.5",
-    "django-autocomplete-light<4.0.0,>=3.11.0",
-    "whitenoise[brotli]>=6.9.0",
+    "pyyaml<7.0.0,>=6.0.3",
+    "django-bootstrap-datepicker-plus<6.0.0,>=5.0.6",
+    "django-autocomplete-light<4.0.0,>=3.12.1",
+    "whitenoise[brotli]>=6.11.0",
 ]
 name = "clubapp"
 version = "0.0.1"
@@ -64,7 +64,7 @@ readme = "readme.md"
 
 [dependency-groups]
 dev = [
-    "mypy<2.0.0,>=1.14.1",
-    "ruff<1.0.0,>=0.9.3",
+    "mypy<2.0.0,>=1.19.1",
+    "ruff<1.0.0,>=0.14.13",
     "django-stubs",
 ]
