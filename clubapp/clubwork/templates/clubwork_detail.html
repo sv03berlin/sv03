@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <p class="h2 mb-3">{{ object.title }}</p>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td>Ressort</td>
+                    <td>{{ object.ressort }}</td>
+                </tr>
+                <tr>
+                    <td>Beschreibung</td>
+                    <td>{{ object.description }}</td>
+                </tr>
+                <tr>
+                    <td>Datum und Uhrzeit</td>
+                    <td>
+                        {% if object.async_date %}Frist: {% endif %}{{ object.date_time }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dauer</td>
+                    <td>{{ object.max_duration }} Min</td>
+                </tr>
+                <tr>
+                    <td>Teilnehmende</td>
+                    <td>{{ object.num_participants }}/{{ object.max_participants }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex mb-3">
+        {% if user not in object.registered_users %}
+            {% if not object.is_full %}
+            <form action="{% url 'register' object.id %}" method="post" class="d-inline-block">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-primary me-1">Anmelden</button>
+            </form>
+            {% endif %}
+        {% else %}
+        <form action="{% url 'unregister' object.id %}" method="post" class="d-inline-block">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger me-1">Abmelden</button>
+        </form>
+        {% endif %}
+        {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+        <a href="{% url 'register_member' object.id %}" class="btn btn-sm btn-secondary me-1">Mitglied anmelden</a>
+        <a href="{% url 'mod_clubwork' object.id %}" class="btn btn-sm btn-secondary me-1">Bearbeiten</a>
+        <a href="{% url 'delete_clubwork' object.id %}" class="btn btn-sm btn-danger me-1">Löschen</a>
+        <a href="{{ object.mailto }}" class="btn btn-sm btn-outline-secondary me-1">Nachricht an Teilnehmende</a>
+        {% endif %}
+    </div>
+
+    <p class="h4 mb-3">Teilnehmende</p>
+
+    {% if participations %}
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Genehmigt</th>
+                    {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+                    <th>Aktionen</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for participation in participations %}
+                <tr>
+                    <td>{{ participation.user.get_full_name }}</td>
+                    <td>
+                        {% if participation.is_approved %}
+                        <span class="badge bg-success">Ja</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Ausstehend</span>
+                        {% endif %}
+                    </td>
+                    {% if user.is_ressort_user or user.is_superuser or user.is_staff %}
+                    <td>
+                        {% if not participation.is_approved %}
+                        <form action="{% url 'unregister_user_for_clubwork' object.id participation.user.id %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Abmelden</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted">Noch keine Teilnehmenden angemeldet.</p>
+    {% endif %}
+</div>
+{% endblock content %}

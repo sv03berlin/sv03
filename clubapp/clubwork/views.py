@@ -22,7 +22,7 @@ from django.http import (
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView
@@ -128,6 +128,16 @@ class IsRessortOrAdminMixin(UserPassesTestMixin):
             return False
         user = self.request.user
         return user.is_superuser or user.is_ressort_user
+
+
+class ClubWorkDetailView(LoginRequiredMixin, DetailView[ClubWork]):
+    model = ClubWork
+    template_name = "clubwork_detail.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        c = super().get_context_data(**kwargs)
+        c["participations"] = self.object.participations.select_related("user").all()
+        return c
 
 
 class ClubWorkDelete(IsRessortOrAdminMixin, DeleteView):  # type: ignore[type-arg]

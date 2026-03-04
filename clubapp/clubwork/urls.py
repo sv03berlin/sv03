@@ -6,6 +6,7 @@ urlpatterns = [
     path("", views.clubwork_index, name="clubwork_index"),
     path("all/", views.AllClubworkHistoryView.as_view(), name="clubwork_all"),
     path("add/", views.add_clubwork, name="add_clubwork"),
+    path("detail/<int:pk>/", views.ClubWorkDetailView.as_view(), name="clubwork_detail"),
     path("mod/<int:pk>/", views.mod_clubwork, name="mod_clubwork"),
     path("register_member/<int:pk>/", views.register_user, name="register_member"),
     path("add_own/", views.OwnClubWorkCreate.as_view(), name="add_own_clubwork"),

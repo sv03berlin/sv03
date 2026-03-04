@@ -18,7 +18,7 @@
                 <td>{{ clubwork.description }}</td>
                 <td>
                     <p data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="{% if clubwork.async_date %} Ihr müsst euch selbständig um einem gemeinsamen Termin bemühren und sollt die Arbeit innerhalb der Frist (bis zum {{ clubwork.date_time }}) erledigen. {% else %} Seid bitte rechtzeitig ({{ clubwork.date_time }}) zum Arbeitsdienst anwesend. {% endif %}">
-                        {% if clubwork.async_date %} First {% endif %} {{ clubwork.date_time }}
+                        {% if clubwork.async_date %} Frist {% endif %} {{ clubwork.date_time }}
                     </p>
                 </td>
                 <td>{{ clubwork.max_duration }} Min</td>
@@ -37,6 +37,7 @@
                 </td>
                 <td>
                     <div class = "d-flex">
+                        <a href="{% url 'clubwork_detail' clubwork.id %}" class="btn btn-sm btn-outline-primary m-1">Detail</a>
                         {% if user not in clubwork.registered_users %}
                         <form action="{% url 'register' clubwork.id %}" method="post" class="d-inline-block">
                             {% csrf_token %}
