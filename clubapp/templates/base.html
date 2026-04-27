@@ -29,25 +29,6 @@
                     {% if user.is_authenticated %}
                         <div class="navbar-collapse">
                             <ul class="navbar-nav me-auto me-auto mb-4 mb-lg-0">
-                                    <!-- <div class="navbar-nav nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-bs-toggle="dropdown" aria-labelledby="navbarDarkDropdownMenuLink" aria-expanded="false">Erstattungen</a>
-                                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                                            <li><a class="dropdown-item" href="{% url 'transaction_overview' %}">Meine Auszahlungen</a></li>
-            
-                                            {% if user.is_invoice_user %}
-                                                <li><a class="dropdown-item" href="{% url 'tracking_overview' %}">Meine Abrechnungen</a></li>
-                                            {% endif %}
-            
-                                            {% if user.is_ressort_user %}
-                                                <li><a class="dropdown-item" href="{% url 'approve_payment' %}">Genehmigen</a></li>
-                                            {% endif %}
-            
-                                            {% if user.is_accountant_user %}
-                                                <li><a class="dropdown-item" href="{% url 'manage_payment' %}">Auszahlungsübersicht</a></li>
-                                            {% endif %}
-                                        </ul>
-                                    </div> -->
-
                                 <div class="navbar-nav nav-item dropdown">
                                     <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Arbeitsdienst
