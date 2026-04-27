@@ -4,7 +4,7 @@ from typing import Any, TypeVar
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
 
-from clubapp.refundflow.models import User
+from clubapp.club.models import User
 
 F = TypeVar("F", bound=Callable[..., Any])
 

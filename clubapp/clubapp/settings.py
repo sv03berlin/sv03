@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     "crispy_forms",
     "django_filters",
     "crispy_bootstrap5",
-    "clubapp.refundflow",
     "clubapp.club",
     "clubapp.clubwork",
     "clubapp.reservationflow",
