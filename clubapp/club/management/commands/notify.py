@@ -20,8 +20,8 @@ class Command(BaseCommand):
     def notify_ressort(self) -> None:
         users: set[User] = set()
         works: set[ClubWorkParticipation] = set()
-        print(str(ClubWorkParticipation.objects.filter(is_approved=False, did_send_approve_hint=False)))
-        for work in ClubWorkParticipation.objects.filter(is_approved=False, did_send_approve_hint=False):
+        self.stdout.write(f"Processing clubwork with filter: date_time__lte={timezone.now()}")
+        for work in ClubWorkParticipation.objects.filter(is_approved=False, did_send_approve_hint=False, date_time__lte=timezone.now()):
             for head in work.ressort.head.all():
                 users.add(head)
                 works.add(work)
@@ -47,7 +47,6 @@ class Command(BaseCommand):
         for work in list(works):
             work.did_send_approve_hint = True
             work.save()
-
 
     def notify_member(self) -> None:
         for participation in ClubWorkParticipation.objects.filter(did_send_reminder=False, clubwork__date_time__lte=timezone.now() + timedelta(hours=24)):
