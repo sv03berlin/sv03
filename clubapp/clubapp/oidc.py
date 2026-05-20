@@ -1,4 +1,5 @@
 import datetime
+from base64 import urlsafe_b64decode
 from json import loads
 from typing import TYPE_CHECKING, Any
 
@@ -6,7 +7,6 @@ from django.conf import settings
 from django.db import transaction
 from django.http import HttpRequest, HttpResponseRedirect
 from django.utils.http import urlencode
-from josepy.b64 import b64decode
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
 from clubapp.club.models import Membership, Ressort, User
@@ -26,7 +26,8 @@ class ClubOIDCAuthenticationBackend(OIDCAuthenticationBackend):  # type: ignore[
     def get_userinfo(self, access_token: str, id_token: str, payload: str) -> Any:
         response = super().get_userinfo(access_token, id_token, payload)
         _, json, _ = access_token.split(".")
-        payload_json = loads(b64decode(json).decode("utf-8"))  # type: dict[str, Any]
+        padded = json + "=" * (-len(json) % 4)
+        payload_json = loads(urlsafe_b64decode(padded).decode("utf-8"))  # type: dict[str, Any]
         response["group"] = payload_json.get("realm_access", {}).get("roles", [])
         return response
 
