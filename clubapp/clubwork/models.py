@@ -92,7 +92,7 @@ class ClubWorkParticipation(models.Model):
         return False
 
     def notify_approval(self, request: AuthenticatedHttpRequest) -> None:
-        from django.utils import timezone as tz
+        from django.utils import timezone as tz  # noqa: PLC0415
 
         local_dt = tz.localtime(self.date_time)
         if self.async_date:
