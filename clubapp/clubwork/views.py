@@ -491,11 +491,16 @@ class AllClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterVi
 def notify_members_new_clubwork(users: list[User], request: AuthenticatedHttpRequest, clubwork: ClubWork) -> None:
     emails = [user.email for user in users]
     try:
+        local_dt = timezone.localtime(clubwork.date_time)
+        if clubwork.async_date:
+            termin_text = f"bis zum {local_dt.strftime('%d.%m.%Y')} zu erledigen"
+        else:
+            termin_text = f"am {local_dt.strftime('%d.%m.%Y')} um {local_dt.strftime('%H:%M')} Uhr"
         email = EmailMessage(
             subject=f"Arbeitsdienst {clubwork.title}",
             body=(
                 f"Liebes Mitglied,\n\n"
-                f"es ist ein neuer Arbeitsdienst verfügbar: {clubwork.title} am {timezone.localtime(clubwork.date_time).strftime('%d.%m.%Y')} um {timezone.localtime(clubwork.date_time).strftime('%H:%M')} Uhr.\n"
+                f"es ist ein neuer Arbeitsdienst verfügbar: {clubwork.title} {termin_text}.\n"
                 f"Beschreibung: {clubwork.description}\n\n"
                 f"Du kannst dich hier anmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
                 f"Viele Grüße,\n"
@@ -564,10 +569,15 @@ def register_user(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                         duration=cw.max_duration,
                         description=cw.description,
                     )
+                    local_dt = timezone.localtime(cw.date_time)
+                    if cw.async_date:
+                        termin_text = f"bis zum {local_dt.strftime('%d.%m.%Y')} zu erledigen"
+                    else:
+                        termin_text = f"am {local_dt.strftime('%d.%m.%Y')} um {local_dt.strftime('%H:%M')} Uhr"
                     send_mail(
                         subject=f"Arbeitsdienst {cw.title}",
                         message=f"Hallo {user.first_name},\n\n"
-                        f"du wurdest für {cw.title} am {timezone.localtime(cw.date_time).strftime('%d.%m.%Y')} um {timezone.localtime(cw.date_time).strftime('%H:%M')} Uhr eingetragen\n"
+                        f"du wurdest für {cw.title} eingetragen ({termin_text}).\n"
                         f"Beschreibung: {cw.description}\n\n"
                         f"Du kannst dich hier abmelden: {settings.VIRTUAL_HOST}{reverse('clubwork_index')}\n\n"
                         f"Viele Grüße,\n"

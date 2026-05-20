@@ -92,11 +92,18 @@ class ClubWorkParticipation(models.Model):
         return False
 
     def notify_approval(self, request: AuthenticatedHttpRequest) -> None:
+        from django.utils import timezone as tz
+
+        local_dt = tz.localtime(self.date_time)
+        if self.async_date:
+            termin_text = f"bis zum {local_dt.strftime('%d.%m.%Y')}"
+        else:
+            termin_text = f"vom {local_dt.strftime('%d.%m.%Y')} um {local_dt.strftime('%H:%M')} Uhr"
         try:
             send_mail(
                 subject=f"Arbeitsdienst '{self.title}' wurde genehmigt",
                 message=f"Hallo {self.user.first_name},\n\n"
-                f"Dein Arbeitsdienst '{self.title}' vom {self.date_time} wurde genehmigt.\n\n"
+                f"Dein Arbeitsdienst '{self.title}' ({termin_text}) wurde genehmigt.\n\n"
                 f"Viele Grüße,\n"
                 f"{request.user.first_name} {request.user.last_name}",
                 from_email=settings.DEFAULT_FROM_EMAIL,

@@ -54,10 +54,11 @@ class Command(BaseCommand):
             with atomic():
                 user: User = participation.user
                 try:
+                    local_dt = timezone.localtime(participation.date_time)
                     if participation.async_date:
-                        msg = f"am {participation.date_time} ist der Arbeitsdienst {participation.title} fällig.\n"
+                        msg = f"der Arbeitsdienst {participation.title} ist bis zum {local_dt.strftime('%d.%m.%Y')} zu erledigen.\n"
                     else:
-                        msg = f"es steht ein neuer Arbeitsdienst an {participation.title} am {participation.date_time}.\n"
+                        msg = f"es steht ein Arbeitsdienst an: {participation.title} am {local_dt.strftime('%d.%m.%Y')} um {local_dt.strftime('%H:%M')} Uhr.\n"
                     send_mail(
                         subject=f"Arbeitsdienst {participation.title}",
                         message=f"Hallo {user.first_name},\n\n"
