@@ -38,7 +38,7 @@ django_settings_module = "clubapp.clubapp.settings"
 
 [project]
 authors = []
-requires-python = "<4.0,>=3.13"
+requires-python = "<4.0,>=3.14.5"
 dependencies = [
     "django<6.1,>=6.0.5",
     "crispy-bootstrap5<2026.4,>=2026.3",
