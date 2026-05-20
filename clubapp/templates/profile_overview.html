@@ -15,7 +15,7 @@
                 <li>Mitgliedschaft: {{ user.membership }}</li>
                 <li>Clubbootnutzung: {{ user.is_clubboat_user|yesno:"Ja,Nein" }}</li>
                 <li>Bootseigner: {{ user.is_boat_owner|yesno:"Ja,Nein" }}</li>
-                <li>Bereits erlegigte Arbeitsstunden: {{ user.hours_done_formatted }} von {{ user.hours_to_do_formatted }}</li>
+                <li>Bereits erledigte Arbeitsstunden: {{ user.hours_done_formatted }} von {{ user.hours_to_do_formatted }}</li>
                 <li>Reservierungsgruppen:
                     <ul>
                         {% for group in user.reservation_groups.all %}

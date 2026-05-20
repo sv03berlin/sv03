@@ -17,7 +17,7 @@
                 <td>{{ clubwork.ressort }}</td>
                 <td>{{ clubwork.description }}</td>
                 <td>
-                    <p data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="{% if clubwork.async_date %} Ihr müsst euch selbständig um einem gemeinsamen Termin bemühren und sollt die Arbeit innerhalb der Frist (bis zum {{ clubwork.date_time }}) erledigen. {% else %} Seid bitte rechtzeitig ({{ clubwork.date_time }}) zum Arbeitsdienst anwesend. {% endif %}">
+                    <p data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="{% if clubwork.async_date %} Ihr müsst euch selbständig um einen gemeinsamen Termin bemühen und sollt die Arbeit innerhalb der Frist (bis zum {{ clubwork.date_time }}) erledigen. {% else %} Seid bitte rechtzeitig ({{ clubwork.date_time }}) zum Arbeitsdienst anwesend. {% endif %}">
                         {% if clubwork.async_date %} Frist {% endif %} {{ clubwork.date_time }}
                     </p>
                 </td>
@@ -58,9 +58,9 @@
                                 <a href="{% url 'register_member' clubwork.id %}" class="dropdown-item">Mitglied für Clubdienst Anmelden</a>
                                 <a href="{% url 'mod_clubwork' clubwork.id %}" class="dropdown-item">Bearbeiten</a>
                                 <a href="{% url 'delete_clubwork' clubwork.id %}" class="dropdown-item">Löschen</a>
-                                <a href="{% url 'select_user_mail' clubwork.id %}" class="dropdown-item">Mitglieder zur Benachichtigung auswählen</a>
-                                <a href="{% url 'all_user_mail' clubwork.id %}" class="dropdown-item">Alle Mitglieder benachichtigen</a>
-                                <a href="{{ clubwork.mailto }}" class="dropdown-item">Nachicht an Teilnehmende senden</a>
+                                <a href="{% url 'select_user_mail' clubwork.id %}" class="dropdown-item">Mitglieder zur Benachrichtigung auswählen</a>
+                                <a href="{% url 'all_user_mail' clubwork.id %}" class="dropdown-item">Alle Mitglieder benachrichtigen</a>
+                                <a href="{{ clubwork.mailto }}" class="dropdown-item">Nachricht an Teilnehmende senden</a>
                             </div>
                         </div>
                         {% endif %}

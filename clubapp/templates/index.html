@@ -11,7 +11,7 @@
                     <li>Übersicht über getätigte Erstattungen</li> -->
                     <li>Eintragen und Ausschreibungen von Arbeitsdienst</li>
                     <li>Übersicht über getätigte Arbeitsdienste</li>
-                    <li>Reservieren von Clubresourcen</li>
+                    <li>Reservieren von Clubressourcen</li>
                     <li>Übersicht über getätigte Reservierungen</li>
                 </ul>
                 <h2>Hilfe benötigt?</h2>
@@ -27,7 +27,7 @@
                     {% endfor %}
                 </ul> -->
                 <h4>Administratoren</h4>
-                <p>Bei Fragen oder Problemen wenden dich bitte an eine:n Administrator:in.</p>
+                <p>Bei Fragen oder Problemen wende dich bitte an eine:n Administrator:in.</p>
                 <ul>
                     <li><a href="mailto:{% for user in staff %}{{ user.email }}{% if not forloop.last %},{% endif %}{% endfor %}">Email an alle Administratoren</a></li>
                     {% for user in staff %}
