@@ -17,9 +17,13 @@
                     <td>{{ object.description }}</td>
                 </tr>
                 <tr>
-                    <td>Datum und Uhrzeit</td>
+                    <td>{% if object.async_date %}Frist (zu erledigen bis){% else %}Datum und Uhrzeit{% endif %}</td>
                     <td>
-                        {% if object.async_date %}Frist: {% endif %}{{ object.date_time }}
+                        {% if object.async_date %}
+                            {{ object.date_time|date:"d.m.Y" }}
+                        {% else %}
+                            {{ object.date_time }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>
