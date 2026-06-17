@@ -489,7 +489,7 @@ class AllClubworkHistoryView(LoginRequiredMixin, IsRessortOrAdminMixin, FilterVi
 
 
 def notify_members_new_clubwork(users: list[User], request: AuthenticatedHttpRequest, clubwork: ClubWork) -> None:
-    emails = [user.email for user in users]
+    emails = [user.email for user in users if not str(user.email).endswith("placeholder.sv03.de")]
     try:
         local_dt = timezone.localtime(clubwork.date_time)
         if clubwork.async_date:
