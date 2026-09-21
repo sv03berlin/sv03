@@ -9,7 +9,7 @@ on:
 
 jobs:
   lint_format:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       UV_CACHE_DIR: /tmp/.uv-cache
     steps:
@@ -38,7 +38,7 @@ jobs:
         run: uv cache prune --ci
 
   typecheck:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       UV_CACHE_DIR: /tmp/.uv-cache
     steps:
@@ -65,7 +65,7 @@ jobs:
         run: uv cache prune --ci
 
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       UV_CACHE_DIR: /tmp/.uv-cache
     steps:
@@ -95,7 +95,7 @@ jobs:
 
   build_and_push:
     name: build_and_push
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - lint_format
       - typecheck
