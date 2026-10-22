@@ -17,7 +17,7 @@ COPY clubapp_uvicorn.py ./
 COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
-FROM python:3.13-slim-bookworm
+FROM python:3.15-slim-bookworm
 WORKDIR /code
 
 COPY --from=builder /code/.venv /code/.venv
