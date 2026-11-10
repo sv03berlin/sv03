@@ -15,6 +15,6 @@ class Command(BaseCommand):
         models = [apps.get_model('club', 'Ressort'), apps.get_model('club', 'Membership'), apps.get_model('reservationflow', 'ReservationGroup'), apps.get_model('reservationflow', 'ReservableThing')]
 
         for model in models:
-            data = serialize('json', model.objects.all(), indent=4, use_natural_foreign_keys=True, use_natural_primary_keys=True, fields=[field.name for field in model._meta.fields])
+            data = serialize('json', model._default_manager.all(), indent=4, use_natural_foreign_keys=True, use_natural_primary_keys=True, fields=[field.name for field in model._meta.fields])
             with open(self.path / f'{model.__name__}.json', 'w') as f:
                 f.write(data)

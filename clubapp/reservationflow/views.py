@@ -49,7 +49,7 @@ class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  
         kwargs["user"] = self.request.user
         return kwargs
 
-    def form_valid(self, form: ReservationForm) -> HttpResponse:
+    def form_valid(self, form: forms.ModelForm[Any]) -> HttpResponse:
         thing = form.cleaned_data["thing"]
         user = self.request.user
         if (
@@ -66,7 +66,7 @@ class ReservationForUserCreateView(LoginRequiredMixin, ReservationMixin, CreateV
     template_name = "create_form.html"
     form_class = ReservationForUserForm
 
-    def form_valid(self, form: ReservationForm) -> HttpResponse:
+    def form_valid(self, form: forms.ModelForm[Any]) -> HttpResponse:
         thing = form.cleaned_data["thing"]
         user = form.cleaned_data["user"]
         if (
@@ -81,7 +81,7 @@ class ReservationForUserCreateView(LoginRequiredMixin, ReservationMixin, CreateV
 
 class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: ignore[type-arg]
     template_name = "create_form.html"
-    form_class = SerialReservationForm
+    form_class = SerialReservationForm  # type: ignore[assignment]
 
     @no_type_check
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -97,7 +97,7 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
         kwargs["user"] = self.request.user
         return kwargs
 
-    def form_valid(self, form: ReservationForm) -> HttpResponse:
+    def form_valid(self, form: forms.ModelForm[Any]) -> HttpResponse:
         things = form.cleaned_data["things"]
         for thing_id in things:
             thing = ReservableThing.objects.get(pk=int(thing_id))
