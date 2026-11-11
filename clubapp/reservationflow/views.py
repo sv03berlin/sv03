@@ -8,7 +8,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.safestring import SafeString
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView
 from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView
 
@@ -81,9 +81,9 @@ class ReservationForUserCreateView(
         return super().form_valid(form)
 
 
-class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: ignore[type-arg]
+class SerialReservationCreateView(LoginRequiredMixin, FormView[SerialReservationForm]):
     template_name = "create_form.html"
-    form_class = SerialReservationForm  # type: ignore[assignment]
+    form_class = SerialReservationForm
 
     @no_type_check
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -99,7 +99,7 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
         kwargs["user"] = self.request.user
         return kwargs
 
-    def form_valid(self, form: SerialReservationForm) -> HttpResponse:  # type: ignore[override]
+    def form_valid(self, form: SerialReservationForm) -> HttpResponse:
         things = form.cleaned_data["things"]
         for thing_id in things:
             thing = ReservableThing.objects.get(pk=int(thing_id))
@@ -116,8 +116,9 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
                 and not user.is_superuser
             ):
                 messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
-                return self.form_invalid(form)  # type: ignore[arg-type]
-        return super().form_valid(form)  # type: ignore[arg-type]
+                return self.form_invalid(form)
+        form.save()
+        return super().form_valid(form)
 
 
 class ReservationUpdateView(LoginRequiredMixin, ReservationMixin, UpdateView[Reservation, ReservationForm]):
