@@ -160,7 +160,7 @@ AUTH_USER_MODEL = "club.User"
 
 LANGUAGE_CODE = "de-DE"
 
-TIME_ZONE = "CET"
+TIME_ZONE = "Europe/Berlin"
 
 
 # Static files (CSS, JavaScript, Images)
@@ -179,6 +179,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

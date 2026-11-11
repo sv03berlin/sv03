@@ -162,7 +162,7 @@ class SerialReservationForm(forms.Form):
         }
 
     def __init__(self, user: User, *args: Any, **kwargs: Any) -> None:
-        kwargs.pop("instance")
+        kwargs.pop("instance", None)
         super().__init__(*args, **kwargs)
         self.user = user
         self.fields["things"].choices = allowed_to_borrow(user)  # type: ignore[attr-defined]

@@ -8,7 +8,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.safestring import SafeString
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView
 from django_filters import FilterSet, NumberFilter
 from django_filters.views import FilterView
 
@@ -40,7 +40,7 @@ class ReservationMixin:
         return reverse("reservation_list")
 
 
-class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  # type: ignore[type-arg]
+class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView[Reservation, ReservationForm]):
     template_name = "create_form.html"
     form_class = ReservationForm
 
@@ -62,11 +62,13 @@ class ReservationCreateView(LoginRequiredMixin, ReservationMixin, CreateView):  
         return super().form_valid(form)
 
 
-class ReservationForUserCreateView(LoginRequiredMixin, ReservationMixin, CreateView, IsRessortOrAdminMixin):  # type: ignore[type-arg]
+class ReservationForUserCreateView(
+    LoginRequiredMixin, ReservationMixin, CreateView[Reservation, ReservationForUserForm], IsRessortOrAdminMixin
+):
     template_name = "create_form.html"
     form_class = ReservationForUserForm
 
-    def form_valid(self, form: ReservationForm) -> HttpResponse:
+    def form_valid(self, form: ReservationForUserForm) -> HttpResponse:
         thing = form.cleaned_data["thing"]
         user = form.cleaned_data["user"]
         if (
@@ -79,7 +81,7 @@ class ReservationForUserCreateView(LoginRequiredMixin, ReservationMixin, CreateV
         return super().form_valid(form)
 
 
-class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: ignore[type-arg]
+class SerialReservationCreateView(LoginRequiredMixin, FormView[SerialReservationForm]):
     template_name = "create_form.html"
     form_class = SerialReservationForm
 
@@ -97,7 +99,7 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
         kwargs["user"] = self.request.user
         return kwargs
 
-    def form_valid(self, form: ReservationForm) -> HttpResponse:
+    def form_valid(self, form: SerialReservationForm) -> HttpResponse:
         things = form.cleaned_data["things"]
         for thing_id in things:
             thing = ReservableThing.objects.get(pk=int(thing_id))
@@ -115,10 +117,11 @@ class SerialReservationCreateView(LoginRequiredMixin, CreateView):  # type: igno
             ):
                 messages.error(self.request, "Du bist nicht berechtigt, dieses Objekt zu reservieren.")
                 return self.form_invalid(form)
+        form.save()
         return super().form_valid(form)
 
 
-class ReservationUpdateView(LoginRequiredMixin, ReservationMixin, UpdateView):  # type: ignore[type-arg]
+class ReservationUpdateView(LoginRequiredMixin, ReservationMixin, UpdateView[Reservation, ReservationForm]):
     template_name = "create_form.html"
     form_class = ReservationForm
 
@@ -129,7 +132,7 @@ class ReservationUpdateView(LoginRequiredMixin, ReservationMixin, UpdateView):  
         return kwargs
 
 
-class ReservationDeleteView(LoginRequiredMixin, ReservationMixin, DeleteView):  # type: ignore[type-arg]
+class ReservationDeleteView(LoginRequiredMixin, ReservationMixin, DeleteView[Reservation]):
     template_name = "delete_form.html"
 
 
